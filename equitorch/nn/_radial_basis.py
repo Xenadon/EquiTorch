@@ -4,45 +4,42 @@ import torch.nn as nn
 from torch import Tensor
 
 class GaussianBasisExpansion(nn.Module):
-    """
+    r"""
     Gaussian Basis Expansion module.
 
     This module implements a Gaussian basis expansion of the form:
 
     .. math::
 
-        \exp(-\gamma_k \cdot (r-\mu_k)^2)
+        \exp[-\gamma_k(r-\mu_k)^2],\ k = 1,2,\dots,\text{num_basis}.
 
-    :param gamma: The gamma parameter for the Gaussian basis function.
-    :type gamma: Union[Tensor, float]
-    :param num_basis: The number of basis functions to use. If None, mu must be provided.
-    :type num_basis: Optional[float], default=None
-    :param start: The start value for generating mu values. Required if num_basis is provided.
-    :type start: Optional[float], default=None
-    :param end: The end value for generating mu values. Required if num_basis is provided.
-    :type end: Optional[float], default=None
-    :param mu: The mu values for the Gaussian basis functions. Required if num_basis is None.
-    :type mu: Optional[Tensor], default=None
-    :param trainable: Whether the mu and gamma parameters should be trainable.
-    :type trainable: bool, default=False
+    Parameters
+    ----------
+    gamma : Union[Tensor, float]
+        The gamma parameter for the Gaussian basis function.
+    num_basis : int, optional
+        The number of basis functions to use. If None, mu must be provided.
+    start : float, optional
+        The start value for generating mu values. Required if num_basis is provided.
+    end : float, optional
+        The end value for generating mu values. Required if num_basis is provided.
+    mu : Tensor, optional
+        The mu values for the Gaussian basis functions. Required if num_basis is None.
+    trainable : bool, optional
+        Whether the mu and gamma parameters should be trainable. Default is False.
 
-    Attributes:
-        mu (Tensor): The mu values for the Gaussian basis functions.
-        gamma (Tensor): The gamma values for the Gaussian basis functions.
-        num_basis (int): The number of basis functions.
-
-    .. note::
-        If num_basis is provided, mu values are generated using torch.linspace(start, end, num_basis).
-        If gamma is a float, it is expanded to match the shape of mu.
-        If trainable is True, mu and gamma become nn.Parameter objects.
-
+    Notes
+    -----
+    If :obj:`num_basis` is provided, :math:`\mu_k` are generated evenly in :math:`[\text{start},\text{end}]`.
+    If :obj:`gamma` is a float, it is expanded to match the shape of :math:`\mu`.
+    If :obj:`trainable` is :obj:`True`, :obj:`mu` and :obj:`gamma` become :obj:`nn.Parameter` objects.
     """
     def __init__(self, 
                  gamma: Union[Tensor,float], 
-                 num_basis: Optional[float] = None, 
-                 start: Optional[float] = None,
-                 end: Optional[float] = None,
-                 mu: Optional[Tensor] = None,
+                 num_basis: float = None, 
+                 start: float = None,
+                 end: float = None,
+                 mu: Tensor = None,
                  trainable: bool = False):
         super().__init__()
         if num_basis is None:
@@ -60,19 +57,13 @@ class GaussianBasisExpansion(nn.Module):
             self.register_buffer('gamma', gamma)
     def forward(self, x: Tensor):
 
-        """
-        Compute the Gaussian basis expansion for the input tensor.
-
-        :param x: The input tensor.
-        :type x: Tensor
-        :return: The Gaussian basis expansion of the input tensor.
-        :rtype: Tensor
+        r"""
         """
         return torch.exp(-self.gamma * (x.unsqueeze(-1)-self.mu).pow(2))
     
 # Modified from https://pytorch-geometric.readthedocs.io/en/latest/_modules/torch_geometric/nn/models/dimenet.html#DimeNet
 class BesselBasisExpansion(torch.nn.Module):
-    """
+    r"""
     Bessel Basis Expansion module.
 
     This module implements a Bessel basis expansion of the form:
@@ -85,24 +76,20 @@ class BesselBasisExpansion(torch.nn.Module):
     :math:`\hat r=r/c` is the cutoff-normalized distance, 
     and :math:`\epsilon` is a small value for stability near zero.
 
-    :param num_basis: The number of basis functions to use.
-    :type num_basis: int
-    :param cutoff: The cutoff value for the distance, default=1.
-    :type cutoff: float
-    :param trainable: Whether the frequency parameters should be trainable.
-    :type trainable: bool, default=False
-    :param eps: A small value to for stability near zero.
-    :type eps: float, default=1e-6
+    Parameters
+    ----------
+    num_basis : int
+        The number of basis functions to use.
+    cutoff : float, optional
+        The cutoff value for the distance. Default is 1.
+    trainable : bool, optional
+        Whether the frequency parameters should be trainable. Default is False.
+    eps : float, optional
+        A small value for stability near zero. Default is 1e-6.
 
-    Attributes:
-        num_basis (int): The number of basis functions.
-        cutoff (float): The cutoff value for the distance.
-        trainable (bool): Whether the frequency parameters are trainable.
-        eps (float): A small value to avoid division by zero.
-        freq (Tensor): The frequency parameters.
-
-    .. note::
-        If trainable is True, the frequency parameters become nn.Parameter objects.
+    Notes
+    -----
+        If :obj:`trainable` is :obj:`True`, the frequency parameters become :obj:`nn.Parameter` objects.
 
     """
     def __init__(self, 
@@ -124,15 +111,8 @@ class BesselBasisExpansion(torch.nn.Module):
             self.register_buffer('freq', freq)
 
 
-    def forward(self, dist: Tensor) -> Tensor:
+    def forward(self, x: Tensor) -> Tensor:
+        r"""
         """
-        Compute the Bessel basis expansion for the input distance tensor.
-
-        :param dist: The input distance tensor.
-        :type dist: Tensor
-        :return: The Bessel basis expansion of the input distance tensor.
-        :rtype: Tensor
-
-        """
-        dist = dist.unsqueeze(-1) / self.cutoff + self.eps
-        return (self.freq * dist).sin() / (dist)
+        x = x.unsqueeze(-1) / self.cutoff + self.eps
+        return (self.freq * x).sin() / (x)

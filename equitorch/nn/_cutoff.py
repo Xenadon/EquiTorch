@@ -3,21 +3,26 @@ from torch import Tensor
 import torch.nn as nn
 
 class CosineCutoff(nn.Module):
-    """
-    Implements a cosine cutoff function.
+    r"""
+    Implements a cosine cutoff function
 
-    This cutoff function smoothly decreases from 1 to 0 in the range [0, cutoff]
-    using a cosine function.
+    .. math::
+        f(r)=\begin{cases}
+        1, & r < \text{start},\\
+        \dfrac{1}{2}\left[1 + \cos\left(\pi\cdot\frac{r-\text{start}}{\text{cutoff}-\text{start}}\right)\right], & \text{start}\le r \le \text{cutoff},\\
+        0, & r > \text{cutoff}. 
+        \end{cases}
 
-    :param cutoff: The cutoff distance beyond which the function returns 0.
-    :type cutoff: float
+    This cutoff function smoothly decreases from 1 to 0 in the range 
+    :math:`[\text{start}, \text{cutoff}]` using a cosine function.
 
-    :Example:
-
-    >>> cutoff = CosineCutoff(5.0)
-    >>> x = torch.tensor([1.0, 3.0, 5.0, 7.0])
-    >>> cutoff(x)
-    
+    Parameters
+    ----------
+    cutoff : float
+        The cutoff distance where the function reaches zero.
+    start : float, optional
+        The starting distance where the function begins to decrease from 1.
+        Must be less than `cutoff`. Default is 0.
     """
     def __init__(self, cutoff: float, start: float = 0):
         super().__init__()        
@@ -27,11 +32,35 @@ class CosineCutoff(nn.Module):
         self.range = self.cutoff - self.start
 
     def forward(self, x: Tensor):
+        """
+        """
         x = (x.clamp(self.start, self.cutoff) - self.start) / self.range
         return 0.5 * (1.+torch.cos(torch.pi * x))
     
 class MollifierCutoff(nn.Module):
+    r'''
+    Implements a mollifier cutoff function.
 
+    The mollifier cutoff function is defined as:
+
+    .. math::
+        f(r) = \begin{cases} 
+        1, & r < \text{start}\\
+        \exp \left[{1 - \left({1 - \left(\frac{r-\text{start}}{\text{cutoff}-\text{start}}\right)^2}+\epsilon\right)^{-1}}\right] & \text{start} \le r \le \text{cutoff} \\
+        0, & r > \text{cutoff}  
+        \end{cases}
+
+    Parameters
+    ----------
+    cutoff : float
+        The cutoff distance where the function reaches zero.
+    start : float, optional
+        The starting distance where the function begins to decrease from 1.
+        Must be less than `cutoff`. Default is 0.
+    eps : float, optional
+        A small value to prevent division by zero or numerical instabilities.
+        Default is 1e-9.
+    '''
     def __init__(self, cutoff: float, start: float = 0, eps: float = 1e-9):
         super().__init__()
         assert start < cutoff
@@ -41,11 +70,37 @@ class MollifierCutoff(nn.Module):
         self.eps = eps
     
     def forward(self, x:Tensor):
-        x = (x.clamp(self.start, self.cutoff) - self.start) / (self.range + self.eps)
-        return torch.exp(1-1/(1-x.pow(2)))
+        """
+        """
+        x = (x.clamp(self.start, self.cutoff) - self.start) / (self.range)
+        return torch.exp(1-1/(1-x.pow(2) + self.eps))
 
 class PolynomialCutoff(nn.Module):
+    r'''
+    Implements a polynomial cutoff function.
 
+    The polynomial cutoff function is defined as:
+
+    .. math::
+        f(r) = \begin{cases} 
+        1, & r < \text{start},\\
+        1-\dfrac{(p+1)(p+2)}{2}u^p+p(p+2)u^{p+1}-\frac{p(p+1)}{2}u^{p+2}& \text{start}, \le r \le \text{cutoff}, \\
+        0, & r > \text{cutoff},  
+        \end{cases}
+
+    where :math:`u=\dfrac{r-\text{start}}{\text{cutoff}-\text{start}}`.
+
+    Parameters
+    ----------
+    cutoff : float
+        The cutoff distance where the function reaches zero.
+    start : float, optional
+        The starting distance where the function begins to decrease from 1.
+        Must be less than `cutoff`. Default is 0.
+    p : int, optional
+        The order of the polynomial.
+        Default is 5.
+    '''
     def __init__(self, cutoff: float, start: float = 0, p: int = 5):
         super().__init__()
         assert start < cutoff
@@ -58,5 +113,7 @@ class PolynomialCutoff(nn.Module):
         self.c = -self.p*(self.p+1)/2
 
     def forward(self, x:Tensor):
+        """
+        """
         x = (x.clamp(self.start, self.cutoff) - self.start) / self.range
         return 1 + self.a * x.pow(self.p) + self.b * x.pow(self.p+1) + self.c * x.pow(self.p+2)

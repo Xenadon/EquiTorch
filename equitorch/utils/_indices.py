@@ -129,9 +129,9 @@ def order_ptr(L: DegreeRange, dim:int=0, device=None):
     return torch.tensor([i**2-L[0]**2 for i in range(L[0], L[1]+2)]).reshape([1]*dim+[-1]).to(device)
 
 @functools.lru_cache(maxsize=None)
-def list_degrees(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, cond=None):
+def list_degrees(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None, cond=None):
     """
-    Generate a list of valid degree triplets (l, l1, l2).
+    Generate a list of valid degree triplets (l, l1, l2). (The triplet satisfies triangular inequality)
 
     Parameters
     ----------
@@ -140,7 +140,7 @@ def list_degrees(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, cond=None):
     L1 : DegreeRange
         The range for the first angular momentum l1.
     L2 : DegreeRange
-        The range for the second angular momentum l2.
+        The range for the second angular momentum l2. default: None, represents the range of all possible l2's
     cond : Callable[[int, int, int], bool], optional
         An optional condition function to further filter the triplets.
 
@@ -156,7 +156,8 @@ def list_degrees(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, cond=None):
     """
     L = check_degree_range(L)
     L1 = check_degree_range(L1)
-    L2 = check_degree_range(L2)
+    L2 = check_degree_range(L2) if L2 is not None \
+        else (min([abs(l1-l) for l1 in range(l1_min,l1_max+1) for l in range(l_min,l_max+1)]), L[1] + L1[1])
     if cond is not None:
         ls = [(l, l1, l2) 
               for l1 in degrees_in_range(L1) 
@@ -170,6 +171,34 @@ def list_degrees(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, cond=None):
               for l in degrees_in_range((abs(l1-l2),l1+l2))  
               if (l >= L[0] and l <= L[1])]
     return sorted(ls)
+
+@functools.lru_cache(maxsize=None)
+def num_interactions(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None, cond=None):
+    """
+    Generate the number of valid degree triplets (l, l1, l2). (The triplet satisfies triangular inequality)
+
+    Parameters
+    ----------
+    L : DegreeRange
+        The range for the total angular momentum l.
+    L1 : DegreeRange
+        The range for the first angular momentum l1.
+    L2 : DegreeRange
+        The range for the second angular momentum l2.
+    cond : Callable[[int, int, int], bool], optional
+        An optional condition function to further filter the triplets.
+
+    Returns
+    -------
+    int
+        The number of valid degree triplets.
+
+    Example
+    -------
+    >>> print(list_degrees(1, (1,2), (2,3)))
+    4
+    """
+    return len(list_degrees(L, L1, L2, cond))
 
 def num_order_between(lmin: int, lmax: int):
     """

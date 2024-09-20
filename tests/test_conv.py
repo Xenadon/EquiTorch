@@ -17,7 +17,7 @@ from equitorch.utils._clebsch_gordan import blocked_CG, coo_CG, dense_CG
 from equitorch.utils._geometries import align_to_z_wigner, rot_on
 from equitorch.math import _o3
 from equitorch.utils._indices import degree_order_to_index, degrees_in_range, extract_batch_ptr, list_degrees, order_batch, num_order_between, order_ptr, reduce_order_to_degree
-from equitorch.utils._other import so3_weights_to_so2
+from equitorch.utils._weights import so3_weights_to_so2
 
 float_type = torch.float
 

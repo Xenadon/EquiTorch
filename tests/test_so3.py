@@ -10,7 +10,7 @@ from typing import Tuple, List
 
 import sys
 
-from equitorch.utils._other import so3_weights_to_so2
+from equitorch.utils._weights import so3_weights_to_so2
 sys.path.append('..')
 
 from equitorch.nn._linear import SO2Linear, SO3Linear

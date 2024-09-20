@@ -22,8 +22,34 @@ from ..utils._indices import (
 from ..utils._clebsch_gordan import coo_CG
 
 class DegreeWiseLinear(nn.Module):
-    '''DegreeWiseLinear.
-    '''
+    """
+    Perform degree-wise linear operation (channel mixing) as the self-interaction 
+    of Tensor field networks.
+
+    This class implements the operation described in "Rotation- and translation-equivariant 
+    neural networks for 3D point clouds" [1]_.
+
+    The operation is defined as:
+
+    .. math::
+        \mathbf{x'}^{(l)}_c = \sum_{c'} \mathbf{W}^{(l)}_{cc'} \mathbf{x}_{c'}^{(l)}
+
+    .. note::
+    The `L_out` range must be contained within the `L_in` range, and the degrees in
+    `L_in` but not in `L_out` will be ignored.
+
+    Parameters
+    ----------
+    L_in : DegreeRange
+        Input degree range.
+    L_out : DegreeRange
+        Output degree range.
+    in_channels : int
+        Number of input channels.
+    out_channels : int
+        Number of output channels.
+
+    """
 
     def __init__(self, 
                  L_in: DegreeRange,
@@ -42,6 +68,20 @@ class DegreeWiseLinear(nn.Module):
                     torch.randn(self.L_out[1]+1 - self.L_out[0], in_channels, out_channels) * 2 / sqrt(in_channels + out_channels))
 
     def forward(self, x: Tensor):
+        r"""
+        Applies the degree wise linear operation to the input tensor.
+
+        Parameters
+        ----------
+        x : Tensor
+            The input tensor of shape :math:`(N, \text{num_orders_in}, C_{\text{in}})`, 
+            where :math:`N` is the batch size and :math:`C_{\text{in}}` is the number of channels.
+
+        Returns
+        -------
+        Tensor
+            The output tensor of shape :math:`(N, \text{num_orders_out}, C_{\text{out}})`.
+        """
         x = extract_in_degree(x, self.L_in, self.L_out)
         return (x.unsqueeze(-2) @ 
                 expand_degree_to_order(self.weight.unsqueeze(0), self.L_out, dim=-3)).squeeze(-2)
@@ -77,13 +117,75 @@ def _so2_indices(L_in: DegreeRange, L_out: DegreeRange):
 
 class SO2Linear(nn.Module):
 
+    r'''
+    The SO(3) equivariant linear operation of complexity :math:`O(L^3)` for the
+    maximum degree :math:`L` as described in the paper `Reducing SO(3)
+    Convolutions to SO(2) for Efficient Equivariant GNNs 
+    <https://arxiv.org/abs/2302.03655>`_.
+
+    It works as a more efficient alternative for SO(3) linear operation. 
+
+    .. math::
+        \begin{aligned}
+        \mathbf{x}_{m}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}-\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, & m < 0,\\
+        \mathbf{x}_{0}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{0}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{0}^{(l_i)}, &\\
+        \mathbf{x}_{m}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m}^{(l_i)}-\mathbf{W}_{-m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, & m > 0,\\
+        \end{aligned}
+
+    where :math:`\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m'}^{(l_i)}` means 
+    :math:`\sum_{c'}\mathbf{W}_{m,cc'}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c'}^{(l_i)}`
+    if `channel_wise` is `False`, or
+    :math:`\mathbf{W}_{m,c}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c}^{(l_i)}` if channel_wise is `True`
+    :math:`\mathbf{W}(\|\mathbf{r}\|)` means the weights can depend on the length of the 
+    vector :math:`\mathbf{r}\in\mathbb{R}^3` (but not necessary).        
+
+    The operation satisfies the following property:
+    
+    for any possible weight :math:`\mathbf{W}(\mathbf{r})` of an SO(3) linear operation,
+    there exists a weight :math:`\mathbf{W'}(\|\mathbf{r}\|)` of an SO(2) linear operation, such that:
+
+    .. math::
+        \mathbf{D}_{\text{out}}^\top\mathbf{W'}(\|\mathbf{r}\|)(\mathbf{D}_{\text{in}}\mathbf{x})=\mathbf{W}(\mathbf {r})\mathbf{x}
+
+    and vice versa, where :math:`\mathbf{D}_{\text{in}}` and :math:`\mathbf{D}_{\text{out}}` are the Wigner-D
+    matrices on the input/output spaces corresponding to the rotation matrix that can align :math:`\mathbf{r}`
+    to the z axis. (See Appendix 2 of the paper above for the proof of the bijection.)
+
+    To explicitly convert from or to the weight for :obj:`SO3Linear` operation, see 
+    :obj:`so3_weights_to_so2` and :obj:`so2_weights_to_so3` in :obj:`utils`.
+    
+    .. note::
+        If dense Wigner-D matrix is used before the SO(2) linear operation, the 
+        :math:`O(L^4)` complexity of :math:`\mathbf{Dx}` can be the bottleneck.
+        When channels :math:`C` explicitly considered, the linear operation will 
+        be of complexity :math:`O(L^3C)` if channel wise or :math:`O(L^3CC')` if
+        not, but the rotation :math:`\mathbf{Dx}` will always be of complexity 
+        :math:`O(L^4C)`.
+
+    Parameters
+    ----------
+    L_in : DegreeRange
+        The input degree range.
+    L_out : DegreeRange
+        The output degree range.
+    in_channels : int
+        The number of input channels.
+    out_channels : int
+        The number of output channels.
+    external_weight : bool, optional
+        Whether the user will pass external weights (that may depend on data or edges) or keep a set of independent weights inside.
+        Default to False.
+    channel_wise : bool, optional
+        Whether the weight is performed channel-wise.
+        Default to False.
+    '''
     def __init__(self, 
                  L_in: DegreeRange, 
                  L_out: DegreeRange, 
                  in_channels: int,
                  out_channels: int,
                  external_weight: bool = False,
-                 channel_wise: bool = True
+                 channel_wise: bool = False
                  ):
         assert in_channels == out_channels or not channel_wise
         super().__init__()
@@ -118,7 +220,36 @@ class SO2Linear(nn.Module):
                                 self.out_channels)
                         * 2 / sqrt(in_channels + out_channels))
 
-    def forward(self, x: Tensor, weight: Optional[Tensor]=None):
+    def forward(self, x: Tensor, weight: Tensor=None):
+        r"""
+        Applies the SO(2) linear operation to the input tensor.
+
+        Parameters
+        ----------
+        x : Tensor
+            The input tensor of shape :math:`(N, \text{num_orders_in}, C_{\text{in}})`, 
+            where :math:`N` is the batch size, :math:`\text{num_orders_in}` 
+            is the number of input orders, and :math:`C_{\text{in}}` is the number of channels.
+            before passed into this function, :math:`x` must have been transformed by 
+            :math:`\mathbf{D}_{\text{in}}`.
+        weight : Tensor, optional
+            The external weights to use for the linear operation. If `None`, the 
+            internal weights will be used.
+            The shape of the weights depends on the value of `channel_wise`. 
+            If `channel_wise` is `True`, the shape should be :math:`(N, \text{num_weights}, C_{\text{in}})`.
+            If `channel_wise` is `False`, the shape should be :math:`(N, \text{num_weights}, C_{\text{in}}, C_{\text{out}})`, 
+
+        Returns
+        -------
+        Tensor
+            The output tensor of shape :math:`(N, \text{num_orders_out}, C_{\text{out}})`.
+            The returned feature should then be transformed by :math:`\mathbf{D}_{\text{out}}^\top`.
+
+        Notes
+        -----
+        If :obj:`external_weight` is :obj:`True`, the :obj:`weight` parameter must be provided. 
+        If :obj:`external_weight` is :obj:`False`, the :obj:`weight` will still be used if provided.
+        """
         if weight is None and not self.external_weight:
             weight = self.weight
         
@@ -184,7 +315,72 @@ def _so3_cw_conv(feature: Tensor,
 
 
 class SO3Linear(nn.Module):
+    r"""
+    The SO(3) equivariant linear operation.
 
+    The SO(3) equivariant linear operation first proposed by `Tensor field 
+    networks: Rotation- and translation-equivariant neural networks for 3D
+    point clouds <https://arxiv.org/abs/1802.08219>`_. The name of "linear 
+    operation" comes from `Geometric and Physical Quantities Improve E(3) 
+    Equivariant Message Passing <https://arxiv.org/abs/2110.02905>`_.
+
+    This operation can be expressed as
+    
+    .. math::
+        \mathbf{x'}^{(l)}=\mathbf{W}_{l_1,l_2}^{l}(\|\mathbf{r}\|)\mathbf{x}^{(l_1)}\otimes \mathbf{Y}^{(l_2)}(\mathbf{r}),
+    
+    or
+
+    .. math::
+        \mathbf{x'}^{(l)}_{m}=\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}\mathbf{W}_{l_1,l_2}^{l}(\|\mathbf{r}\|)\mathbf{x}_{m_1}^{(l_1)}\mathbf{Y}_{m_2}^{(l_2)}(\mathbf{r}),
+    
+    where :math:`C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}` is the Clebsch-Gordan coefficients and 
+    :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}_{m_1}^{(l_i)}` means 
+    :math:`\sum_{c'}\mathbf{W}_{l_1,l_2,cc'}^{l}\mathbf{x}_{m_1,c'}^{(l_i)}`
+    if :obj:`channel_wise` is :obj:`False`, or
+    :math:`\mathbf{W}_{l_1,l_2,c}^{l}\mathbf{x}_{m_1,c}^{(l_i)}` if :obj:`channel_wise` is :obj:`True`.
+    :math:`\mathbf{W}(\|\mathbf{r}\|)` means the weights can depend on the length of the 
+    vector :math:`\mathbf{r}\in\mathbb{R}^3` (but not necessary).
+
+    When there are no ambiguities on :obj:`L_in`, :obj:`L_edge` and :obj:`L_out`,
+    we also denote this operation as
+    
+    .. math::
+        \mathbf{x'}=\mathbf{W}({\mathbf{r}})\mathbf{x},
+
+    which looks more like a linear operation where the weight can depend on :math:`\mathbf{r}`.
+
+    The SO(3) equivariance means that for any rotation matrix :math:`\mathbf{R}\in\mathrm{SO(3)}`
+    and corresponding Wigner-D matrices :math:`\mathbf{D}_{\text{in}}`, 
+    :math:`\mathbf{D}_{\text{out}}` in input/output feature spaces, it will satisfies that
+
+    .. math::
+        \mathbf{D}_{\text{out}}\mathbf{x'}=\mathbf{W}(\mathbf{R}{\mathbf{r}})(\mathbf{D}_{\text{in}}\mathbf{x}).
+
+    .. note::
+        By using sparse contraction on :math:`m_1,m_2`, the time complexity of this operation is :math:`O(L^5)`
+        for the maximum degree :math:`L`.
+
+        Whenever possible, it is recommended to use :obj:`SO2Linear` for 
+        equivariant operation on large :math:`L`.
+
+    Parameters
+    ----------
+    L_in : DegreeRange
+        The degree range of the input.
+    L_edge : DegreeRange
+        The degree range of the edge.
+    L_out : DegreeRange
+        The degree range of the output.
+    in_channels : int
+        The number of input channels.
+    out_channels : int
+        The number of output channels.
+    external_weight : bool, optional
+        Whether to use an external weight. Defaults to False.
+    channel_wise : bool, optional
+        Whether to perform the operation channel-wise. Defaults to False.
+    """
     def __init__(
             self,
             L_in: DegreeRange,
@@ -193,10 +389,9 @@ class SO3Linear(nn.Module):
             in_channels: int,
             out_channels: int,
             external_weight: bool = False,
-            channel_wise: bool = True,
-            **kwargs
+            channel_wise: bool = False,
     ):
-        super().__init__(**kwargs)
+        super().__init__()
 
         assert in_channels == out_channels or not channel_wise
 
@@ -251,53 +446,76 @@ class SO3Linear(nn.Module):
                                     * sqrt(2/(in_channels+out_channels)))
             
     def forward(self, 
-                feature: Tensor, 
+                x: Tensor, 
                 edge_feat: Tensor,
                 weight: Optional[Tensor] = None,
         ):
+        r"""
+        Applies the SO(3) linear operation to the input tensor.
+
+        Parameters
+        ----------
+        x : Tensor
+            The input tensor of shape :math:`(N, \text{num_orders_in}, C_{\text{in}})`, 
+            where :math:`N` is the batch size and :math:`C_{\text{in}}` is the number of channels.
+        edge_feat : Tensor
+            The edge spherical harmonics tensor of shape :math:`(N, \text{num_orders_edge})`.
+        weight : Tensor, optional
+            The external weights to use for the linear operation. If :obj:`None`, the 
+            internal weights will be used.
+            The shape of the weights depends on the value of :obj:`channel_wise`. 
+            If :obj:`channel_wise` is :obj:`True`, the shape should be :math:`(N, \text{num_weights}, C_{\text{in}})`.
+            If :obj:`channel_wise` is :obj:`False`, the shape should be :math:`(N, \text{num_weights}, C_{\text{in}}, C_{\text{out}})`, 
+
+        Returns
+        -------
+        Tensor
+            The output tensor of shape :math:`(N, \text{num_orders_out}, C_{\text{out}})`.
+
+        Notes
+        -----
+        If :obj:`external_weight` is :obj:`True`, the :obj:`weight` parameter must be provided. 
+        If :obj:`external_weight` is :obj:`False`, the :obj:`weight` will still be used if provided.
+        """
         if weight is None and not self.external_weight:
             weight = self.weight
 
         if self.channel_wise:
-            return _so3_cw_conv(feature, edge_feat, weight,
+            return _so3_cw_conv(x, edge_feat, weight,
                          self.CG_vals, self.M_ptr, self.l_ind, 
                          self.M1, self.M2)
         else:
-            return _so3_conv(feature, edge_feat, weight,
+            return _so3_conv(x, edge_feat, weight,
                             self.CG_vals, self.Ml1l2_ptr, self.l_ind, 
                             self.M1, self.M2, self.M_ptr)
         
-    
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(\n  L_in={self.L_in}, L_edge={self.L_edge}, L_out={self.L_out},\n  in_channels={self.in_channels}, out_channels={self.out_channels}, channel_wise={self.channel_wise}, external_weight={self.external_weight}\n)'
 
 class ElementWiseLinear(nn.Module):
-    r"""Applies an element-wise linear transformation to the input tensor.
+    r"""Applies an element wise linear transformation to the input tensor.
 
     The transformation can be either channel-wise or not channel-wise.
 
-    Args:
-        in_channels (int): Number of input channels.
-        out_channels (int): Number of output channels.
-        channel_wise (bool, optional): If True, the transformation is channel-wise. Defaults to False.
+    If :obj:`channel_wise` is False, the transformation is calculated as:
 
-    Attributes:
-        in_channels (int): Number of input channels.
-        out_channels (int): Number of output channels.
-        channel_wise (bool): Indicates whether the transformation is channel-wise.
-        weight_shape (tuple): Shape of the weight tensor.
+    .. math:: \mathbf{x}'_{mc'} = \sum_{c}  \mathbf{W}_{cc'} \mathbf{x}_{mc},
 
-    Returns:
-        Tensor: The transformed input tensor.
+    If :obj:`channel_wise` is True, the transformation is calculated as:
 
-        If `channel_wise` is False:
-            ::math::
-                Z_{nmc'} = \sum_{c} X_{nmc} W_{ncc'}
+    .. math:: \mathbf{x}'_{mc} = \mathbf{W}_{c} \mathbf{x}_{mc},
+    
+    which is exactly a gate operation.
 
-        If `channel_wise` is True:
-            ::math::
-                Z_{nmc} = X_{nmc} W_{nc} (\text{work like a gate operation})
 
+    Parameters
+    ----------
+    in_channels : int
+        Number of input channels.
+    out_channels : int
+        Number of output channels.
+    channel_wise : bool, optional
+        If True, the transformation is channel-wise. Defaults to False.
     """
 
     def __init__(self, in_channels: int, out_channels: int, 
@@ -312,12 +530,18 @@ class ElementWiseLinear(nn.Module):
     def forward(self, x: Tensor, weight: Tensor):
         r"""Applies the element-wise linear transformation to the input tensor.
 
-        Args:
-            x (Tensor): Input tensor of shape `(N, num_orders, in_channels)`.
-            weight (Tensor): Weight tensor of shape `(N, in_channels)` if `channel_wise` is False, or `(N, in_channels, out_channels)` if `channel_wise` is True.
+        Parameters
+        ----------
+        x : Tensor
+            Input tensor of shape :math:`(N, \text{num_orders}, C_{\text{in}})`.
+        weight : Tensor
+            Weight tensor of shape :math:`(N, C_{\text{in}})` if :obj:`channel_wise` is False, or
+            :math:`(N, C_{\text{in}}, C_{\text{out}})` if :obj:`channel_wise` is True.
 
-        Returns:
-            Tensor: The transformed input tensor.
+        Returns
+        -------
+        Tensor
+            The transformed input tensor of shape :math:`(N, \text{num_orders}, C_{\text{out}})`.
         """
         weight = weight.reshape(self.weight_shape)
         if self.channel_wise:

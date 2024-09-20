@@ -21,7 +21,7 @@ from equitorch.utils._geometries import rot_on
 from equitorch.utils._indices import list_degrees
 from equitorch.math._o3 import spherical_harmonics, wigner_D
 from equitorch.utils._geometries import align_to_z_wigner
-from equitorch.utils._other import so3_weights_to_so2, so2_weights_to_so3
+from equitorch.utils._weights import so3_weights_to_so2, so2_weights_to_so3
 
 float_type = torch.float64
 
@@ -58,8 +58,8 @@ ls = list_degrees((l_min, l_max), (l1_min, l1_max), (l2_min, l2_max))
 in_channels = 2
 out_channels = 5
 
-so2 = SO2Linear(in_channels, out_channels, (l1_min, l1_max), (l_min, l_max), True, False)
-so3 = SO3Linear(in_channels, out_channels, (l1_min, l1_max), (l2_min, l2_max), (l_min, l_max), True, False)
+so2 = SO2Linear((l1_min, l1_max), (l_min, l_max), in_channels, out_channels, True, False)
+so3 = SO3Linear((l1_min, l1_max), (l2_min, l2_max), (l_min, l_max), in_channels, out_channels,  True, False)
 
 
 W_so3, X, Y, XR, YR, (a,b,c), D1, D2, D, r = init_test(
