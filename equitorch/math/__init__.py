@@ -16,86 +16,44 @@ from ..typing import Union, Tuple
 
 from ._o3 import *
 
-
-# def dot(x1: Tensor, x2: Tensor, L: DegreeRange, channel_wise=True):
-#     r"""Compute the degree & channel-wise dot product between spherical features.
-
-#     For spherical features :math:`x_1 = [{x_1}_m^l]_c` and :math:`x_2 = [{x_2}_m^l]_c`,
-#     this function computes:
-
-#     .. math::
-
-#         d_c^l = \sum_{m=-l}^l [{x_1}_m^l {x_2}_m^l]_c
-
-#     Parameters
-#     ----------
-#     x1 : Tensor
-#         Spherical feature tensor of shape (N, num_orders, C)
-#     x2 : Tensor
-#         Spherical feature tensor of shape (N, num_orders, C)
-#     L : DegreeRange
-#         Range of degrees to consider
-
-#     Returns
-#     -------
-#     Tensor
-#         Dot product tensor of shape (N, num_degrees, C)
-
-#     Notes
-#     -----
-#     - N is the batch size
-#     - num_orders is the total number of spherical harmonic orders
-#     - num_degrees is the number of degrees in the specified range L
-#     - C is the number of channels
-#     """
-
-#     L = check_degree_range(L)
-#     return reduce_order_to_degree(x1*x2, L, dim=-2)
-
 def dot(x1: Tensor, x2: Tensor, L: DegreeRange, channel_wise=True):
-    """
+    r"""
     Compute the degree-wise dot product between spherical features.
 
-    For spherical features :math:`x_1 = [{x_1}_m^l]_{c1}` and :math:`x_2 = [{x_2}_m^l]_{c2}`,
-    this function computes:
+    .. math::
+
+        d_c^{(l)} = \sum_{m=-l}^l [{\mathbf{x}_m^{(l)}}]_c [{\mathbf{y}_m^{(l)}}]_c
+
+    if :obj:`channel_wise`, or
 
     .. math::
 
-        d_c^l = \sum_{m=-l}^l {{x_1}_m^l}_c {{x_2}_m^l}_c
-
-    if channel_wise, or
-
-    .. math::
-
-        d_{c_1,c_2}^l = \sum_{m=-l}^l {{x_1}_m^l}_{c1} {{x_2}_m^l}_{c2}
+        d_{c_1,c_2}^{(l)} = \sum_{m=-l}^l [{\mathbf{x}_m^{(l)}}]_{c_1} [{\mathbf{y}_m^{(l)}}]_{c_2}
         
-    if not channel_wise.
+    otherwise.
 
     Parameters
     ----------
     x1 : Tensor
-        Spherical feature tensor of shape (N, num_orders, C1)
+        First input tensor of shape :math:`(N, \text{num_orders_1}, C_1)`.
     x2 : Tensor
-        Spherical feature tensor of shape (N, num_orders, C2)
+        Second input tensor of shape :math:`(N, \text{num_orders_1}, C_2)`.
     L : DegreeRange
-        Range of degrees to consider
+        The degree range of inputs.
     channel_wise : bool, optional
         If True, compute channel-wise dot product. Default is True.
 
     Returns
     -------
     Tensor
-        If channel_wise:
-            Dot product tensor of shape (N, num_degrees, C)
-        If not channel_wise:
-            Dot product tensor of shape (N, num_degrees, C1, C2)
+        The result of the dot product of shape 
+        :math:`(N, \text{num_degrees}, C)` if :obj:`channel_wise` is :obj:`True`
+        or :math:`(N, \text{num_degrees}, C_1, C_2)` if :obj:`channel_wise` is :obj:`False`.
 
-    Notes
-    -----
-    - N is the batch size
-    - num_orders is the total number of spherical harmonic orders
-    - num_degrees is the number of degrees in the specified range L
-    - C, C1, C2 are the number of channels
+        
+    Where :math:`N` is the batch-size that will automatically broadcast if set to :math:`1`
+    and :math:`C_1,C_2,C` are corresponding number of channels.
+    If :obj:`channel_wise` is :obj:`True`, :math:`C_1=C_2=C` should be satisfied.  
 
     Examples
     --------
@@ -121,76 +79,113 @@ def dot(x1: Tensor, x2: Tensor, L: DegreeRange, channel_wise=True):
 
 
 def norm(x: Tensor, L: DegreeRange):
-    r"""Compute the degree & channel-wise norm of a spherical feature.
-
-    For a spherical feature :math:`x = [x_m^l]_c`, this function computes:
+    r"""Compute the degree & channel-wise norm of a spherical feature as 
 
     .. math::
 
-        \sqrt{\sum_{m=-l}^l [{x_m^l}^2]_c}
+        \|\mathbf{x}^{(l)}_c\| = \sqrt{\sum_{m=-l}^l [{\mathbf{x}_m^{(l)}}]_c^2}, l\in L
 
     Parameters
     ----------
     x : Tensor
-        Spherical feature tensor of shape (N, num_orders, C)
+        Spherical feature tensor of shape :math:`(N, \text{num_orders}, C)`
     L : DegreeRange
-        Range of degrees to consider
+        The degree range of input
 
     Returns
     -------
     Tensor
-        Norm tensor of shape (N, num_degrees, C)
+        Norm tensor of shape :math:`(N, \text{num_degrees}, C)`
 
-    Notes
-    -----
-    - N is the batch size
-    - num_orders is the total number of spherical harmonic orders
-    - num_degrees is the number of degrees in the specified range L
-    - C is the number of channels
+    
+    Where :math:`N` is the batch-size and :math:`C` is the number of channels. 
     """
 
-    return reduce_order_to_degree(x**2, L, dim=-2).sqrt(2)
+    return reduce_order_to_degree(x**2, L, dim=-2).sqrt()
 
 def norm2(x: Tensor, L: DegreeRange):
-    r"""Compute the square of the degree & channel-wise norm of a spherical feature.
-
-    For a spherical feature :math:`x = [x_m^l]_c`, this function computes:
+    r"""Compute the square of degree & channel-wise norm of a spherical feature as
 
     .. math::
 
-        \sum_{m=-l}^l [{x_m^l}^2]_c
+        \|\mathbf{x}^{(l)}_c\|^2 = {\sum_{m=-l}^l [{\mathbf{x}_m^{(l)}}]_c^2}, l\in L
 
     Parameters
     ----------
     x : Tensor
-        Spherical feature tensor of shape (N, num_orders, C)
+        Spherical feature tensor of shape :math:`(N, \text{num_orders}, C)`
     L : DegreeRange
-        Range of degrees to consider
+        The degree range of input
 
     Returns
     -------
     Tensor
-        Squared norm tensor of shape (N, num_degrees, C)
+        Square of norm tensor of shape :math:`(N, \text{num_degrees}, C)`
 
-    Notes
-    -----
-    - N is the batch size
-    - num_orders is the total number of spherical harmonic orders
-    - num_degrees is the number of degrees in the specified range L
-    - C is the number of channels
-    - This function is equivalent to `norm(x, L)**2` but may be more efficient
+    
+    Where :math:`N` is the batch-size and :math:`C` is the number of channels. 
     """
     return reduce_order_to_degree(x**2, L, dim=-2)
 
-
-@functools.lru_cache(maxsize=None)
 def s2_grid(num_thetas: int, num_phis: int, device = None, dtype = None):
+    r"""
+    Returns the regular grid points on a sphere as defined by the spherical coordinates theta and phi.
+
+    The grid points are calculated according to the following formulas:
+
+    .. math::
+        \begin{aligned}
+        \theta_i &= \pi\cdot\frac{(i+\frac{1}{2})}{N}, &i = 0,1,\dots N-1,\\
+        \phi_j &= 2\pi\cdot\frac{j}{M}, &j = 0,1,\dots M-1,
+        \end{aligned}
+
+    where :math:`N` and :math:`M` are the number of points along the 
+    :math:`\theta` and :math:`\phi` axes, respectively.
+
+    Parameters
+    ----------
+    num_thetas : int
+        The number of grid points along the :math:`\theta` axis.
+    num_phis : int
+        The number of grid points along the :math:`\phi` axis.
+    device : optional
+        The device to store the resulting tensors on. Defaults is None.
+    dtype : torch.dtype, optional
+        The data type of the resulting tensors. Defaults is None.
+
+    Returns
+    -------
+    (Tensor, Tensor)
+        A tuple of two tensors of the grid points along the :math:`\theta` and :math:`\phi` axes.
+    """
     return o3.s2_grid(num_thetas, num_phis, device, dtype)
 
 # def spherical_harmonics_on_grid(grid_points: Union[Tensor, Tuple[Tensor, Tensor]]):
-def spherical_harmonics_on_grid(L: int, res_theta: float, res_phi: float):
-    theta, phi, legendres, fouriers = o3.spherical_harmonics_s2_grid(lmax=3, res_beta=res_theta, res_alpha=res_phi)
-    return torch.meshgrid(theta, phi),  legendres.unsqueeze(-1), fouriers.unsqueeze(-2)
+def legendre_fourier_on_grid(L: int, res_theta: float, res_phi: float, device = None, dtype = None):
+    """
+    Returns the legendre-cos and fourier functions on the regular grid points on a sphere as defined by the spherical coordinates theta and phi.
+
+    Parameters
+    ----------
+    L : int
+        _description_
+    res_theta : float
+        _description_
+    res_phi : float
+        _description_
+    device : _type_, optional
+        _description_, by default None
+    dtype : _type_, optional
+        _description_, by default None
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
+    theta, phi, legendres, fouriers = o3.spherical_harmonics_s2_grid(
+        lmax=L, res_beta=res_theta, res_alpha=res_phi, device=device, dtype=dtype)
+    return (theta.unsqueeze(-1), phi.unsqueeze(-2)),  legendres.unsqueeze(-1), fouriers.unsqueeze(-2)
 
 # def s2_spectral_to_spatial(x: Tensor, grid_points: Union[Tensor, Tuple]):
 

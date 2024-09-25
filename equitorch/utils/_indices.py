@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Optional, Callable
 import torch
 from torch import Tensor
 import functools
@@ -129,7 +129,7 @@ def order_ptr(L: DegreeRange, dim:int=0, device=None):
     return torch.tensor([i**2-L[0]**2 for i in range(L[0], L[1]+2)]).reshape([1]*dim+[-1]).to(device)
 
 @functools.lru_cache(maxsize=None)
-def list_degrees(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None, cond=None):
+def list_degrees(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None, cond: Optional[Callable[[int, int, int], bool]] =None):
     """
     Generate a list of valid degree triplets (l, l1, l2). (The triplet satisfies triangular inequality)
 
@@ -173,7 +173,8 @@ def list_degrees(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None, cond=N
     return sorted(ls)
 
 @functools.lru_cache(maxsize=None)
-def num_interactions(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None, cond=None):
+def num_degree_triplets(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None, 
+                        cond: Optional[Callable[[int, int, int], bool]] = None):
     """
     Generate the number of valid degree triplets (l, l1, l2). (The triplet satisfies triangular inequality)
 

@@ -135,19 +135,116 @@ def _weighted_tensor_product_cw(x1: Tensor,
     return ret
 
 class WeightedTensorProduct(nn.Module):
-    '''
+    r'''
     Weighted Tensor Product
+
+    .. math::
+        \mathbf{z}^{(l)} = \sum_{l_1,l_2}\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)},
+        l \in L_{out},
+
+    or 
+
+    .. math::
+        \mathbf{z}^{(l)}_m = \sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}
+        \mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2},
+        l \in L_{out}, m=-l,\dots,l,
+    
+    where the summation of :math:`(l_1,l_2)` is over all the values such that 
+    :math:`l_1\in L_1, l_2\in L_2` and :math:`|l_1-l_2|\le l\le l_1+l_2` and 
+    :math:`C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}` are the Clebsch-Gordan coefficients.
+
+    When considering multiple channel inputs, the effect of weights :math:`\mathbf{W}_{l_1,l_2}^{l}`
+    on input pairs :math:`(\mathbf{x}^{(l_1)}, \mathbf{y}^{(l_2)})` will depend on :obj:`tp_type`:
+
+    * Channel wise:
+
+        When :obj:`tp_type=\'cw\'` or :obj:`connected = False and channel_wise = True`,
+        :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C,)` shaped tensor. 
+        :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}` means that
+        
+        .. math::
+            [\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_c=
+            [\mathbf{W}_{l_1,l_2}^{l}]_c [\mathbf{x}^{(l_1)}_{m_1}]_c[\mathbf{y}^{(l_2)}_{m_2}]_c
+
+    * Pair wise:
+
+        When :obj:`tp_type=\'pw\'` or :obj:`connected = False and channel_wise = False`,
+        :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C_1,C_2)` shaped tensor. 
+        :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}` means that
+        
+        .. math::
+            [\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_{c_1,c_2}=
+            [\mathbf{W}_{l_1,l_2}^{l}]_{c_1,c_2} [\mathbf{x}^{(l_1)}_{m_1}]_{c_1}[\mathbf{y}^{(l_2)}_{m_2}]_{c_2}
+
+    * Channel-wise connected:
+
+        When :obj:`tp_type=\'cwc\'` or :obj:`connected = True and channel_wise = True`,
+        :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C_{\text{in}},C_{\text{out}})` shaped tensor. 
+        :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}` means that
+        
+        .. math::
+            [\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_{c'}=
+            \sum_c[\mathbf{W}_{l_1,l_2}^{l}]_{c,c'} [\mathbf{x}^{(l_1)}_{m_1}]_c[\mathbf{y}^{(l_2)}_{m_2}]_c
+
+    * Fully connected:
+
+        When :obj:`tp_type=\'fc\'` or :obj:`connected = False and channel_wise = False`,
+        :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C_{\text{in1}},C_{\text{in2}},C_{\text{out}})` shaped tensor. 
+        :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}` means that
+        
+        .. math::
+            [\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_{c'}=
+            \sum_{c_1,c_2}[\mathbf{W}_{l_1,l_2}^{l}]_{c_1,c_2,c'} [\mathbf{x}^{(l_1)}_{m_1}]_{c_1}[\mathbf{y}^{(l_2)}_{m_2}]_{c_2}
+
+    Also, we allow different weights for different input pairs when :obj:`external_weight` is :obj:`True`.
+    
+    Note
+    ----
+    - When :obj:`channel_wise` is :obj:`True`, :obj:`in1_channels` must be equal to :obj:`in2_channels`.
+    - When :obj:`connected` is :obj:`False`, :obj:`out_channels` must not be specified.
+    - When :obj:`connected` is :obj:`True`, :obj:`out_channels` must be specified.
+
+    Parameters
+    ----------
+    L_in1 : DegreeRange
+        The degree range of the first input.
+    L_in2 : DegreeRange
+        The degree range of the second input.
+    L_out : DegreeRange
+        The degree range of the output.
+    in1_channels : int
+        The number of channels in the first input.
+    in2_channels : int
+        The number of channels in the second input. Must be the same as :obj:`in1_channels` if :obj:`channel_wise` is :obj:`True`.
+    out_channels : int, optional
+        The number of channels in the output. Must be specified if :obj:`connected` is :obj:`True`, and must not be specified if :obj:`connected` is :obj:`False`.
+    connected : bool, optional
+        Whether the weights are connected or not. Default is :obj:`False`. Will be overridden if :obj:`tp_type` is specified.
+    channel_wise : bool, optional
+        Whether the weights are channel-wise or not. Default is :obj:`True`. Will be overridden if :obj:`tp_type` is specified.
+    tp_type : str, optional
+        The type of tensor product. Can be one of the following:
+
+            - :obj:`'channel_wise'` or :obj:`'cw'`: Channel-wise tensor product with :obj:`connected=False` and :obj:`channel_wise=True`.
+            - :obj:`'pair_wise'` or :obj:`'pw'`: Pair-wise tensor product with :obj:`connected=False` and :obj:`channel_wise=False`.
+            - :obj:`'channel_wise_connected'` or :obj:`'cwc'`: Channel-wise connected tensor product with :obj:`connected=True` and :obj:`channel_wise=True`.
+            - :obj:`'fully_connected'` or :obj:`'fc'`: Fully connected tensor product with :obj:`connected=True` and :obj:`channel_wise=False`.
+        
+        If not provided, :obj:`connected` and :obj:`channel_wise` will be used to determine the type of tensor product.
+    external_weight : bool, optional
+        Whether to use external weights or not. Default is :obj:`False`.
     '''
+
     def __init__(self, 
                  L_in1: DegreeRange, 
                  L_in2:DegreeRange, 
                  L_out:DegreeRange,
                  in1_channels: int,
                  in2_channels: int,
-                 out_channels: int = None,
+                 out_channels: Optional[int] = None,
                  connected: bool = False,
                  channel_wise: bool = True,
-                 tp_type: str = None,
+                 tp_type: Optional[str] = None,
                  external_weight: bool = False, 
                 ):
         super().__init__()
@@ -244,7 +341,38 @@ class WeightedTensorProduct(nn.Module):
                             self.in1_channels, self.in2_channels) \
                             * sqrt(2/(self.in1_channels * self.in2_channels)))
                     
-    def forward(self, x1: Tensor, x2: Tensor, weight: Optional[Tensor] = None, **kwargs): # !TO REMOVE
+    def forward(self, x1: Tensor, x2: Tensor, weight: Optional[Tensor] = None):
+        r"""
+        Performs the weighted tensor product operation.
+
+        Parameters
+        ----------
+        x1 : Tensor
+            The first input tensor of shape :math:`(N,\text{num_orders_1},C_1)`.
+        x2 : Tensor
+            The second input tensor of shape :math:`(N,\text{num_orders_2},C_2)`. 
+        weight : Optional[Tensor], optional
+            The weight of shape :math:`(N,\text{num_weights},...)`, where ":math:`...`" 
+            depends on the tensor product type as listed above. 
+            Default is None.
+
+            It will be used if :obj:`external_weight` is True
+            or if provided even when :obj:`external_weight` is False.
+        
+            
+        Returns
+        -------
+        Tensor
+            The tensor product of shape :math:`(N,\text{num_orders_out},C_{out})`,
+            where :math:`C_{out}` will be :math:`C=C_1=C_2` if :obj:`tp_type='cw'`,
+            :math:`(C_1,C_2)` if :obj:`tp_type='pw'` or the specified value otherwise.
+        
+            
+        Where :math:`N` is the batch-size that will automatically broadcast if set to :math:`1` 
+        and :math:`C` is the corresponding number of channels.  
+
+        
+        """
         if weight is None and not self.external_weight:
             weight = self.weight
         if self.channel_wise and self.connected:
@@ -302,7 +430,43 @@ def _tensor_product_pw(x1: Tensor,
     return ret
 
 class TensorProduct(nn.Module):
-    
+    r""" The traditional tensor product with no weights
+
+    .. math::
+        \mathbf{z}^{(l)} = \sum_{l_1,l_2}\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)},
+        l \in L_{out},
+
+    or 
+
+    - if :obj:`channel_wise`:
+
+        .. math::
+            [\mathbf{z}^{(l)}_m]_c = \sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}
+            [\mathbf{x}^{(l_1)}_{m_1}]_c[\mathbf{y}^{(l_2)}_{m_2}]_c,
+            l \in L_{out}, m=-l,\dots,l,
+
+    - otherwise:
+
+        .. math::
+            [\mathbf{z}^{(l)}_m]_{c_1,c_2} = \sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}
+            [\mathbf{x}^{(l_1)}_{m_1}]_{c_1}[\mathbf{y}^{(l_2)}_{m_2}]_{c_2},
+            l \in L_{out}, m=-l,\dots,l,
+            
+    where the summation of :math:`(l_1,l_2)` is over all the values such that 
+    :math:`l_1\in L_1, l_2\in L_2` and :math:`|l_1-l_2|\le l\le l_1+l_2` and 
+    :math:`C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}` are the Clebsch-Gordan coefficients.
+
+    Parameters
+    ----------
+    L_in1 : DegreeRange
+        The degree range of the first input.
+    L_in2 : DegreeRange
+        The degree range of the second input.
+    L_out : DegreeRange
+        The degree range of the output.
+    channel_wise : bool
+        Whether the product is performed channel-wise.
+    """
     def __init__(self, 
                  L_in1: DegreeRange, 
                  L_in2:DegreeRange, 
@@ -321,7 +485,28 @@ class TensorProduct(nn.Module):
         self.register_buffer('M_ptr', M_ptr)
         self.register_buffer('CG_vals', CG_vals)
 
-    def forward(self, x1: Tensor, x2: Tensor, **kwargs): # !TO REMOVE
+    def forward(self, x1: Tensor, x2: Tensor):
+        r"""Perform tensor product
+
+        Parameters
+        ----------
+        x1 : Tensor
+            The first input tensor of shape :math:`(N,\text{num_orders_1},C_1)`
+        x2 : Tensor
+            The second input tensor of shape :math:`(N,\text{num_orders_2},C_2)`
+
+        Returns
+        -------
+        Tensor
+            The tensor product of two input tensors 
+            of shape :math:`(N,\text{num_orders_out},C)` if :obj:`channel_wise` is :obj:`True`
+            or :math:`(N,\text{num_orders_out},C_1, C_2)` otherwise.
+
+
+        Where :math:`N` is the batch-size that will automatically broadcast if set to :math:`1` 
+        and :math:`C_1,C_2,C` are corresponding number of channels.
+        If :obj:`channel_wise` is :obj:`True`, :math:`C_1=C_2=C` should be satisfied.  
+        """
         if self.channel_wise:
             return _tensor_product_cw(x1, x2, self.CG_vals, self.M1, self.M2, self.M_ptr)
         else:
@@ -332,36 +517,26 @@ class TensorProduct(nn.Module):
 
 class TensorDot(nn.Module):
     r"""
-    The module that computes the degree-wise dot product between spherical features.
-
-    For spherical features :math:`x_1 = [{x_1}_m^l]_{c1}` and :math:`x_2 = [{x_2}_m^l]_{c2}`,
-    this module computes:
+    The module that computes the degree-wise dot product between spherical features
 
     .. math::
 
-        d_c^l = \sum_{m=-l}^l {{x_1}_m^l}_c {{x_2}_m^l}_c
+        d_c^{(l)} = \sum_{m=-l}^l [{\mathbf{x}_m^{(l)}}]_c [{\mathbf{y}_m^{(l)}}]_c
 
-    if channel_wise, or
+    if :obj:`channel_wise`, or
 
     .. math::
 
-        d_{c_1,c_2}^l = \sum_{m=-l}^l {{x_1}_m^l}_{c1} {{x_2}_m^l}_{c2}
+        d_{c_1,c_2}^{(l)} = \sum_{m=-l}^l [{\mathbf{x}_m^{(l)}}]_{c_1} [{\mathbf{y}_m^{(l)}}]_{c_2}
         
-    if not channel_wise.
+    otherwise.
 
     Parameters
     ----------
     L : DegreeRange
-        Range of degrees to consider in the dot product computation.
+        The degree range of inputs.
     channel_wise : bool, optional
         If True, compute channel-wise dot product. Default is True.
-
-    Attributes
-    ----------
-    L : DegreeRange
-        The range of degrees used in the dot product computation.
-    channel_wise : bool
-        Flag indicating whether to compute channel-wise dot product.
 
     Examples
     --------
@@ -373,13 +548,6 @@ class TensorDot(nn.Module):
     >>> print(result.shape)
     torch.Size([32, 4, 64])  # (N, num_degrees, C)
 
-    See Also
-    --------
-    dot : The underlying function used for dot product computation.
-
-    Notes
-    -----
-    - The forward pass computes the dot product using the specified degree range and channel-wise setting.
     """
     def __init__(self, 
                  L: DegreeRange,
@@ -389,32 +557,28 @@ class TensorDot(nn.Module):
         self.L = L
         self.channel_wise = channel_wise
 
-    def forward(self, x1: torch.Tensor, x2: torch.Tensor):
+    def forward(self, x1: Tensor, x2: Tensor):
         r"""
         Compute the degree-wise dot product between two input tensors.
 
         Parameters
         ----------
-        x1 : torch.Tensor
-            First input tensor of shape (N, num_orders, C1).
-        x2 : torch.Tensor
-            Second input tensor of shape (N, num_orders, C2).
+        x1 : Tensor
+            First input tensor of shape :math:`(N, \text{num_orders_1}, C_1)`.
+        x2 : Tensor
+            Second input tensor of shape :math:`(N, \text{num_orders_1}, C_2)`.
 
         Returns
         -------
-        torch.Tensor
-            The result of the dot product computation. 
-            If channel_wise is True:
-                Shape is (N, num_degrees, C)
-            If channel_wise is False:
-                Shape is (N, num_degrees, C1, C2)
+        Tensor
+            The result of the dot product of shape 
+            :math:`(N, \text{num_degrees}, C)` if :obj:`channel_wise` is :obj:`True`
+            or :math:`(N, \text{num_degrees}, C_1, C_2)` if :obj:`channel_wise` is :obj:`False`.
 
-        Notes
-        -----
-        - N is the batch size
-        - num_orders is the total number of spherical harmonic orders
-        - num_degrees is the number of degrees in the specified range L
-        - C, C1, C2 are the number of channels
+            
+        Where :math:`N` is the batch-size that will automatically broadcast if set to :math:`1`
+        and :math:`C_1,C_2,C` are corresponding number of channels.
+        If :obj:`channel_wise` is :obj:`True`, :math:`C_1=C_2=C` should be satisfied.  
         """
         return dot(x1, x2, self.L, self.channel_wise)
     

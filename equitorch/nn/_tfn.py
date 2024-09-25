@@ -27,8 +27,8 @@ class TFNBlock(MessagePassing):
                  L_edge: DegreeRange, 
                  L_out: DegreeRange,
                  channel_wise: bool = True,
-                 weight_producer: Callable = None,
-                 act: Callable = None,
+                 weight_producer: Optional[Callable] = None,
+                 act: Optional[Callable] = None,
                 ):
         super().__init__(node_dim=0)
         self.L_in = check_degree_range(L_in)
@@ -40,13 +40,12 @@ class TFNBlock(MessagePassing):
                              external_weight=True, channel_wise=channel_wise)
         self.lin_weight_shape = (-1, self.lin.num_weights, in_channels) if channel_wise \
             else (-1, self.lin.num_weights, in_channels, out_channels)
-        # self.self_int = DegreeWiseLinear(self.L_in, self.L_out, in_channels, out_channels)
         self.self_int = DegreeWiseLinear(self.L_out, self.L_out, out_channels, out_channels)
         self.act = act
         self.weight_producer = weight_producer
 
     def forward(self, x: Tensor, edge_index: Adj,
-                edge_feat: Tensor, edge_emb: Tensor, edge_weight: Tensor):
+                edge_feat: Tensor, edge_emb: Optional[Tensor], edge_weight: Optional[Tensor]=None):
         lin_weight = edge_emb if self.weight_producer is None else self.weight_producer(edge_emb)
         lin_weight = lin_weight.view(*(self.lin_weight_shape))
         out = self.propagate(edge_index, x=x, edge_feat=edge_feat,
@@ -54,8 +53,9 @@ class TFNBlock(MessagePassing):
         out = self.self_int(out)
         return self.act(out) if self.act is not None else out
     
-    def message(self, x_j:Tensor, edge_feat:Tensor, lin_weight:Tensor, edge_weight:Tensor):
+    def message(self, x_j:Tensor, edge_feat:Tensor, lin_weight:Tensor, edge_weight:Optional[Tensor]):
         x_j = self.lin(x_j, edge_feat, lin_weight)
+
         return edge_weight.view(-1,1,1) * x_j
     
 
@@ -89,7 +89,7 @@ class SO2TFNBlock(MessagePassing):
         self.weight_producer = weight_producer
 
     def forward(self, x: Tensor, edge_index: Adj,
-                D_in: Tensor, DT_out: Tensor, edge_emb: Tensor, edge_weight: Tensor):
+                D_in: Tensor, DT_out: Tensor, edge_emb: Tensor, edge_weight: Tensor = None):
         lin_weight = edge_emb if self.weight_producer is None else self.weight_producer(edge_emb)
         lin_weight = lin_weight.view(*(self.lin_weight_shape))
         out = self.propagate(edge_index, x=x, D_in=D_in, DT_out=DT_out,
@@ -99,8 +99,12 @@ class SO2TFNBlock(MessagePassing):
     
     def message(self, x_j:Tensor, 
                 lin_weight:Tensor, edge_weight:Tensor,
-                D_in:Tensor, DT_out:Tensor):
+                D_in:Tensor, DT_out: Tensor):
         x_j = rot_on(D_in, x_j)
         x_j = self.lin(x_j, lin_weight)
         x_j = rot_on(DT_out, x_j)
-        return edge_weight.view(-1,1,1) * x_j
+        # return edge_weight.view(-1,1,1) * x_j
+        if edge_weight is not None:
+            return edge_weight.view(-1,1,1) * x_j
+        else:
+            return x_j

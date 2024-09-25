@@ -22,12 +22,13 @@ from ..utils._indices import (
 from ..utils._clebsch_gordan import coo_CG
 
 class DegreeWiseLinear(nn.Module):
-    """
+    r"""
     Perform degree-wise linear operation (channel mixing) as the self-interaction 
     of Tensor field networks.
 
-    This class implements the operation described in "Rotation- and translation-equivariant 
-    neural networks for 3D point clouds" [1]_.
+    This class implements the operation described in `Tensor field 
+    networks: Rotation- and translation-equivariant neural networks for 3D
+    point clouds <https://arxiv.org/abs/1802.08219>`_.
 
     The operation is defined as:
 
@@ -35,8 +36,8 @@ class DegreeWiseLinear(nn.Module):
         \mathbf{x'}^{(l)}_c = \sum_{c'} \mathbf{W}^{(l)}_{cc'} \mathbf{x}_{c'}^{(l)}
 
     .. note::
-    The `L_out` range must be contained within the `L_in` range, and the degrees in
-    `L_in` but not in `L_out` will be ignored.
+    The :obj:`L_out` range must be contained within the :obj:`L_in` range, and the degrees in
+    :obj:`L_in` but not in :obj:`L_out` will be ignored.
 
     Parameters
     ----------
@@ -88,183 +89,6 @@ class DegreeWiseLinear(nn.Module):
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(L_in={self.L_in}, L_out={self.L_out}, in_channels={self.in_channels}, out_channels={self.out_channels})'
 
-
-def _so2_indices(L_in: DegreeRange, L_out: DegreeRange):
-    L_in = check_degree_range(L_in)
-    L_out = check_degree_range(L_out)
-    ret = sorted([
-        (degree_order_to_index(l_out, m_out, L_out[0]), 
-         degree_order_to_index(l_in, m_in, L_in[0]),
-         l_in,
-         l_out,
-         -1. if m_out > 0 and m_in < 0 else 1.,
-         weight_idx,
-         )
-        # (weight_idx)
-        for weight_idx, (l_out, l_in, m_weight) in enumerate(
-            (l_out, l_in, m_weight) 
-            for l_out in degrees_in_range(L_out)
-            for l_in in degrees_in_range(L_in)
-            for m_weight in range(-min(l_out, l_in), min(l_out, l_in)+1)
-        ) 
-        for m_out, m_in in (((-abs(m_weight),-m_weight), (abs(m_weight),m_weight)) if m_weight != 0 else ((0,0),))
-    ])
-    Ms = torch.tensor([[t[0], t[1]] for t in ret]).T
-    ls = torch.tensor([[t[2], t[3]] for t in ret]).T
-    weight_sign = torch.tensor([t[4] for t in ret])
-    weight_idx = torch.tensor([t[5] for t in ret])
-    return Ms, ls, weight_sign, weight_idx
-
-class SO2Linear(nn.Module):
-
-    r'''
-    The SO(3) equivariant linear operation of complexity :math:`O(L^3)` for the
-    maximum degree :math:`L` as described in the paper `Reducing SO(3)
-    Convolutions to SO(2) for Efficient Equivariant GNNs 
-    <https://arxiv.org/abs/2302.03655>`_.
-
-    It works as a more efficient alternative for SO(3) linear operation. 
-
-    .. math::
-        \begin{aligned}
-        \mathbf{x}_{m}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}-\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, & m < 0,\\
-        \mathbf{x}_{0}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{0}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{0}^{(l_i)}, &\\
-        \mathbf{x}_{m}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m}^{(l_i)}-\mathbf{W}_{-m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, & m > 0,\\
-        \end{aligned}
-
-    where :math:`\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m'}^{(l_i)}` means 
-    :math:`\sum_{c'}\mathbf{W}_{m,cc'}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c'}^{(l_i)}`
-    if `channel_wise` is `False`, or
-    :math:`\mathbf{W}_{m,c}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c}^{(l_i)}` if channel_wise is `True`
-    :math:`\mathbf{W}(\|\mathbf{r}\|)` means the weights can depend on the length of the 
-    vector :math:`\mathbf{r}\in\mathbb{R}^3` (but not necessary).        
-
-    The operation satisfies the following property:
-    
-    for any possible weight :math:`\mathbf{W}(\mathbf{r})` of an SO(3) linear operation,
-    there exists a weight :math:`\mathbf{W'}(\|\mathbf{r}\|)` of an SO(2) linear operation, such that:
-
-    .. math::
-        \mathbf{D}_{\text{out}}^\top\mathbf{W'}(\|\mathbf{r}\|)(\mathbf{D}_{\text{in}}\mathbf{x})=\mathbf{W}(\mathbf {r})\mathbf{x}
-
-    and vice versa, where :math:`\mathbf{D}_{\text{in}}` and :math:`\mathbf{D}_{\text{out}}` are the Wigner-D
-    matrices on the input/output spaces corresponding to the rotation matrix that can align :math:`\mathbf{r}`
-    to the z axis. (See Appendix 2 of the paper above for the proof of the bijection.)
-
-    To explicitly convert from or to the weight for :obj:`SO3Linear` operation, see 
-    :obj:`so3_weights_to_so2` and :obj:`so2_weights_to_so3` in :obj:`utils`.
-    
-    .. note::
-        If dense Wigner-D matrix is used before the SO(2) linear operation, the 
-        :math:`O(L^4)` complexity of :math:`\mathbf{Dx}` can be the bottleneck.
-        When channels :math:`C` explicitly considered, the linear operation will 
-        be of complexity :math:`O(L^3C)` if channel wise or :math:`O(L^3CC')` if
-        not, but the rotation :math:`\mathbf{Dx}` will always be of complexity 
-        :math:`O(L^4C)`.
-
-    Parameters
-    ----------
-    L_in : DegreeRange
-        The input degree range.
-    L_out : DegreeRange
-        The output degree range.
-    in_channels : int
-        The number of input channels.
-    out_channels : int
-        The number of output channels.
-    external_weight : bool, optional
-        Whether the user will pass external weights (that may depend on data or edges) or keep a set of independent weights inside.
-        Default to False.
-    channel_wise : bool, optional
-        Whether the weight is performed channel-wise.
-        Default to False.
-    '''
-    def __init__(self, 
-                 L_in: DegreeRange, 
-                 L_out: DegreeRange, 
-                 in_channels: int,
-                 out_channels: int,
-                 external_weight: bool = False,
-                 channel_wise: bool = False
-                 ):
-        assert in_channels == out_channels or not channel_wise
-        super().__init__()
-        self.L_in = check_degree_range(L_in)
-        self.L_out = check_degree_range(L_out)
-        self.in_channels = in_channels
-        self.out_ms = num_order_between(*self.L_out)
-        self.out_channels = out_channels 
-        self.channel_wise = channel_wise
-
-        Ms, ls, weight_sign, weight_index = _so2_indices(L_in, L_out)
-        
-        self.register_buffer('M_out', Ms[0])
-        self.register_buffer('M_in', Ms[1])
-        self.register_buffer('weight_sign', weight_sign)
-        self.register_buffer('weight_index', weight_index)
-
-        self.num_weights = weight_index.max().item()+1
-
-        self.external_weight = external_weight
-        
-        if self.channel_wise:
-            if not self.external_weight:
-                self.weight = nn.Parameter(
-                    torch.randn(1, self.num_weights,
-                                self.channels))
-        else:
-            if not self.external_weight:
-                self.weight = nn.Parameter(
-                    torch.randn(1, self.num_weights,
-                                self.in_channels, 
-                                self.out_channels)
-                        * 2 / sqrt(in_channels + out_channels))
-
-    def forward(self, x: Tensor, weight: Tensor=None):
-        r"""
-        Applies the SO(2) linear operation to the input tensor.
-
-        Parameters
-        ----------
-        x : Tensor
-            The input tensor of shape :math:`(N, \text{num_orders_in}, C_{\text{in}})`, 
-            where :math:`N` is the batch size, :math:`\text{num_orders_in}` 
-            is the number of input orders, and :math:`C_{\text{in}}` is the number of channels.
-            before passed into this function, :math:`x` must have been transformed by 
-            :math:`\mathbf{D}_{\text{in}}`.
-        weight : Tensor, optional
-            The external weights to use for the linear operation. If `None`, the 
-            internal weights will be used.
-            The shape of the weights depends on the value of `channel_wise`. 
-            If `channel_wise` is `True`, the shape should be :math:`(N, \text{num_weights}, C_{\text{in}})`.
-            If `channel_wise` is `False`, the shape should be :math:`(N, \text{num_weights}, C_{\text{in}}, C_{\text{out}})`, 
-
-        Returns
-        -------
-        Tensor
-            The output tensor of shape :math:`(N, \text{num_orders_out}, C_{\text{out}})`.
-            The returned feature should then be transformed by :math:`\mathbf{D}_{\text{out}}^\top`.
-
-        Notes
-        -----
-        If :obj:`external_weight` is :obj:`True`, the :obj:`weight` parameter must be provided. 
-        If :obj:`external_weight` is :obj:`False`, the :obj:`weight` will still be used if provided.
-        """
-        if weight is None and not self.external_weight:
-            weight = self.weight
-        
-        X = x.index_select(dim=1,index=self.M_in) # N * Num * Ci 
-
-        if self.channel_wise:
-            W = weight.index_select(dim=1, index=self.weight_index) * self.weight_sign.view(1,-1,1) # N * Num * Ci (* Co)
-            out = X * W
-        else:
-            W = weight.index_select(dim=1, index=self.weight_index) * self.weight_sign.view(1,-1,1,1) # N * Num * Ci (* Co)
-            out = (X.unsqueeze(-2)@W).squeeze(-2)
-        return scatter(out, index=self.M_out, dim=1, dim_size=self.out_ms)
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(L_in={self.L_in}, L_out={self.L_out}, in_channels={self.in_channels},\n  out_channels={self.out_channels}, channel_wise={self.channel_wise}, external_weight={self.external_weight}\n)'
-    
 def _so3_conv(feature: Tensor, 
               edge_feat: Tensor,
               weight: Tensor,
@@ -327,14 +151,16 @@ class SO3Linear(nn.Module):
     This operation can be expressed as
     
     .. math::
-        \mathbf{x'}^{(l)}=\mathbf{W}_{l_1,l_2}^{l}(\|\mathbf{r}\|)\mathbf{x}^{(l_1)}\otimes \mathbf{Y}^{(l_2)}(\mathbf{r}),
+        \mathbf{x'}^{(l)}=\sum_{l_1,l_2}\mathbf{W}_{l_1,l_2}^{l}(\|\mathbf{r}\|)\mathbf{x}^{(l_1)}\otimes \mathbf{Y}^{(l_2)}(\mathbf{r}),
     
     or
 
     .. math::
-        \mathbf{x'}^{(l)}_{m}=\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}\mathbf{W}_{l_1,l_2}^{l}(\|\mathbf{r}\|)\mathbf{x}_{m_1}^{(l_1)}\mathbf{Y}_{m_2}^{(l_2)}(\mathbf{r}),
+        \mathbf{x'}^{(l)}_{m}=\sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}\mathbf{W}_{l_1,l_2}^{l}(\|\mathbf{r}\|)\mathbf{x}_{m_1}^{(l_1)}\mathbf{Y}_{m_2}^{(l_2)}(\mathbf{r}),
     
-    where :math:`C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}` is the Clebsch-Gordan coefficients and 
+    where the summation of :math:`(l_1,l_2)` is over all the values such that 
+    :math:`l_1\in L_1, l_2\in L_2` and :math:`|l_1-l_2|\le l\le l_1+l_2`,
+    :math:`C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}` are the Clebsch-Gordan coefficients and 
     :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}_{m_1}^{(l_i)}` means 
     :math:`\sum_{c'}\mathbf{W}_{l_1,l_2,cc'}^{l}\mathbf{x}_{m_1,c'}^{(l_i)}`
     if :obj:`channel_wise` is :obj:`False`, or
@@ -346,16 +172,17 @@ class SO3Linear(nn.Module):
     we also denote this operation as
     
     .. math::
-        \mathbf{x'}=\mathbf{W}({\mathbf{r}})\mathbf{x},
+        \mathbf{x'}=\tilde{\mathbf{W}}({\mathbf{r}})\mathbf{x},
 
-    which looks more like a linear operation where the weight can depend on :math:`\mathbf{r}`.
+    We use "tilde" to denote this is an equivariant operation. 
+    This looks more like a linear operation where the weight can depend on :math:`\mathbf{r}`.
 
     The SO(3) equivariance means that for any rotation matrix :math:`\mathbf{R}\in\mathrm{SO(3)}`
     and corresponding Wigner-D matrices :math:`\mathbf{D}_{\text{in}}`, 
-    :math:`\mathbf{D}_{\text{out}}` in input/output feature spaces, it will satisfies that
+    :math:`\mathbf{D}_{\text{out}}` in input/output feature spaces, it satisfies that
 
     .. math::
-        \mathbf{D}_{\text{out}}\mathbf{x'}=\mathbf{W}(\mathbf{R}{\mathbf{r}})(\mathbf{D}_{\text{in}}\mathbf{x}).
+        \mathbf{D}_{\text{out}}\tilde{\mathbf{W}}({\mathbf{r}})\mathbf{x}=\tilde{\mathbf{W}}(\mathbf{R}{\mathbf{r}})(\mathbf{D}_{\text{in}}\mathbf{x}).
 
     .. note::
         By using sparse contraction on :math:`m_1,m_2`, the time complexity of this operation is :math:`O(L^5)`
@@ -491,6 +318,193 @@ class SO3Linear(nn.Module):
         
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(\n  L_in={self.L_in}, L_edge={self.L_edge}, L_out={self.L_out},\n  in_channels={self.in_channels}, out_channels={self.out_channels}, channel_wise={self.channel_wise}, external_weight={self.external_weight}\n)'
+
+
+def _so2_indices(L_in: DegreeRange, L_out: DegreeRange):
+    L_in = check_degree_range(L_in)
+    L_out = check_degree_range(L_out)
+    ret = sorted([
+        (degree_order_to_index(l_out, m_out, L_out[0]), 
+         degree_order_to_index(l_in, m_in, L_in[0]),
+         l_in,
+         l_out,
+         -1. if m_out > 0 and m_in < 0 else 1.,
+         weight_idx,
+         )
+        # (weight_idx)
+        for weight_idx, (l_out, l_in, m_weight) in enumerate(
+            (l_out, l_in, m_weight) 
+            for l_out in degrees_in_range(L_out)
+            for l_in in degrees_in_range(L_in)
+            for m_weight in range(-min(l_out, l_in), min(l_out, l_in)+1)
+        ) 
+        for m_out, m_in in (((-abs(m_weight),-m_weight), (abs(m_weight),m_weight)) if m_weight != 0 else ((0,0),))
+    ])
+    Ms = torch.tensor([[t[0], t[1]] for t in ret]).T
+    ls = torch.tensor([[t[2], t[3]] for t in ret]).T
+    weight_sign = torch.tensor([t[4] for t in ret])
+    weight_idx = torch.tensor([t[5] for t in ret])
+    return Ms, ls, weight_sign, weight_idx
+
+class SO2Linear(nn.Module):
+
+    r'''
+    The SO(3) equivariant linear operation of complexity :math:`O(L^3)` for the
+    maximum degree :math:`L` as described in the paper `Reducing SO(3)
+    Convolutions to SO(2) for Efficient Equivariant GNNs 
+    <https://arxiv.org/abs/2302.03655>`_.
+
+    It works as a more efficient alternative for SO(3) linear operation. 
+
+    .. math::
+        \begin{aligned}
+        \mathbf{x}_{m}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}-\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, & m < 0,\\
+        \mathbf{x}_{0}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{0}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{0}^{(l_i)}, &\\
+        \mathbf{x}_{m}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m}^{(l_i)}-\mathbf{W}_{-m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, & m > 0,\\
+        \end{aligned}
+
+    where :math:`\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m'}^{(l_i)}` means 
+    :math:`\sum_{c'}\mathbf{W}_{m,cc'}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c'}^{(l_i)}`
+    if :obj:`channel_wise` is :obj:`False`, or
+    :math:`\mathbf{W}_{m,c}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c}^{(l_i)}` if :obj:`channel_wise` is :obj:`True`.
+    :math:`\mathbf{W}(\|\mathbf{r}\|)` means the weights can depend on the length of the 
+    vector :math:`\mathbf{r}\in\mathbb{R}^3` (but not necessary).        
+
+    When there is no ambiguity, we also denote the operation as 
+
+    .. math::
+        \mathbf{x}'=\tilde{\mathbf{W}}(\|\mathbf{r}\|)\mathbf{x}.
+
+    The operation satisfies the following property:
+    
+    for any possible SO(3) linear operation :math:`\tilde{\mathbf{W}}(\mathbf{r})`,
+    there exists an SO(2) linear operation :math:`\tilde{\mathbf{W'}}(\|\mathbf{r}\|)` such that:
+
+    .. math::
+        \mathbf{D}_{\mathbf{r},\text{out}}^\top\tilde{\mathbf{W}}'(\|\mathbf{r}\|)(\mathbf{D}_{\mathbf{r},\text{in}}\mathbf{x})=\tilde{\mathbf{W}}(\mathbf {r})\mathbf{x}
+
+    and vice versa, where :math:`\mathbf{D}_{\mathbf{r},\text{in}}` and :math:`\mathbf{D}_{\mathbf{r},\text{out}}` are the Wigner-D
+    matrices on the input/output spaces corresponding to the rotation matrix that can align :math:`\mathbf{r}`
+    to the z axis. (See Appendix 2 of the paper above for the proof of the bijection.)
+
+    To explicitly convert from or to the weight for :obj:`SO3Linear` operation, see 
+    :obj:`so3_weights_to_so2` and :obj:`so2_weights_to_so3` in :obj:`utils`.
+    
+    .. note::
+        If dense Wigner-D matrix is used before the SO(2) linear operation, the 
+        :math:`O(L^4)` complexity of :math:`\mathbf{Dx}` can be the bottleneck.
+        When channels :math:`C` explicitly considered, the linear operation will 
+        be of complexity :math:`O(L^3C)` if channel wise or :math:`O(L^3CC')` if
+        not, but the rotation :math:`\mathbf{Dx}` will always be of complexity 
+        :math:`O(L^4C)`.
+
+        Whenever possible, it is recommended to use :obj:`SO2Linear` rather than :obj:`SO3Linear` for 
+        equivariant operation on large :math:`L`.
+
+    Parameters
+    ----------
+    L_in : DegreeRange
+        The input degree range.
+    L_out : DegreeRange
+        The output degree range.
+    in_channels : int
+        The number of input channels.
+    out_channels : int
+        The number of output channels.
+    external_weight : bool, optional
+        Whether the user will pass external weights (that may depend on data or edges) or keep a set of independent weights inside.
+        Default to False.
+    channel_wise : bool, optional
+        Whether the weight is performed channel-wise.
+        Default to False.
+    '''
+    def __init__(self, 
+                 L_in: DegreeRange, 
+                 L_out: DegreeRange, 
+                 in_channels: int,
+                 out_channels: int,
+                 external_weight: bool = False,
+                 channel_wise: bool = False
+                 ):
+        assert in_channels == out_channels or not channel_wise
+        super().__init__()
+        self.L_in = check_degree_range(L_in)
+        self.L_out = check_degree_range(L_out)
+        self.in_channels = in_channels
+        self.out_ms = num_order_between(*self.L_out)
+        self.out_channels = out_channels 
+        self.channel_wise = channel_wise
+
+        Ms, ls, weight_sign, weight_index = _so2_indices(L_in, L_out)
+        
+        self.register_buffer('M_out', Ms[0])
+        self.register_buffer('M_in', Ms[1])
+        self.register_buffer('weight_sign', weight_sign)
+        self.register_buffer('weight_index', weight_index)
+
+        self.num_weights = weight_index.max().item()+1
+
+        self.external_weight = external_weight
+        
+        if self.channel_wise:
+            if not self.external_weight:
+                self.weight = nn.Parameter(
+                    torch.randn(1, self.num_weights,
+                                self.channels))
+        else:
+            if not self.external_weight:
+                self.weight = nn.Parameter(
+                    torch.randn(1, self.num_weights,
+                                self.in_channels, 
+                                self.out_channels)
+                        * 2 / sqrt(in_channels + out_channels))
+
+    def forward(self, x: Tensor, weight: Optional[Tensor]=None):
+        r"""
+        Applies the SO(2) linear operation to the input tensor.
+
+        Parameters
+        ----------
+        x : Tensor
+            The input tensor of shape :math:`(N, \text{num_orders_in}, C_{\text{in}})`, 
+            where :math:`N` is the batch size, :math:`\text{num_orders_in}` 
+            is the number of input orders, and :math:`C_{\text{in}}` is the number of channels.
+            before passed into this function, :math:`x` must have been transformed by 
+            :math:`\mathbf{D}_{\text{in}}`.
+        weight : Tensor, optional
+            The external weights to use for the linear operation. If `None`, the 
+            internal weights will be used.
+            The shape of the weights depends on the value of `channel_wise`. 
+            If `channel_wise` is `True`, the shape should be :math:`(N, \text{num_weights}, C_{\text{in}})`.
+            If `channel_wise` is `False`, the shape should be :math:`(N, \text{num_weights}, C_{\text{in}}, C_{\text{out}})`, 
+
+        Returns
+        -------
+        Tensor
+            The output tensor of shape :math:`(N, \text{num_orders_out}, C_{\text{out}})`.
+            The returned feature should then be transformed by :math:`\mathbf{D}_{\text{out}}^\top`.
+
+        Notes
+        -----
+        If :obj:`external_weight` is :obj:`True`, the :obj:`weight` parameter must be provided. 
+        If :obj:`external_weight` is :obj:`False`, the :obj:`weight` will still be used if provided.
+        """
+        if weight is None and not self.external_weight:
+            weight = self.weight
+        
+        X = x.index_select(dim=1,index=self.M_in) # N * Num * Ci 
+
+        if self.channel_wise:
+            W = weight.index_select(dim=1, index=self.weight_index) * self.weight_sign.view(1,-1,1) # N * Num * Ci (* Co)
+            out = X * W
+        else:
+            W = weight.index_select(dim=1, index=self.weight_index) * self.weight_sign.view(1,-1,1,1) # N * Num * Ci (* Co)
+            out = (X.unsqueeze(-2)@W).squeeze(-2)
+        return scatter(out, index=self.M_out, dim=1, dim_size=self.out_ms)
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}(L_in={self.L_in}, L_out={self.L_out}, in_channels={self.in_channels},\n  out_channels={self.out_channels}, channel_wise={self.channel_wise}, external_weight={self.external_weight}\n)'
+
+
 
 class ElementWiseLinear(nn.Module):
     r"""Applies an element wise linear transformation to the input tensor.
