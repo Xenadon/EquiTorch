@@ -1,3 +1,6 @@
+"""
+Some math functions.
+"""
 
 from math import sqrt
 
@@ -15,6 +18,8 @@ from ..typing import DegreeRange
 from ..typing import Union, Tuple
 
 from ._o3 import *
+from ._sht import *
+
 
 def dot(x1: Tensor, x2: Tensor, L: DegreeRange, channel_wise=True):
     r"""
@@ -127,71 +132,12 @@ def norm2(x: Tensor, L: DegreeRange):
     """
     return reduce_order_to_degree(x**2, L, dim=-2)
 
-def s2_grid(num_thetas: int, num_phis: int, device = None, dtype = None):
-    r"""
-    Returns the regular grid points on a sphere as defined by the spherical coordinates theta and phi.
-
-    The grid points are calculated according to the following formulas:
-
-    .. math::
-        \begin{aligned}
-        \theta_i &= \pi\cdot\frac{(i+\frac{1}{2})}{N}, &i = 0,1,\dots N-1,\\
-        \phi_j &= 2\pi\cdot\frac{j}{M}, &j = 0,1,\dots M-1,
-        \end{aligned}
-
-    where :math:`N` and :math:`M` are the number of points along the 
-    :math:`\theta` and :math:`\phi` axes, respectively.
-
-    Parameters
-    ----------
-    num_thetas : int
-        The number of grid points along the :math:`\theta` axis.
-    num_phis : int
-        The number of grid points along the :math:`\phi` axis.
-    device : optional
-        The device to store the resulting tensors on. Defaults is None.
-    dtype : torch.dtype, optional
-        The data type of the resulting tensors. Defaults is None.
-
-    Returns
-    -------
-    (Tensor, Tensor)
-        A tuple of two tensors of the grid points along the :math:`\theta` and :math:`\phi` axes.
-    """
-    return o3.s2_grid(num_thetas, num_phis, device, dtype)
-
-# def spherical_harmonics_on_grid(grid_points: Union[Tensor, Tuple[Tensor, Tensor]]):
-def legendre_fourier_on_grid(L: int, res_theta: float, res_phi: float, device = None, dtype = None):
-    """
-    Returns the legendre-cos and fourier functions on the regular grid points on a sphere as defined by the spherical coordinates theta and phi.
-
-    Parameters
-    ----------
-    L : int
-        _description_
-    res_theta : float
-        _description_
-    res_phi : float
-        _description_
-    device : _type_, optional
-        _description_, by default None
-    dtype : _type_, optional
-        _description_, by default None
-
-    Returns
-    -------
-    _type_
-        _description_
-    """
-    theta, phi, legendres, fouriers = o3.spherical_harmonics_s2_grid(
-        lmax=L, res_beta=res_theta, res_alpha=res_phi, device=device, dtype=dtype)
-    return (theta.unsqueeze(-1), phi.unsqueeze(-2)),  legendres.unsqueeze(-1), fouriers.unsqueeze(-2)
-
-# def s2_spectral_to_spatial(x: Tensor, grid_points: Union[Tensor, Tuple]):
-
-def spherical_harmonics_evaluation(grid_points: Union[Tensor, Tuple[Tensor, Tensor]],
-                         coefficients: Tensor,
-                         l_max: int,
-                         dim_m: int = -1):
-    if isinstance(grid_points, Tuple):
-        ys = o3.spherical_harmonics_alpha_beta(range(l_max+1), grid_points[1], grid_points[0])
+__all__ = [
+    'sht',
+    'isht',
+    'angles_to_xyz',
+    'xyz_to_angles',
+    'angles_to_matrix',
+    'wigner_D',
+    'spherical_harmonics'
+]

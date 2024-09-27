@@ -5,12 +5,13 @@ import math
 import sympy
 from sympy.printing.pycode import pycode
 import torch
+from torch import Tensor
 
 import e3nn
 from e3nn import o3
 from e3nn.util.jit import compile_mode
 
-from ..utils._indices import check_degree_range, num_order_between, degrees_in_range
+from ..utils._indices import check_degree_range, num_orders_between, degrees_in_range
 
 from ..typing import DegreeRange
 
@@ -24,19 +25,19 @@ def angles_to_xyz(theta, phi, dim=-1):
 
     Parameters
     ----------
-    theta : torch.Tensor
+    theta : Tensor
         The polar angles, tensor of shape :math:`(...)`
-    phi : torch.Tensor
+    phi : Tensor
         The azimuthal angles, tensor of shape :math:`(...)`
     dim : int, optional
         The dimension along which to stack the result. Defaults to -1.
 
     Returns
     -------
-    torch.Tensor
-        Cartesian coordinates, tensor of shape :math:`(..., 3)`
+    Tensor
+        Cartesian coordinates, tensor of :math:`\text{shape}[\text{dim}]=3`.
     """
-    alpha, beta = torch.broadcast_tensors(alpha, beta)
+    theta, phi = torch.broadcast_tensors(theta, phi)
     x = torch.cos(phi) * torch.sin(theta)
     y = torch.sin(phi) * torch.sin(theta)
     z = torch.cos(theta)
@@ -50,15 +51,15 @@ def xyz_to_angles(xyz, need_normalize, dim=-1):
 
     .. math::
 
-        \vec{r} = R_z(\phi) R_y(\theta) \vec{e}_z
+        \mathbf{r} = \mathbf{R}_z(\phi) \mathbf{R}_y(\theta) \mathbf{e}_z
 
     ::
-    where :math:`R_z` and :math:`R_y` are rotation matrices, and :math:`\vec{e}_z` is the unit vector along z-axis.
+    where :math:`\mathbf{R}_z` and :math:`\mathbf{R}_y` are rotation matrices, and :math:`\mathbf{e}_z` is the unit vector along z-axis.
 
     Parameters
     ----------
-    xyz : torch.Tensor
-        Cartesian coordinates, tensor of shape :math:`(..., 3)`
+    xyz : Tensor
+        Cartesian coordinates, tensor of :math:`\text{shape}[\text{dim}]=3`.
     need_normalize : bool
         Whether to normalize the input coordinates
     dim : int, optional
@@ -66,12 +67,12 @@ def xyz_to_angles(xyz, need_normalize, dim=-1):
 
     Returns
     -------
-    Tuple[torch.Tensor, torch.Tensor]
+    Tuple[Tensor, Tensor]
         - phi : Azimuthal angle, tensor of shape :math:`(...)`
         - theta : Polar angle, tensor of shape :math:`(...)`
     """
     if need_normalize:
-        xyz = torch.nn.functional.normalize(xyz, p=2, dim=-1)  # forward 0's instead of nan for zero-radius
+        xyz = torch.nn.functional.normalize(xyz, p=2, dim=dim)  # forward 0's instead of nan for zero-radius
         xyz = xyz.clamp(-1.00001, 1.00001)
 
     theta = torch.acos(xyz.select(dim, 2))
@@ -85,22 +86,57 @@ def angles_to_matrix(alpha, beta, gamma):
 
     Parameters
     ----------
-    alpha : torch.Tensor
+    alpha : Tensor
         First rotation angle around Z-axis, tensor of shape :math:`(...)`
-    beta : torch.Tensor
+    beta : Tensor
         Second rotation angle around Y-axis, tensor of shape :math:`(...)`
-    gamma : torch.Tensor
+    gamma : Tensor
         Third rotation angle around Z-axis, tensor of shape :math:`(...)`
 
     Returns
     -------
-    torch.Tensor
+    Tensor
         Rotation matrices of shape :math:`(..., 3, 3)`
     """
     alpha, beta, gamma = torch.broadcast_tensors(alpha, beta, gamma)
     return o3.matrix_z(alpha) @ o3.matrix_y(beta) @ o3.matrix_z(gamma)
 
-def wigner_D(L: DegreeRange, alpha: torch.Tensor, beta: torch.Tensor, gamma: torch.Tensor):
+def wigner_D(L: DegreeRange, alpha: Tensor, beta: Tensor, gamma: Tensor):
+    r"""Wigner D matrix representation of :math:`\text{SO(3)}` parameterized by Z-Y-Z angles 
+    on the spaces of degree range :math:`L`.
+
+    It satisfies the following properties:
+
+    * :math:`\mathbf{D}(\mathbf{I}) = \mathbf{I}`
+    * :math:`\mathbf{D}(\mathbf{R}_1 \mathbf{R}_2) = \mathbf{D}(\mathbf{R}_1)\mathbf{D}(\mathbf{R}_2)`
+    * :math:`\mathbf{D}(\mathbf{R}^\top) = \mathbf{D}(\mathbf{R})^\top`
+
+    Parameters
+    ----------
+    L : DegreeRange
+        The degree range.
+
+    alpha : `Tensor`
+        tensor of shape :math:`(...)`
+        Rotation :math:`\alpha` around Z axis, applied third.
+
+    beta : `Tensor`
+        tensor of shape :math:`(...)`
+        Rotation :math:`\beta` around Y axis, applied second.
+
+    gamma : `Tensor`
+        tensor of shape :math:`(...)`
+        Rotation :math:`\gamma` around Z axis, applied first.
+
+    Returns
+    -------
+    `Tensor`
+        tensor :math:`D^l(\alpha, \beta, \gamma)` of shape :math:`(...,\text{num_orders}, \text{num_orders})`
+
+    Warning
+    -------
+    This function is currently not optimized. Thus it is not recommended to use it in iterations.
+    """
     return e3nn.math.direct_sum(*(_wigner_D(l, alpha, beta, gamma) for l in degrees_in_range(L))).to(alpha.device)
 
 def _wigner_D(l, alpha, beta, gamma):
@@ -117,21 +153,21 @@ def _wigner_D(l, alpha, beta, gamma):
     l : int
         :math:`l`
 
-    alpha : `torch.Tensor`
+    alpha : `Tensor`
         tensor of shape :math:`(...)`
         Rotation :math:`\alpha` around Z axis, applied third.
 
-    beta : `torch.Tensor`
+    beta : `Tensor`
         tensor of shape :math:`(...)`
         Rotation :math:`\beta` around Y axis, applied second.
 
-    gamma : `torch.Tensor`
+    gamma : `Tensor`
         tensor of shape :math:`(...)`
         Rotation :math:`\gamma` around Z axis, applied first.
 
     Returns
     -------
-    `torch.Tensor`
+    `Tensor`
         tensor :math:`D^l(\alpha, \beta, \gamma)` of shape :math:`(2l+1, 2l+1)`
     """
     alpha, beta, gamma = torch.broadcast_tensors(alpha, beta, gamma)
@@ -139,30 +175,50 @@ def _wigner_D(l, alpha, beta, gamma):
     beta = beta[..., None, None] % (2 * math.pi)
     gamma = gamma[..., None, None] % (2 * math.pi)
     X = o3._wigner.so3_generators(l).to(alpha.device)
-    # return torch.matrix_exp(alpha * X[2]) @ torch.matrix_exp(beta * X[1]) @ torch.matrix_exp(gamma * X[2])
     return torch.matrix_exp(alpha * X[1]) @ torch.matrix_exp(beta * X[0]) @ torch.matrix_exp(gamma * X[1])
 
-def spherical_harmonics(X: torch.Tensor, 
+def spherical_harmonics(X: Tensor, 
                         L: DegreeRange, 
                         need_normalize:bool=False,
                         dim:int=-1):
     r"""Compute spherical harmonics for given Cartesian coordinates.
 
-    Gives the spherical harmonics in the degree range L of exactly the same form 
-    as in https://en.wikipedia.org/wiki/Spherical_harmonics#/media/File:Sphericalfunctions.svg,
-    where :math:`theta` and :math:`phi` are the polar and azimuth angles respectively.
-    The harmonics are ordered as m = -l, -l+1, ..., l-1, l for each degree l. 
+    Gives the spherical harmonics of exactly the same shape 
+    as in `here <https://en.wikipedia.org/wiki/Spherical_harmonics#/media/File:Sphericalfunctions.svg>`_
+    in the form
+    
+    .. math::
+        Y_m^{(l)}(\theta,\phi) = (-1)^m\sqrt{2}\sqrt{\frac{2l+1}{4\pi}\frac{(l-|m|)!}{(l+|m|)!}}P_{l}^{|m|}(\cos\theta)B_m(\phi)
 
-    Examples:
-        * l = 0 ~ [1]
-        * l = 1 ~ [y, z, x]
-        * l = 2 ~ [xy, yz, z^2-x^2-y^2, xz, x^2-y^2] (with different coefficients)
+    where where :math:`\theta` and :math:`\phi` are the polar and azimuth angles respectively,
+    :math:`P_l^{|m|}(z)` are the associated Legendre functions and 
+
+    .. math::
+        B_{m}(\phi)=\begin{cases}
+        \sin(|m|\phi), & m < 0,\\
+        \frac{1}{\sqrt{2}}, & m = 0,\\
+        \cos(|m|\phi), & m > 0.
+        \end{cases}
+
+    The returned harmonics are ordered as :math:`m = -l, -l+1, ..., l-1, l` for each degree :math:`l`. 
+
+    Here we listed the examples of first several spherical harmonics,
+    for :math:`\mathbf{r}=(x,y,z)` lying on the unit sphere :math:`S^2`: 
+        
+        .. math::
+            \begin{aligned}
+                \mathbf{Y}^{(0)}(\mathbf{r})&=\bigg[\sqrt{\frac{1}{4\pi}}\bigg]\\
+                \mathbf{Y}^{(1)}(\mathbf{r})&=\begin{bmatrix}\sqrt{\frac{3}{4\pi}}y\\\sqrt{\frac{3}{4\pi}}z\\\sqrt{\frac{3}{4\pi}}x\end{bmatrix}\\
+                \mathbf{Y}^{(2)}(\mathbf{r})&=\begin{bmatrix}\sqrt{\frac{15}{4\pi}}xy\\ \sqrt{\frac{15}{4\pi}}yz\\ \sqrt{\frac{5}{16\pi}}(2z^2-x^2-y^2)\\ -\sqrt{\frac{15}{4\pi}}xz\\ \sqrt{\frac{15}{16\pi}}(x^2-y^2)\end{bmatrix}
+            \end{aligned}
+
+        
 
     If there is a channel dimension in X, it will also be included in the returned spherical harmonics.
 
     Parameters
     ----------
-    X : torch.Tensor
+    X : Tensor
         The coordinate tensor.
     L : DegreeRange
         The degree range of spherical harmonics that we need.
@@ -174,21 +230,22 @@ def spherical_harmonics(X: torch.Tensor,
 
     Returns
     -------
-    torch.Tensor
+    Tensor
         Tensor of spherical harmonics.
 
     Notes
     -----
     The shape of the output tensor depends on the input shape and the degree range L.
     """
+    L = check_degree_range(L)
     assert L[1] <= 17, f"The maximum degree in L should not execeed 17, got {L[1]}."
     if need_normalize:
         X = X / X.norm(p='fro',dim=dim,keepdim=True)
     lmin, lmax = check_degree_range(L)
-    return _spherical_harmonics(lmax, X,dim).narrow(dim, lmin**2, num_order_between(lmin, lmax)) / math.sqrt(4*math.pi)
+    return _spherical_harmonics(lmax, X,dim).narrow(dim, lmin**2, num_orders_between(lmin, lmax)) / math.sqrt(4*math.pi)
 
 def _generate_spherical_harmonics(lmax, device=None):  # pragma: no cover
-    r"""code used to generate the code above
+    r"""code used to generate the code of _spherical_harmonics
 
     based on `wigner_3j`
     """
@@ -251,7 +308,7 @@ def _generate_spherical_harmonics(lmax, device=None):  # pragma: no cover
         polynomials = [sympy.simplify(p, full=True) for p in polynomials]
 
 @torch.jit.script
-def _spherical_harmonics(lmax:int, X:torch.Tensor,dim:int=-2):
+def _spherical_harmonics(lmax:int, X:Tensor,dim:int=-1):
 
     x = X.narrow(dim,0,1)
     y = X.narrow(dim,1,1)

@@ -1,0 +1,686 @@
+equitorch.utils
+===============
+
+.. py:module:: equitorch.utils
+
+.. autoapi-nested-parse::
+
+   Utility functions.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   equitorch.utils.check_degree_range
+   equitorch.utils.degrees_in_range
+   equitorch.utils.get_center_of_mass
+   equitorch.utils.zero_center_of_mass
+   equitorch.utils.align_to_z_mat
+   equitorch.utils.edge_align_to_z_mat
+   equitorch.utils.edge_align_to_z_angles
+   equitorch.utils.align_to_z_wigner
+   equitorch.utils.edge_align_to_z_wigner
+   equitorch.utils.rot_on
+   equitorch.utils.check_degree_range
+   equitorch.utils.degrees_in_range
+   equitorch.utils.order_batch
+   equitorch.utils.extract_batch_ptr
+   equitorch.utils.order_ptr
+   equitorch.utils.order_in_degree_range
+   equitorch.utils.orders_in_degree
+   equitorch.utils.list_degrees
+   equitorch.utils.num_degree_triplets
+   equitorch.utils.num_orders_in
+   equitorch.utils.num_orders_between
+   equitorch.utils.num_order_of_degree
+   equitorch.utils.degree_index_from
+   equitorch.utils.degree_order_to_index
+   equitorch.utils.expand_degree_to_order
+   equitorch.utils.reduce_order_to_degree
+   equitorch.utils.check_degree_range
+   equitorch.utils.degree_order_to_index
+   equitorch.utils.degrees_in_range
+   equitorch.utils.dense_CG
+   equitorch.utils.blocked_CG
+   equitorch.utils.coo_CG
+   equitorch.utils.blocked_CG
+   equitorch.utils.so3_weights_to_so2
+   equitorch.utils.so2_weights_to_so3
+
+
+Package Contents
+----------------
+
+.. py:function:: check_degree_range(L: equitorch.typing.DegreeRange) -> Tuple[int, int]
+
+   Check and normalize the degree range.
+
+   :param L: The input degree range. Can be an int or a tuple of two ints.
+   :type L: DegreeRange
+
+   :returns: A tuple representing the normalized degree range (l_min, l_max).
+   :rtype: Tuple[int, int]
+
+   .. rubric:: Example
+
+   >>> L = (1, 3)
+   >>> result = check_degree_range(L)
+   >>> print(result)
+   (1, 3)
+   >>> L = 5
+   >>> result = check_degree_range(L)
+   >>> print(result)
+   (0, 5)
+
+
+.. py:function:: degrees_in_range(L: equitorch.typing.DegreeRange)
+
+   Returns :obj:`range(L[0], L[1]+1)`.
+
+
+.. py:function:: get_center_of_mass(pos: torch.Tensor, ptr: torch.Tensor, atom_mass: Optional[torch.Tensor] = None)
+
+   Calculate the center of mass for each molecule in a batch.
+
+   :param pos: Tensor of shape (N, 3) containing the positions of all atoms.
+   :type pos: Tensor
+   :param ptr: Tensor containing the cumulative sum of atoms for each molecule in the batch.
+   :type ptr: Tensor
+   :param atom_mass: Tensor of shape (N,) containing the mass of each atom.
+                     If None, all atoms are assumed to have equal mass.
+   :type atom_mass: Tensor, optional
+
+   :returns: Tensor of shape (B, 3) containing the center of mass for each molecule in the batch,
+             where B is the number of molecules.
+   :rtype: Tensor
+
+
+.. py:function:: zero_center_of_mass(pos: torch.Tensor, batch: torch.Tensor, center_of_mass: torch.Tensor)
+
+   Shift the positions of atoms in each molecule so that their center of mass is at the origin.
+
+   :param pos: Tensor of shape (N, 3) containing the positions of all atoms.
+   :type pos: Tensor
+   :param batch: Tensor of shape (N,) indicating which molecule each atom belongs to.
+   :type batch: Tensor
+   :param center_of_mass: Tensor of shape (B, 3) containing the center of mass for each molecule,
+                          where B is the number of molecules.
+   :type center_of_mass: Tensor
+
+   :returns: Tensor of shape (N, 3) containing the shifted positions of all atoms.
+   :rtype: Tensor
+
+   .. rubric:: Notes
+
+   This function subtracts the center of mass of each molecule from the positions of its atoms,
+   effectively centering each molecule at the origin.
+
+
+.. py:function:: align_to_z_mat(r: torch.Tensor, need_normalize: bool = True)
+
+   Calculate the rotation matrix R that aligns the vector r with the z-axis.
+
+   :param r: Input vector to be aligned.
+   :type r: Tensor
+   :param need_normalize: Whether to normalize the input vector. Default is True.
+   :type need_normalize: bool, optional
+
+   :returns: Rotation matrix R such that R @ r = z.
+   :rtype: Tensor
+
+
+.. py:function:: edge_align_to_z_mat(pos: torch.Tensor, edge_index: torch.Tensor)
+
+   Calculate the rotation matrix R that aligns the edge vector with the z-axis.
+
+   :param pos: Tensor of node positions.
+   :type pos: Tensor
+   :param edge_index: Tensor of edge indices.
+   :type edge_index: Tensor
+
+   :returns: Rotation matrix R such that R @ r = z, where r is the edge vector.
+   :rtype: Tensor
+
+
+.. py:function:: edge_align_to_z_angles(pos: torch.Tensor, edge_index: torch.Tensor)
+
+   Calculate the angles (phi, theta) that describe the rotation to align an edge vector with the z-axis.
+
+   :param pos: Tensor of node positions.
+   :type pos: Tensor
+   :param edge_index: Tensor of edge indices.
+   :type edge_index: Tensor
+
+   :returns: A tuple (phi, theta) where:
+             - r can be generated by rotating z on y by theta, and then rotating on z by phi.
+             - r can be aligned to z by rotating on z by -phi, and then on y by -theta.
+   :rtype: Tuple[Tensor, Tensor]
+
+
+.. py:function:: align_to_z_wigner(r: torch.Tensor, L: equitorch.typing.DegreeRange, need_normalize: bool = True)
+
+   Returns the Wigner-D matrix corresponding to the return of align_to_z_mat.
+
+   :param r: Input vector to be aligned.
+   :type r: Tensor
+   :param L: Range of degrees for the Wigner-D matrix.
+   :type L: DegreeRange
+   :param need_normalize: Whether to normalize the input vector. Default is True.
+   :type need_normalize: bool, optional
+
+   :returns: Wigner-D matrix corresponding to the rotation returned by align_to_z_mat.
+   :rtype: Tensor
+
+
+.. py:function:: edge_align_to_z_wigner(pos: torch.Tensor, edge_index: torch.Tensor, L: equitorch.typing.DegreeRange)
+
+   Calculate the Wigner-D matrix corresponding to the rotation that aligns an edge vector with the z-axis.
+
+   :param pos: Tensor of node positions.
+   :type pos: Tensor
+   :param edge_index: Tensor of edge indices.
+   :type edge_index: Tensor
+   :param L: Range of degrees for the Wigner-D matrix.
+   :type L: DegreeRange
+
+   :returns: Wigner-D matrix corresponding to the rotation that aligns the edge vector with the z-axis.
+   :rtype: Tensor
+
+
+.. py:function:: rot_on(mat: torch.Tensor, x: torch.Tensor)
+
+   Performs rotation of matrix 'mat' on tensor 'x'.
+
+   This function applies the rotation defined by 'mat' to the tensor 'x'. The behavior
+   depends on the dimensions of both 'mat' and 'x'.
+
+   :param mat: The rotation matrix or matrices. Can be 2D, 3D, or 4D.
+               - If 2D: A single rotation matrix applied to all samples in x.
+               - If 3D: Batched rotation matrices applied sample-wise to x.
+               - If 4D: Batched rotation matrices applied both sample-wise and channel-wise to x.
+   :type mat: Tensor
+   :param x: The tensor to be rotated. Can be 2D or 3D.
+             - If 2D: Interpreted as a batch of vectors.
+             - If 3D: Interpreted as a batch of matrices or multi-channel vectors.
+   :type x: Tensor
+
+   :returns: The rotated tensor. The shape will match the input 'x', except when 'mat'
+             is 4D, in which case the channel dimension may change.
+   :rtype: Tensor
+
+   .. rubric:: Notes
+
+   - If x is 2D, it's temporarily expanded to 3D for computation and then squeezed back.
+   - The function uses matrix multiplication for 2D and 3D 'mat', and einsum for 4D 'mat'.
+
+
+.. py:function:: check_degree_range(L: equitorch.typing.DegreeRange) -> Tuple[int, int]
+
+   Check and normalize the degree range.
+
+   :param L: The input degree range. Can be an int or a tuple of two ints.
+   :type L: DegreeRange
+
+   :returns: A tuple representing the normalized degree range (l_min, l_max).
+   :rtype: Tuple[int, int]
+
+   .. rubric:: Example
+
+   >>> L = (1, 3)
+   >>> result = check_degree_range(L)
+   >>> print(result)
+   (1, 3)
+   >>> L = 5
+   >>> result = check_degree_range(L)
+   >>> print(result)
+   (0, 5)
+
+
+.. py:function:: degrees_in_range(L: equitorch.typing.DegreeRange)
+
+   Returns :obj:`range(L[0], L[1]+1)`.
+
+
+.. py:function:: order_batch(L: equitorch.typing.DegreeRange, device=None)
+
+   Generate a tensor of degree indices for each order.
+
+   :param L: The degree range.
+   :type L: DegreeRange
+   :param device: The device to place the resulting tensor on.
+   :type device: torch.device, optional
+
+   :returns: A tensor where each element is the degree index for the corresponding order.
+   :rtype: torch.Tensor
+
+   .. rubric:: Example
+
+   >>> L = (0, 2)
+   >>> result = order_batch(L)
+   >>> print(result)
+   tensor([0, 1, 1, 1, 2, 2, 2, 2, 2])
+
+
+.. py:function:: extract_batch_ptr(keys: List[torch.Tensor])
+
+   key: sorted, int
+   returns: batch, ptr, key_value
+
+
+.. py:function:: order_ptr(L: equitorch.typing.DegreeRange, dim: int = 0, device=None)
+
+   Generate a tensor of pointers to the start of each degree's orders, including the next of the final elements.
+
+   :param L: The degree range.
+   :type L: DegreeRange
+   :param dim: The dimension along which to expand the result. Default is 0.
+   :type dim: int, optional
+   :param device: The device to place the resulting tensor on.
+   :type device: torch.device, optional
+
+   :returns: A tensor of pointers to the start of each degree's orders.
+   :rtype: torch.Tensor
+
+   .. rubric:: Example
+
+   >>> L = (0, 2)
+   >>> result = order_ptr(L)
+   >>> print(result)
+   tensor([0, 1, 4, 9])
+   >>> L = (1, 3)
+   >>> result = order_ptr(L)
+   >>> print(result)
+   tensor([0, 3, 8, 15])
+
+
+.. py:function:: order_in_degree_range(L: equitorch.typing.DegreeRange, zero_based: bool = True, device=None)
+
+   Generate a tensor that specifying the order :math:`m` in a feature of
+   degree range :math:`L`.
+
+   :param L: The degree range.
+   :type L: DegreeRange
+   :param zero_based: Whether the :math:`m` is in :math:`0,\dots,2l_  ext{max}+1` or
+                      :math:`-l_      ext{max},\dots,l_       ext{max}`. Default is True.
+   :type zero_based: bool, optional
+   :param device: The device to place the resulting tensor on.
+   :type device: torch.device, optional
+
+   :returns: A tensor denoting the degrees.
+   :rtype: Tensor
+
+   .. rubric:: Example
+
+   >>> L = (1, 2)
+   >>> result = order_in_degree_range(L, True)
+   >>> print(result)
+   tensor([1, 2, 3, 0, 1, 2, 3, 4])
+   >>> result = order_in_degree_range(L, False)
+   >>> print(result)
+   tensor([-1, 0, 1, -2, -1, 0, 1, 2])
+
+
+.. py:function:: orders_in_degree(l: int)
+
+   returns :obj:`range(-l, l+1)`
+
+
+.. py:function:: list_degrees(L: equitorch.typing.DegreeRange, L1: equitorch.typing.DegreeRange, L2: equitorch.typing.DegreeRange = None, cond: Optional[Callable[[int, int, int], bool]] = None)
+
+   Generate a list of valid degree triplets (l, l1, l2). (The triplet satisfies triangular inequality)
+
+   :param L: The range for the total angular momentum l.
+   :type L: DegreeRange
+   :param L1: The range for the first angular momentum l1.
+   :type L1: DegreeRange
+   :param L2: The range for the second angular momentum l2. default: None, represents the range of all possible l2's
+   :type L2: DegreeRange
+   :param cond: An optional condition function to further filter the triplets.
+   :type cond: Callable[[int, int, int], bool], optional
+
+   :returns: A sorted list of valid (l, l1, l2) triplets.
+   :rtype: List[Tuple[int, int, int]]
+
+   .. rubric:: Example
+
+   >>> print(list_degrees(1, (1,2), (2,3)))
+   [(0, 2, 2), (1, 1, 2), (1, 2, 2), (1, 2, 3)]
+
+
+.. py:function:: num_degree_triplets(L: equitorch.typing.DegreeRange, L1: equitorch.typing.DegreeRange, L2: equitorch.typing.DegreeRange = None, cond: Optional[Callable[[int, int, int], bool]] = None)
+
+   Generate the number of valid degree triplets (l, l1, l2). (The triplet satisfies triangular inequality)
+
+   :param L: The range for the total angular momentum l.
+   :type L: DegreeRange
+   :param L1: The range for the first angular momentum l1.
+   :type L1: DegreeRange
+   :param L2: The range for the second angular momentum l2.
+   :type L2: DegreeRange
+   :param cond: An optional condition function to further filter the triplets.
+   :type cond: Callable[[int, int, int], bool], optional
+
+   :returns: The number of valid degree triplets.
+   :rtype: int
+
+   .. rubric:: Example
+
+   >>> print(num_degree_triplets(1, (1,2), (2,3)))
+   4
+
+
+.. py:function:: num_orders_in(L: equitorch.typing.DegreeRange)
+
+   Calculate the number of spherical orders in a degree range.
+
+
+.. py:function:: num_orders_between(lmin: int, lmax: int)
+
+   Calculate the number of orders between two degrees.
+
+   :param lmin: The minimum degree.
+   :type lmin: int
+   :param lmax: The maximum degree.
+   :type lmax: int
+
+   :returns: The total number of orders between lmin and lmax (inclusive).
+   :rtype: int
+
+
+.. py:function:: num_order_of_degree(l: int)
+
+   Calculate the number of orders for a given degree.
+
+   :param l: The degree.
+   :type l: int
+
+   :returns: The number of orders for the given degree (2l + 1).
+   :rtype: int
+
+
+.. py:function:: degree_index_from(l: int, l_min: int)
+
+   Calculate the start and end indices for a given degree.
+
+   :param l: The degree.
+   :type l: int
+   :param l_min: The minimum degree in the range.
+   :type l_min: int
+
+   :returns: A tuple containing the start and end indices for the given degree.
+   :rtype: Tuple[int, int]
+
+   .. rubric:: Example
+
+   >>> l, l_min = 2, 0
+   >>> result = degree_index_from(l, l_min)
+   >>> print(result)
+   (4, 8)
+
+
+.. py:function:: degree_order_to_index(l, m, l_min=0)
+
+   Convert degree and order to a linear index.
+
+   :param l: The degree.
+   :type l: int
+   :param m: The order.
+   :type m: int
+   :param l_min: The minimum degree in the range. Default is 0.
+   :type l_min: int, optional
+
+   :returns: The linear index corresponding to the given degree and order.
+   :rtype: int
+
+   .. rubric:: Example
+
+   >>> l, m, l_min = 2, 1, 0
+   >>> result = degree_order_to_index(l, m, l_min)
+   >>> print(result)
+   7
+
+
+.. py:function:: expand_degree_to_order(src: torch.Tensor, L: equitorch.typing.DegreeRange, dim: int)
+
+   Expand a tensor from degree to order representation.
+
+   :param src: The input tensor in degree representation.
+   :type src: torch.Tensor
+   :param L: The degree range.
+   :type L: DegreeRange
+   :param dim: The dimension along which to expand the tensor.
+   :type dim: int
+
+   :returns: The expanded tensor in order representation.
+   :rtype: torch.Tensor
+
+
+.. py:function:: reduce_order_to_degree(src: torch.Tensor, L: equitorch.typing.DegreeRange, dim: int)
+
+   Reduce a tensor from order to degree representation.
+
+   :param src: The input tensor in order representation.
+   :type src: torch.Tensor
+   :param L: The degree range.
+   :type L: DegreeRange
+   :param dim: The dimension along which to reduce the tensor.
+   :type dim: int
+
+   :returns: The reduced tensor in degree representation.
+   :rtype: torch.Tensor
+
+
+.. py:function:: check_degree_range(L: equitorch.typing.DegreeRange) -> Tuple[int, int]
+
+   Check and normalize the degree range.
+
+   :param L: The input degree range. Can be an int or a tuple of two ints.
+   :type L: DegreeRange
+
+   :returns: A tuple representing the normalized degree range (l_min, l_max).
+   :rtype: Tuple[int, int]
+
+   .. rubric:: Example
+
+   >>> L = (1, 3)
+   >>> result = check_degree_range(L)
+   >>> print(result)
+   (1, 3)
+   >>> L = 5
+   >>> result = check_degree_range(L)
+   >>> print(result)
+   (0, 5)
+
+
+.. py:function:: degree_order_to_index(l, m, l_min=0)
+
+   Convert degree and order to a linear index.
+
+   :param l: The degree.
+   :type l: int
+   :param m: The order.
+   :type m: int
+   :param l_min: The minimum degree in the range. Default is 0.
+   :type l_min: int, optional
+
+   :returns: The linear index corresponding to the given degree and order.
+   :rtype: int
+
+   .. rubric:: Example
+
+   >>> l, m, l_min = 2, 1, 0
+   >>> result = degree_order_to_index(l, m, l_min)
+   >>> print(result)
+   7
+
+
+.. py:function:: degrees_in_range(L: equitorch.typing.DegreeRange)
+
+   Returns :obj:`range(L[0], L[1]+1)`.
+
+
+.. py:function:: dense_CG(L: equitorch.typing.DegreeRange, L1: equitorch.typing.DegreeRange, L2: equitorch.typing.DegreeRange, condition: Optional[Callable] = None, dtype=torch.float)
+
+   Generate dense Clebsch-Gordan (CG) matrices for given angular momentum ranges.
+
+   This function computes the Clebsch-Gordan coefficients for coupling two angular momenta
+   :math:`l_1` and :math:`l_2` to a total angular momentum :math:`l`. The coefficients are
+   organized into a dense matrix format.
+
+   :param L: Range of total angular momentum :math:`l`.
+   :type L: DegreeRange
+   :param L1: Range of first angular momentum :math:`l_1`.
+   :type L1: DegreeRange
+   :param L2: Range of second angular momentum :math:`l_2`.
+   :type L2: DegreeRange
+   :param condition: A function that takes :math:`(l, l_1, l_2)` as arguments and returns a boolean or float.
+                     If provided, it is used to filter the CG coefficients.
+   :type condition: callable, optional
+   :param dtype: The desired data type of the output tensor. Default is torch.float.
+   :type dtype: torch.dtype, optional
+
+   :returns: A dense tensor of Clebsch-Gordan coefficients. The shape of the tensor is
+             :math:`(l_{max}^2 - l_{min}^2,l_{1,max}^2 - l_{1,min}^2, l_{2,max}^2 - l_{2,min}^2)`.
+   :rtype: torch.Tensor
+
+
+.. py:function:: blocked_CG(L: equitorch.typing.DegreeRange, L1: equitorch.typing.DegreeRange, L2: equitorch.typing.DegreeRange, condition: Optional[Callable] = None, dtype=torch.float)
+
+   Generate blocked Clebsch-Gordan (CG) coefficients for given angular momentum ranges.
+
+   This function computes the Clebsch-Gordan coefficients for coupling two angular momenta
+   :math:`l_1` and :math:`l_2` to a total angular momentum :math:`l`. The coefficients are
+   organized into a dictionary of tensors, where each tensor corresponds to a specific
+   :math:`(l, l_1, l_2)` combination.
+
+   :param L: Range of total angular momentum :math:`l`.
+   :type L: DegreeRange
+   :param L1: Range of first angular momentum :math:`l_1`.
+   :type L1: DegreeRange
+   :param L2: Range of second angular momentum :math:`l_2`.
+   :type L2: DegreeRange
+   :param condition: A function that takes :math:`(l, l_1, l_2)` as arguments and returns a boolean.
+                     If provided, it is used to filter the CG coefficients.
+   :type condition: callable, optional
+   :param dtype: The desired data type of the output tensors. Default is torch.float.
+   :type dtype: torch.dtype, optional
+
+   :returns: A dictionary where each key is a tuple :math:`(l, l_1, l_2)`, and each value
+             is a tensor of Clebsch-Gordan coefficients for that combination.
+   :rtype: Dict[Tuple[int, int, int], torch.Tensor]
+
+
+.. py:function:: coo_CG(L: equitorch.typing.DegreeRange, L1: equitorch.typing.DegreeRange, L2: equitorch.typing.DegreeRange, condition: Optional[Callable] = None, dtype=torch.float, device=None)
+
+   Generate sparse Clebsch-Gordan (CG) coefficients in coordinate format.
+
+   This function computes the non-zero Clebsch-Gordan coefficients for coupling two angular momenta
+   :math:`l_1` and :math:`l_2` to a total angular momentum :math:`l`, and returns them in a sparse format.
+   The results are sorted in the order of (l, M, l1, l2, M1, M2).
+
+   :param L: Range of total angular momentum :math:`l`.
+   :type L: DegreeRange
+   :param L1: Range of first angular momentum :math:`l_1`.
+   :type L1: DegreeRange
+   :param L2: Range of second angular momentum :math:`l_2`.
+   :type L2: DegreeRange
+   :param condition: A function that takes :math:`(l, l_1, l_2)` as arguments and returns a boolean.
+                     If provided, it is used to filter the CG coefficients.
+   :type condition: callable, optional
+   :param dtype: The desired data type of the output tensors. Default is torch.float.
+   :type dtype: torch.dtype, optional
+   :param device: The desired device of the output tensors. Default is None (uses current device).
+   :type device: torch.device, optional
+
+   :returns: A tuple containing:
+
+             - Cs : Tensor of shape (N,)
+                 Non-zero CG coefficient values.
+             - Ms : Tensor of shape (3, N)
+                 Indices (M, M1, M2) of non-zero CG values.
+             - ls_cg : Tensor of shape (3, N)
+                 Corresponding degrees (l, l1, l2) for each non-zero CG value.
+             - l_ind : Tensor of shape (N,)
+                 Indices of (l, l1, l2) combinations.
+
+             Where N is the number of non-zero CG coefficients.
+   :rtype: Tuple[Tensor, Tensor, Tensor, Tensor]
+
+   .. rubric:: Notes
+
+   - The output is strictly sorted in the order of (l, M, l1, l2, M1, M2) lexigraphically.
+
+
+.. py:function:: blocked_CG(L: equitorch.typing.DegreeRange, L1: equitorch.typing.DegreeRange, L2: equitorch.typing.DegreeRange, condition: Optional[Callable] = None, dtype=torch.float)
+
+   Generate blocked Clebsch-Gordan (CG) coefficients for given angular momentum ranges.
+
+   This function computes the Clebsch-Gordan coefficients for coupling two angular momenta
+   :math:`l_1` and :math:`l_2` to a total angular momentum :math:`l`. The coefficients are
+   organized into a dictionary of tensors, where each tensor corresponds to a specific
+   :math:`(l, l_1, l_2)` combination.
+
+   :param L: Range of total angular momentum :math:`l`.
+   :type L: DegreeRange
+   :param L1: Range of first angular momentum :math:`l_1`.
+   :type L1: DegreeRange
+   :param L2: Range of second angular momentum :math:`l_2`.
+   :type L2: DegreeRange
+   :param condition: A function that takes :math:`(l, l_1, l_2)` as arguments and returns a boolean.
+                     If provided, it is used to filter the CG coefficients.
+   :type condition: callable, optional
+   :param dtype: The desired data type of the output tensors. Default is torch.float.
+   :type dtype: torch.dtype, optional
+
+   :returns: A dictionary where each key is a tuple :math:`(l, l_1, l_2)`, and each value
+             is a tensor of Clebsch-Gordan coefficients for that combination.
+   :rtype: Dict[Tuple[int, int, int], torch.Tensor]
+
+
+.. py:function:: so3_weights_to_so2(weight_so3: torch.Tensor, L_in: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, channel_wise=True)
+
+   Transform the weights used for :obj:`SO3Linear` to the weights for :obj:`SO2Linear`.
+
+   :param weight_so3: The weights used for `SO3Linear`. Shape depends on `channel_wise`:
+                      - If not channel_wise: :math:`(N,       ext{num_degree_in},     ext{in_channels},       ext{out_channels})` or :math:`( ext{num_degree_in},     ext{in_channels},       ext{out_channels})`
+                      - If channel_wise: :math:`(N,   ext{num_degree_in},     ext{channels})` or :math:`(     ext{num_degree_in},     ext{channels})`
+                      It should be sorted by :math:`(l_       ext{out}, l_    ext{in}, l_     ext{edge})` lexicographically in the `num_degree_in` dimension.
+                      :math:`l_       ext{edge}` should take all values from :math:`|l_       ext{out}-l_     ext{in}|` to :math:`l_  ext{out}+l_     ext{in}` for a given pair of :math:`l_  ext{out}` and :math:`l_ ext{in}`.
+   :type weight_so3: torch.Tensor
+   :param L_in: The degree range of input features.
+   :type L_in: DegreeRange
+   :param L_out: The degree range of output features.
+   :type L_out: DegreeRange
+   :param channel_wise: Whether the weights are channel-wise. Default is True.
+   :type channel_wise: bool, optional
+
+   :returns: **weight_so2** -- Transformed weights for `SO2Linear`, with the same shape as `weight_so3`,
+             sorted by :math:`(l_    ext{out}, l_    ext{in}, m)` lexicographically in the `num_degree_in` dimension.
+   :rtype: torch.Tensor
+
+
+.. py:function:: so2_weights_to_so3(weight_so2: torch.Tensor, L_in: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, channel_wise=True)
+
+   Transform the weights used for :obj:`SO2Linear` to the weights for :obj:`SO3Linear`.
+
+   :param weight_so2: The weights used for `SO2Linear`. Shape depends on `channel_wise`:
+                      - If not channel_wise: :math:`(N,       ext{num_degree_in},     ext{in_channels},       ext{out_channels})` or :math:`( ext{num_degree_in},     ext{in_channels},       ext{out_channels})`
+                      - If channel_wise: :math:`(N,   ext{num_degree_in},     ext{channels})` or :math:`(     ext{num_degree_in},     ext{channels})`
+                      It should be sorted by :math:`(l_       ext{out}, l_    ext{in}, m)` lexicographically in the `num_degree_in` dimension.
+   :type weight_so2: torch.Tensor
+   :param L_in: The degree range of input features.
+   :type L_in: DegreeRange
+   :param L_out: The degree range of output features.
+   :type L_out: DegreeRange
+   :param channel_wise: Whether the weights are channel-wise. Default is True.
+   :type channel_wise: bool, optional
+
+   :returns: **weight_so3** -- Transformed weights for `SO3Linear`, with the same shape as `weight_so2`,
+             sorted by :math:`(l_    ext{out}, l_    ext{in}, l_     ext{edge})` lexicographically in the `num_degree_in` dimension.
+             :math:`l_       ext{edge}` will take all values from :math:`|l_ ext{out}-l_     ext{in}|` to :math:`l_  ext{out}+l_     ext{in}` for a given pair of :math:`l_  ext{out}` and :math:`l_ ext{in}`.
+   :rtype: torch.Tensor
+
+

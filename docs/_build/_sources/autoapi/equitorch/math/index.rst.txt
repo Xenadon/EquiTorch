@@ -1,0 +1,225 @@
+equitorch.math
+==============
+
+.. py:module:: equitorch.math
+
+.. autoapi-nested-parse::
+
+   Some math functions.
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   equitorch.math.angles_to_xyz
+   equitorch.math.xyz_to_angles
+   equitorch.math.angles_to_matrix
+   equitorch.math.wigner_D
+   equitorch.math.spherical_harmonics
+   equitorch.math.isht
+   equitorch.math.sht
+
+
+Package Contents
+----------------
+
+.. py:function:: angles_to_xyz(theta, phi, dim=-1)
+
+   Convert spherical coordinates :math:`(\theta, \phi)` into Cartesian coordinates :math:`(x, y, z)` on the unit sphere.
+
+   Uses the physics convention of spherical coordinates.
+   See: https://en.wikipedia.org/wiki/Spherical_coordinate_system
+
+   :param theta: The polar angles, tensor of shape :math:`(...)`
+   :type theta: Tensor
+   :param phi: The azimuthal angles, tensor of shape :math:`(...)`
+   :type phi: Tensor
+   :param dim: The dimension along which to stack the result. Defaults to -1.
+   :type dim: int, optional
+
+   :returns: Cartesian coordinates, tensor of :math:`\text{shape}[\text{dim}]=3`.
+   :rtype: Tensor
+
+
+.. py:function:: xyz_to_angles(xyz, need_normalize, dim=-1)
+
+   Convert Cartesian coordinates :math:`(x, y, z)` to spherical coordinates :math:`(\theta, \phi)`.
+
+   Follows the equation:
+
+   .. math::
+
+       \mathbf{r} = \mathbf{R}_z(\phi) \mathbf{R}_y(\theta) \mathbf{e}_z
+
+   ::
+   where :math:`\mathbf{R}_z` and :math:`\mathbf{R}_y` are rotation matrices, and :math:`\mathbf{e}_z` is the unit vector along z-axis.
+
+   :param xyz: Cartesian coordinates, tensor of :math:`\text{shape}[\text{dim}]=3`.
+   :type xyz: Tensor
+   :param need_normalize: Whether to normalize the input coordinates
+   :type need_normalize: bool
+   :param dim: The dimension containing the xyz coordinates. Defaults to -1.
+   :type dim: int, optional
+
+   :returns:
+
+             - phi : Azimuthal angle, tensor of shape :math:`(...)`
+             - theta : Polar angle, tensor of shape :math:`(...)`
+   :rtype: Tuple[Tensor, Tensor]
+
+
+.. py:function:: angles_to_matrix(alpha, beta, gamma)
+
+   Convert Z-Y-Z Euler angles to rotation matrices.
+
+   :param alpha: First rotation angle around Z-axis, tensor of shape :math:`(...)`
+   :type alpha: Tensor
+   :param beta: Second rotation angle around Y-axis, tensor of shape :math:`(...)`
+   :type beta: Tensor
+   :param gamma: Third rotation angle around Z-axis, tensor of shape :math:`(...)`
+   :type gamma: Tensor
+
+   :returns: Rotation matrices of shape :math:`(..., 3, 3)`
+   :rtype: Tensor
+
+
+.. py:function:: wigner_D(L: equitorch.typing.DegreeRange, alpha: torch.Tensor, beta: torch.Tensor, gamma: torch.Tensor)
+
+   Wigner D matrix representation of :math:`\text{SO(3)}` parameterized by Z-Y-Z angles
+   on the spaces of degree range :math:`L`.
+
+   It satisfies the following properties:
+
+   * :math:`\mathbf{D}(\mathbf{I}) = \mathbf{I}`
+   * :math:`\mathbf{D}(\mathbf{R}_1 \mathbf{R}_2) = \mathbf{D}(\mathbf{R}_1)\mathbf{D}(\mathbf{R}_2)`
+   * :math:`\mathbf{D}(\mathbf{R}^\top) = \mathbf{D}(\mathbf{R})^\top`
+
+   :param L: The degree range.
+   :type L: DegreeRange
+   :param alpha: tensor of shape :math:`(...)`
+                 Rotation :math:`\alpha` around Z axis, applied third.
+   :type alpha: `Tensor`
+   :param beta: tensor of shape :math:`(...)`
+                Rotation :math:`\beta` around Y axis, applied second.
+   :type beta: `Tensor`
+   :param gamma: tensor of shape :math:`(...)`
+                 Rotation :math:`\gamma` around Z axis, applied first.
+   :type gamma: `Tensor`
+
+   :returns: tensor :math:`D^l(\alpha, \beta, \gamma)` of shape :math:`(...,\text{num_orders}, \text{num_orders})`
+   :rtype: `Tensor`
+
+   .. warning:: This function is currently not optimized. Thus it is not recommended to use it in iterations.
+
+
+.. py:function:: spherical_harmonics(X: torch.Tensor, L: equitorch.typing.DegreeRange, need_normalize: bool = False, dim: int = -1)
+
+   Compute spherical harmonics for given Cartesian coordinates.
+
+   Gives the spherical harmonics of exactly the same shape
+   as in `here <https://en.wikipedia.org/wiki/Spherical_harmonics#/media/File:Sphericalfunctions.svg>`_
+   in the form
+
+   .. math::
+       Y_m^{(l)}(\theta,\phi) = (-1)^m\sqrt{2}\sqrt{\frac{2l+1}{4\pi}\frac{(l-|m|)!}{(l+|m|)!}}P_{l}^{|m|}(\cos\theta)B_m(\phi)
+
+   where where :math:`\theta` and :math:`\phi` are the polar and azimuth angles respectively,
+   :math:`P_l^{|m|}(z)` are the associated Legendre functions and
+
+   .. math::
+       B_{m}(\phi)=\begin{cases}
+       \sin(|m|\phi), & m < 0,\\
+       \frac{1}{\sqrt{2}}, & m = 0,\\
+       \cos(|m|\phi), & m > 0.
+       \end{cases}
+
+   The returned harmonics are ordered as :math:`m = -l, -l+1, ..., l-1, l` for each degree :math:`l`.
+
+   Here we listed the examples of first several spherical harmonics,
+   for :math:`\mathbf{r}=(x,y,z)` lying on the unit sphere :math:`S^2`:
+
+       .. math::
+           \begin{aligned}
+               \mathbf{Y}^{(0)}(\mathbf{r})&=\bigg[\sqrt{\frac{1}{4\pi}}\bigg]\\
+               \mathbf{Y}^{(1)}(\mathbf{r})&=\begin{bmatrix}\sqrt{\frac{3}{4\pi}}y\\\sqrt{\frac{3}{4\pi}}z\\\sqrt{\frac{3}{4\pi}}x\end{bmatrix}\\
+               \mathbf{Y}^{(2)}(\mathbf{r})&=\begin{bmatrix}\sqrt{\frac{15}{4\pi}}xy\\ \sqrt{\frac{15}{4\pi}}yz\\ \sqrt{\frac{5}{16\pi}}(2z^2-x^2-y^2)\\ -\sqrt{\frac{15}{4\pi}}xz\\ \sqrt{\frac{15}{16\pi}}(x^2-y^2)\end{bmatrix}
+           \end{aligned}
+
+
+
+   If there is a channel dimension in X, it will also be included in the returned spherical harmonics.
+
+   :param X: The coordinate tensor.
+   :type X: Tensor
+   :param L: The degree range of spherical harmonics that we need.
+             The maximum degree in L should not execeed 17.
+   :type L: DegreeRange
+   :param need_normalize: Whether the input needs to be normalized. Default is False.
+   :type need_normalize: bool, optional
+   :param dim: The 'xyz' dimension in X. Default is -1.
+   :type dim: int, optional
+
+   :returns: Tensor of spherical harmonics.
+   :rtype: Tensor
+
+   .. rubric:: Notes
+
+   The shape of the output tensor depends on the input shape and the degree range L.
+
+
+.. py:function:: isht(X: torch.Tensor, L: equitorch.typing.DegreeRange, num_thetas: int, num_phis: int)
+
+   Inverse spherical harmonics transform.
+
+   .. math::
+       F(\theta_{i},\phi_j)=\sum_{l=0}^L\sum_{m=-l}^l X_{m}^{(l)}Y_{m}^{(l)}(\theta_i,\phi_j),\\
+
+   where :math:`\theta_i=\frac{\pi i+\frac{\pi}{2}}{\text{num_thetas}}`, :math:`\phi_j=\frac{2\pi j}{\text{num_phis}}`.
+
+   :param x: Input tensor of shape :math:`(..., \text{num_orders}, C)`.
+   :type x: Tensor
+   :param L: The degree range of spherical harmonics.
+   :type L: DegreeRange
+   :param num_thetas: The number of grid points of :math:`\theta`.
+   :type num_thetas: int
+   :param num_phis: The number of grid points of :math:`\phi`.
+   :type num_phis: int
+
+   :returns: Output tensor of shape :math:`(..., \text{num_thetas}, \text{num_phis}, C)`.
+   :rtype: Tensor
+
+
+.. py:function:: sht(x: torch.Tensor, L: equitorch.typing.DegreeRange, num_thetas: int, num_phis: int)
+
+   The spherical harmonics transform of a function :math:`F(\theta, \phi)` is
+   defined as:
+
+   .. math::
+       X_{m}^{(l)} = \int_{S^2} F(\theta, \phi) Y_{m}^{(l)}(\theta, \phi) \sin\theta \mathrm{d}\phi \mathrm{d}\theta
+
+   approximated by:
+
+   .. math::
+       X_{m}^{(l)} \approx \sum_{i=0}^{\text{num_thetas}-1} \sum_{j=0}^{\text{num_phis}-1} F(\theta_i, \phi_j) Y_{m}^{(l)}(\theta_i, \phi_j) \sin\theta_i \Delta\theta \Delta\phi
+
+   where :math:`\theta_i=\frac{\pi i+\frac{\pi}{2}}{\text{num_thetas}}`,
+   :math:`\phi_j=\frac{2\pi j}{\text{num_phis}}`,
+   :math:`\Delta\theta=\frac{\pi}{\text{num_thetas}}`,
+   :math:`\Delta\phi=\frac{2\pi}{\text{num_phis}}`.
+
+   :param x: Input tensor of shape :math:`(..., \text{num_thetas}, \text{num_phis}, C)`.
+   :type x: Tensor
+   :param L: The degree range of spherical harmonics.
+   :type L: DegreeRange
+   :param num_thetas: The number of grid points of :math:`\theta`.
+   :type num_thetas: int
+   :param num_phis: The number of grid points of :math:`\phi`.
+   :type num_phis: int
+
+   :returns: Output tensor of shape :math:`(..., \text{num_orders}, C)`.
+   :rtype: Tensor
+
+

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>equitorch.transforms &mdash; equitorch  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            equitorch
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">equitorch</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">equitorch.transforms</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for equitorch.transforms</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Some data transforms.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">import</span> <span class="nn">torch_geometric</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.data</span> <span class="kn">import</span> <span class="n">Data</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.data.datapipes</span> <span class="kn">import</span> <span class="n">functional_transform</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.transforms</span> <span class="kn">import</span> <span class="n">BaseTransform</span>
+
+<span class="kn">from</span> <span class="nn">..utils._indices</span> <span class="kn">import</span> <span class="n">check_degree_range</span>
+
+<span class="kn">from</span> <span class="nn">..utils._geometries</span> <span class="kn">import</span> <span class="n">align_to_z_mat</span><span class="p">,</span> <span class="n">align_to_z_wigner</span><span class="p">,</span> <span class="n">edge_align_to_z_mat</span>
+
+<span class="kn">from</span> <span class="nn">..math._o3</span> <span class="kn">import</span> <span class="n">spherical_harmonics</span>
+
+<span class="kn">from</span> <span class="nn">..typing</span> <span class="kn">import</span> <span class="n">DegreeRange</span>
+
+
+<span class="c1"># Modified from https://pytorch-geometric.readthedocs.io/en/latest/_modules/torch_geometric/transforms/radius_graph.html#RadiusGraph</span>
+<span class="nd">@functional_transform</span><span class="p">(</span><span class="s1">&#39;radius_graph_et&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="RadiusGraph">
+<a class="viewcode-back" href="../../autoapi/equitorch/transforms/index.html#equitorch.transforms.RadiusGraph">[docs]</a>
+<span class="k">class</span> <span class="nc">RadiusGraph</span><span class="p">(</span><span class="n">BaseTransform</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Creates edges based on node positions :obj:`pos_attr` to all points</span>
+<span class="sd">    within a given cutoff distance (functional name: :obj:`radius_graph_et`).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : float</span>
+<span class="sd">        The cutoff distance.</span>
+<span class="sd">    loop : bool, optional</span>
+<span class="sd">        If True, the graph will contain self-loops. Default is False.</span>
+<span class="sd">    max_num_neighbors : int, optional</span>
+<span class="sd">        The maximum number of neighbors to return for each element.</span>
+<span class="sd">        This flag is only needed for CUDA tensors. Default is 32.</span>
+<span class="sd">    flow : str, optional</span>
+<span class="sd">        The flow direction when using in combination with message passing</span>
+<span class="sd">        (&quot;source_to_target&quot; or &quot;target_to_source&quot;). Default is &quot;source_to_target&quot;.</span>
+<span class="sd">    pos_attr : str, optional</span>
+<span class="sd">        The attribute name for positions in the data. Default is &quot;pos&quot;.</span>
+<span class="sd">    edge_index_attr : str, optional</span>
+<span class="sd">        The attribute name for creating edge index in the data. Default is &quot;edge_index&quot;.</span>
+<span class="sd">    edge_vector_attr : str, optional</span>
+<span class="sd">        The attribute name for creating edge vectors in the data. Default is &quot;edge_vec&quot;.</span>
+<span class="sd">    num_workers : int, optional</span>
+<span class="sd">        Number of workers to use for computation. Has no effect in case batch is</span>
+<span class="sd">        not None, or the input lies on the GPU. Default is 1.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; N = 50</span>
+<span class="sd">    &gt;&gt;&gt; pos = torch.randn(N,3)</span>
+<span class="sd">    &gt;&gt;&gt; data = Data(pos=pos)</span>
+<span class="sd">    &gt;&gt;&gt; print(data)</span>
+<span class="sd">    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])</span>
+<span class="sd">    &gt;&gt;&gt; data = RadiusGraph(0.5)(data)</span>
+<span class="sd">    &gt;&gt;&gt; print(data)</span>
+<span class="sd">    Data(pos=[50, 3])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">r</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">loop</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">max_num_neighbors</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+        <span class="n">flow</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;source_to_target&#39;</span><span class="p">,</span>
+        <span class="n">pos_attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;pos&#39;</span><span class="p">,</span>
+        <span class="n">edge_index_attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;edge_index&#39;</span><span class="p">,</span>
+        <span class="n">edge_vector_attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;edge_vec&#39;</span><span class="p">,</span>
+        <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop</span> <span class="o">=</span> <span class="n">loop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_num_neighbors</span> <span class="o">=</span> <span class="n">max_num_neighbors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flow</span> <span class="o">=</span> <span class="n">flow</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span> <span class="o">=</span> <span class="n">num_workers</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos_attr</span> <span class="o">=</span> <span class="n">pos_attr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_index_attr</span> <span class="o">=</span> <span class="n">edge_index_attr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_vector_attr</span> <span class="o">=</span> <span class="n">edge_vector_attr</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Data</span><span class="p">:</span>
+        <span class="c1"># assert data.pos is not None</span>
+
+
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pos_attr</span><span class="p">)</span>
+        <span class="n">edge_index</span> <span class="o">=</span> <span class="n">torch_geometric</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">radius_graph</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">batch</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">,</span>
+            <span class="n">max_num_neighbors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_num_neighbors</span><span class="p">,</span>
+            <span class="n">flow</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">flow</span><span class="p">,</span>
+            <span class="n">num_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_index_attr</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">)</span>
+
+        <span class="n">data</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_vector_attr</span><span class="p">,</span> 
+            <span class="n">data</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">edge_index</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">-</span> <span class="n">data</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">edge_index</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(r=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="si">}</span><span class="s1">)&#39;</span></div>
+
+    
+    
+<span class="nd">@functional_transform</span><span class="p">(</span><span class="s1">&#39;add_edge_spherical_harmonics&#39;</span><span class="p">)</span>
+<div class="viewcode-block" id="AddEdgeSphericalHarmonics">
+<a class="viewcode-back" href="../../autoapi/equitorch/transforms/index.html#equitorch.transforms.AddEdgeSphericalHarmonics">[docs]</a>
+<span class="k">class</span> <span class="nc">AddEdgeSphericalHarmonics</span><span class="p">(</span><span class="n">BaseTransform</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Creates edge spherical harmonics embedding</span>
+<span class="sd">    based on edge direction vectors :obj:`edge_vector_attr`  </span>
+<span class="sd">    (functional name: :obj:`add_edge_spherical_harmonics`).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : DegreeRange</span>
+<span class="sd">        The degree range of spherical harmonics.</span>
+<span class="sd">    edge_vector_attr : str, optional</span>
+<span class="sd">        The attribute name for edge direction vectors. Default is &quot;edge_vec&quot;.</span>
+<span class="sd">    edge_sh_attr : str, optional</span>
+<span class="sd">        The attribute name for creating edge spherical harmonics in the data. Default is &quot;edge_sh&quot;.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; print(data)</span>
+<span class="sd">    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])</span>
+<span class="sd">    &gt;&gt;&gt; data = AddEdgeSphericalHarmonics(L=3)(data)</span>
+<span class="sd">    &gt;&gt;&gt; print(data)</span>
+<span class="sd">    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3], edge_sh=[36, 16])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span>
+        <span class="n">edge_vector_attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;edge_vec&#39;</span><span class="p">,</span>
+        <span class="n">edge_sh_attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;edge_sh&#39;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_vector_attr</span> <span class="o">=</span> <span class="n">edge_vector_attr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_sh_attr</span> <span class="o">=</span> <span class="n">edge_sh_attr</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Data</span><span class="p">:</span>
+        
+        <span class="n">edge_vec</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_vector_attr</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_sh_attr</span><span class="p">,</span> <span class="n">spherical_harmonics</span><span class="p">(</span><span class="n">edge_vec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+<span class="nd">@functional_transform</span><span class="p">(</span><span class="s1">&#39;add_edge_align_matrix&#39;</span><span class="p">)</span>   
+<div class="viewcode-block" id="AddEdgeAlignMatrix">
+<a class="viewcode-back" href="../../autoapi/equitorch/transforms/index.html#equitorch.transforms.AddEdgeAlignMatrix">[docs]</a>
+<span class="k">class</span> <span class="nc">AddEdgeAlignMatrix</span><span class="p">(</span><span class="n">BaseTransform</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Creates rotation matrices that can align each edge to z</span>
+<span class="sd">    based on edge direction vectors :obj:`edge_vector_attr` </span>
+<span class="sd">    (functional name: :obj:`add_edge_align_matrix`).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    edge_vector_attr : str, optional</span>
+<span class="sd">        The attribute name for edge direction vectors. Default is &quot;edge_vec&quot;.</span>
+<span class="sd">    align_mat_attr : str, optional</span>
+<span class="sd">        The attribute name for creating edge alignment matrices in the data. Default is &quot;R&quot;.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; print(data)</span>
+<span class="sd">    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])</span>
+<span class="sd">    &gt;&gt;&gt; data = AddEdgeAlignMatrix()(data)</span>
+<span class="sd">    &gt;&gt;&gt; print(data)</span>
+<span class="sd">    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3], R=[36, 3, 3])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">edge_vector_attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;edge_vec&#39;</span><span class="p">,</span>
+        <span class="n">align_mat_attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;R&#39;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_vector_attr</span> <span class="o">=</span> <span class="n">edge_vector_attr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">align_mat_attr</span> <span class="o">=</span> <span class="n">align_mat_attr</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Data</span><span class="p">:</span>
+        
+        <span class="n">edge_vec</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_vector_attr</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">align_mat_attr</span><span class="p">,</span> <span class="n">align_to_z_mat</span><span class="p">(</span><span class="n">edge_vec</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+<span class="nd">@functional_transform</span><span class="p">(</span><span class="s1">&#39;add_edge_align_wigner_d&#39;</span><span class="p">)</span>   
+<div class="viewcode-block" id="AddEdgeAlignWignerD">
+<a class="viewcode-back" href="../../autoapi/equitorch/transforms/index.html#equitorch.transforms.AddEdgeAlignWignerD">[docs]</a>
+<span class="k">class</span> <span class="nc">AddEdgeAlignWignerD</span><span class="p">(</span><span class="n">BaseTransform</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Creates Wigner-D matrices for the roation matrices that</span>
+<span class="sd">    can align each edge to z based on edge direction vectors </span>
+<span class="sd">    :obj:`edge_vector_attr`. (functional name: :obj:`add_edge_align_matrix`).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : DegreeRange</span>
+<span class="sd">        The degree range for the Wigner D matrices.</span>
+<span class="sd">    edge_vector_attr : str, optional</span>
+<span class="sd">        The attribute name for edge direction vectors. Default is &quot;edge_vec&quot;.</span>
+<span class="sd">    align_wigner_attr : str, optional</span>
+<span class="sd">        The attribute name for creating edge alignment matrices in the data. Default is &quot;D&quot;.</span>
+<span class="sd">    </span>
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; print(data)</span>
+<span class="sd">    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])</span>
+<span class="sd">    &gt;&gt;&gt; data = AddEdgeAlignWignerD(L=1)(data)</span>
+<span class="sd">    &gt;&gt;&gt; print(data)</span>
+<span class="sd">    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3], D=[36, 4, 4])</span>
+<span class="sd">    &gt;&gt;&gt; data = AddEdgeAlignWignerD(L=3, align_wigner_attr=&#39;D_3&#39;)(data)</span>
+<span class="sd">    &gt;&gt;&gt; print(data)</span>
+<span class="sd">    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3], D=[36, 4, 4], D_3=[36, 16, 16])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span>
+        <span class="n">edge_vector_attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;edge_vec&#39;</span><span class="p">,</span>
+        <span class="n">align_wigner_attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;D&#39;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="n">L</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_vector_attr</span> <span class="o">=</span> <span class="n">edge_vector_attr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">align_wigner_attr</span> <span class="o">=</span> <span class="n">align_wigner_attr</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Data</span><span class="p">:</span>
+        
+        <span class="n">edge_vec</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_vector_attr</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">align_wigner_attr</span><span class="p">,</span> <span class="n">align_to_z_wigner</span><span class="p">(</span><span class="n">edge_vec</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">data</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Tong Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

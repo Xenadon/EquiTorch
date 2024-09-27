@@ -1,0 +1,31 @@
+equitorch.typing
+================
+
+.. py:module:: equitorch.typing
+
+.. autoapi-nested-parse::
+
+   Types.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   equitorch.typing.DegreeRange
+
+
+Package Contents
+----------------
+
+.. py:data:: DegreeRange
+
+   Degree Range
+
+   Denoting the range of spherical harmonics degrees.
+   It can be a tuple :math:`(l_{\text{min}}, l_{\text{max}})`
+   or a single int :math:`l_{\text{max}}`.
+   In Equitorch, a :obj:`DegreeRange` object is usually denoted by :math:`L`.
+

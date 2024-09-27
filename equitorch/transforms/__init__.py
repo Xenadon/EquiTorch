@@ -1,3 +1,6 @@
+"""
+Some data transforms.
+"""
 from typing import Any
 import torch_geometric
 from torch_geometric.data import Data
@@ -12,31 +15,45 @@ from ..math._o3 import spherical_harmonics
 
 from ..typing import DegreeRange
 
+
 # Modified from https://pytorch-geometric.readthedocs.io/en/latest/_modules/torch_geometric/transforms/radius_graph.html#RadiusGraph
 @functional_transform('radius_graph_et')
 class RadiusGraph(BaseTransform):
     r"""Creates edges based on node positions :obj:`pos_attr` to all points
     within a given cutoff distance (functional name: :obj:`radius_graph_et`).
 
-    Args:
-        r (float): The cutoff distance.
-        loop (bool, optional): If :obj:`True`, the graph will contain
-            self-loops. (default: :obj:`False`)
-        max_num_neighbors (int, optional): The maximum number of neighbors to
-            return for each element in :obj:`y`.
-            This flag is only needed for CUDA tensors. (default: :obj:`32`)
-        flow (str, optional): The flow direction when using in combination with
-            message passing (:obj:`"source_to_target"` or
-            :obj:`"target_to_source"`). (default: :obj:`"source_to_target"`)
-        pos_attr (str): The attribute name for positions 
-            in the data. (default: :obj:`pos`)
-        edge_index_attr (str): The attribute name for creating edge index 
-            in the data. (default: :obj:`edge_index`)
-        edge_vector_attr (str): The attribute name for creating edge vectors 
-            in the data. (default: :obj:`edge_vec`),
-        num_workers (int): Number of workers to use for computation. Has no
-            effect in case :obj:`batch` is not :obj:`None`, or the input lies
-            on the GPU. (default: :obj:`1`)
+    Parameters
+    ----------
+    r : float
+        The cutoff distance.
+    loop : bool, optional
+        If True, the graph will contain self-loops. Default is False.
+    max_num_neighbors : int, optional
+        The maximum number of neighbors to return for each element.
+        This flag is only needed for CUDA tensors. Default is 32.
+    flow : str, optional
+        The flow direction when using in combination with message passing
+        ("source_to_target" or "target_to_source"). Default is "source_to_target".
+    pos_attr : str, optional
+        The attribute name for positions in the data. Default is "pos".
+    edge_index_attr : str, optional
+        The attribute name for creating edge index in the data. Default is "edge_index".
+    edge_vector_attr : str, optional
+        The attribute name for creating edge vectors in the data. Default is "edge_vec".
+    num_workers : int, optional
+        Number of workers to use for computation. Has no effect in case batch is
+        not None, or the input lies on the GPU. Default is 1.
+
+    Examples
+    --------
+    >>> N = 50
+    >>> pos = torch.randn(N,3)
+    >>> data = Data(pos=pos)
+    >>> print(data)
+    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])
+    >>> data = RadiusGraph(0.5)(data)
+    >>> print(data)
+    Data(pos=[50, 3])
     """
     def __init__(
         self,
@@ -84,18 +101,29 @@ class RadiusGraph(BaseTransform):
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(r={self.r})'
     
+    
 @functional_transform('add_edge_spherical_harmonics')
 class AddEdgeSphericalHarmonics(BaseTransform):
     r"""Creates edge spherical harmonics embedding
     based on edge direction vectors :obj:`edge_vector_attr`  
     (functional name: :obj:`add_edge_spherical_harmonics`).
 
-    Args:
-        L (DegreeRange): The degree range of spherical harmonics
-        edge_vector_attr (str): The attribute name for 
-            edge direction vectors. (default: :obj:`edge_vec`)
-        edge_sh_attr (str): The attribute name for creating edge 
-            spherical harmonics in the data. (default: :obj:`edge_sh`),
+    Parameters
+    ----------
+    L : DegreeRange
+        The degree range of spherical harmonics.
+    edge_vector_attr : str, optional
+        The attribute name for edge direction vectors. Default is "edge_vec".
+    edge_sh_attr : str, optional
+        The attribute name for creating edge spherical harmonics in the data. Default is "edge_sh".
+    
+    Examples
+    --------
+    >>> print(data)
+    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])
+    >>> data = AddEdgeSphericalHarmonics(L=3)(data)
+    >>> print(data)
+    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3], edge_sh=[36, 16])
     """
     def __init__(
         self,
@@ -121,11 +149,20 @@ class AddEdgeAlignMatrix(BaseTransform):
     based on edge direction vectors :obj:`edge_vector_attr` 
     (functional name: :obj:`add_edge_align_matrix`).
 
-    Args:
-        edge_vector_attr (str): The attribute name for 
-            edge direction vectors. (default: :obj:`edge_vec`)
-        align_mat_attr (str): The attribute name for creating edge 
-            alignment matrices in the data. (default: :obj:`R`)
+    Parameters
+    ----------
+    edge_vector_attr : str, optional
+        The attribute name for edge direction vectors. Default is "edge_vec".
+    align_mat_attr : str, optional
+        The attribute name for creating edge alignment matrices in the data. Default is "R".
+
+    Examples
+    --------
+    >>> print(data)
+    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])
+    >>> data = AddEdgeAlignMatrix()(data)
+    >>> print(data)
+    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3], R=[36, 3, 3])
     """
     def __init__(
         self,
@@ -148,12 +185,25 @@ class AddEdgeAlignWignerD(BaseTransform):
     can align each edge to z based on edge direction vectors 
     :obj:`edge_vector_attr`. (functional name: :obj:`add_edge_align_matrix`).
 
-    Args:
-        L (DegreeRange): The degree range for the Wigner D matrices.
-        edge_vector_attr (str): The attribute name for 
-            edge direction vectors. (default: :obj:`edge_vec`)
-        align_wigner_attr (str): The attribute name for creating edge 
-            alignment matrices in the data. (default: :obj:`D`)
+    Parameters
+    ----------
+    L : DegreeRange
+        The degree range for the Wigner D matrices.
+    edge_vector_attr : str, optional
+        The attribute name for edge direction vectors. Default is "edge_vec".
+    align_wigner_attr : str, optional
+        The attribute name for creating edge alignment matrices in the data. Default is "D".
+    
+    Examples
+    --------
+    >>> print(data)
+    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])
+    >>> data = AddEdgeAlignWignerD(L=1)(data)
+    >>> print(data)
+    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3], D=[36, 4, 4])
+    >>> data = AddEdgeAlignWignerD(L=3, align_wigner_attr='D_3')(data)
+    >>> print(data)
+    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3], D=[36, 4, 4], D_3=[36, 16, 16])
     """
     def __init__(
         self,

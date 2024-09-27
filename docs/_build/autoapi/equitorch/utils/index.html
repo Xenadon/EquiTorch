@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>equitorch.utils &mdash; equitorch  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="prev" title="equitorch.typing" href="../typing/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            equitorch
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">equitorch</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../math/index.html">equitorch.math</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../nn/index.html">equitorch.nn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../transforms/index.html">equitorch.transforms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../typing/index.html">equitorch.typing</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">equitorch.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">equitorch</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">equitorch</a></li>
+      <li class="breadcrumb-item active">equitorch.utils</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/autoapi/equitorch/utils/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-equitorch.utils">
+<span id="equitorch-utils"></span><h1>equitorch.utils<a class="headerlink" href="#module-equitorch.utils" title="Link to this heading"></a></h1>
+<p>Utility functions.</p>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id2" title="equitorch.utils.check_degree_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_degree_range</span></code></a>(→ Tuple[int, int])</p></td>
+<td><p>Check and normalize the degree range.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#id4" title="equitorch.utils.degrees_in_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">degrees_in_range</span></code></a>(L)</p></td>
+<td><p>Returns <code class="xref py py-obj docutils literal notranslate"><span class="pre">range(L[0],</span> <span class="pre">L[1]+1)</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.utils.get_center_of_mass" title="equitorch.utils.get_center_of_mass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_center_of_mass</span></code></a>(pos, ptr[, atom_mass])</p></td>
+<td><p>Calculate the center of mass for each molecule in a batch.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.utils.zero_center_of_mass" title="equitorch.utils.zero_center_of_mass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zero_center_of_mass</span></code></a>(pos, batch, center_of_mass)</p></td>
+<td><p>Shift the positions of atoms in each molecule so that their center of mass is at the origin.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.utils.align_to_z_mat" title="equitorch.utils.align_to_z_mat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">align_to_z_mat</span></code></a>(r[, need_normalize])</p></td>
+<td><p>Calculate the rotation matrix R that aligns the vector r with the z-axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.utils.edge_align_to_z_mat" title="equitorch.utils.edge_align_to_z_mat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edge_align_to_z_mat</span></code></a>(pos, edge_index)</p></td>
+<td><p>Calculate the rotation matrix R that aligns the edge vector with the z-axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.utils.edge_align_to_z_angles" title="equitorch.utils.edge_align_to_z_angles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edge_align_to_z_angles</span></code></a>(pos, edge_index)</p></td>
+<td><p>Calculate the angles (phi, theta) that describe the rotation to align an edge vector with the z-axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.utils.align_to_z_wigner" title="equitorch.utils.align_to_z_wigner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">align_to_z_wigner</span></code></a>(r, L[, need_normalize])</p></td>
+<td><p>Returns the Wigner-D matrix corresponding to the return of align_to_z_mat.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.utils.edge_align_to_z_wigner" title="equitorch.utils.edge_align_to_z_wigner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edge_align_to_z_wigner</span></code></a>(pos, edge_index, L)</p></td>
+<td><p>Calculate the Wigner-D matrix corresponding to the rotation that aligns an edge vector with the z-axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.utils.rot_on" title="equitorch.utils.rot_on"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rot_on</span></code></a>(mat, x)</p></td>
+<td><p>Performs rotation of matrix 'mat' on tensor 'x'.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id2" title="equitorch.utils.check_degree_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_degree_range</span></code></a>(→ Tuple[int, int])</p></td>
+<td><p>Check and normalize the degree range.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#id4" title="equitorch.utils.degrees_in_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">degrees_in_range</span></code></a>(L)</p></td>
+<td><p>Returns <code class="xref py py-obj docutils literal notranslate"><span class="pre">range(L[0],</span> <span class="pre">L[1]+1)</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.utils.order_batch" title="equitorch.utils.order_batch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">order_batch</span></code></a>(L[, device])</p></td>
+<td><p>Generate a tensor of degree indices for each order.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.utils.extract_batch_ptr" title="equitorch.utils.extract_batch_ptr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_batch_ptr</span></code></a>(keys)</p></td>
+<td><p>key: sorted, int</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.utils.order_ptr" title="equitorch.utils.order_ptr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">order_ptr</span></code></a>(L[, dim, device])</p></td>
+<td><p>Generate a tensor of pointers to the start of each degree's orders, including the next of the final elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.utils.order_in_degree_range" title="equitorch.utils.order_in_degree_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">order_in_degree_range</span></code></a>(L[, zero_based, device])</p></td>
+<td><p>Generate a tensor that specifying the order <span class="math notranslate nohighlight">\(m\)</span> in a feature of</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.utils.orders_in_degree" title="equitorch.utils.orders_in_degree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">orders_in_degree</span></code></a>(l)</p></td>
+<td><p>returns <code class="xref py py-obj docutils literal notranslate"><span class="pre">range(-l,</span> <span class="pre">l+1)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.utils.list_degrees" title="equitorch.utils.list_degrees"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_degrees</span></code></a>(L, L1[, L2, cond])</p></td>
+<td><p>Generate a list of valid degree triplets (l, l1, l2). (The triplet satisfies triangular inequality)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.utils.num_degree_triplets" title="equitorch.utils.num_degree_triplets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_degree_triplets</span></code></a>(L, L1[, L2, cond])</p></td>
+<td><p>Generate the number of valid degree triplets (l, l1, l2). (The triplet satisfies triangular inequality)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.utils.num_orders_in" title="equitorch.utils.num_orders_in"><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_orders_in</span></code></a>(L)</p></td>
+<td><p>Calculate the number of spherical orders in a degree range.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.utils.num_orders_between" title="equitorch.utils.num_orders_between"><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_orders_between</span></code></a>(lmin, lmax)</p></td>
+<td><p>Calculate the number of orders between two degrees.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.utils.num_order_of_degree" title="equitorch.utils.num_order_of_degree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_order_of_degree</span></code></a>(l)</p></td>
+<td><p>Calculate the number of orders for a given degree.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.utils.degree_index_from" title="equitorch.utils.degree_index_from"><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree_index_from</span></code></a>(l, l_min)</p></td>
+<td><p>Calculate the start and end indices for a given degree.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#id3" title="equitorch.utils.degree_order_to_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree_order_to_index</span></code></a>(l, m[, l_min])</p></td>
+<td><p>Convert degree and order to a linear index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.utils.expand_degree_to_order" title="equitorch.utils.expand_degree_to_order"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_degree_to_order</span></code></a>(src, L, dim)</p></td>
+<td><p>Expand a tensor from degree to order representation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.utils.reduce_order_to_degree" title="equitorch.utils.reduce_order_to_degree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reduce_order_to_degree</span></code></a>(src, L, dim)</p></td>
+<td><p>Reduce a tensor from order to degree representation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id2" title="equitorch.utils.check_degree_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_degree_range</span></code></a>(→ Tuple[int, int])</p></td>
+<td><p>Check and normalize the degree range.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#id3" title="equitorch.utils.degree_order_to_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree_order_to_index</span></code></a>(l, m[, l_min])</p></td>
+<td><p>Convert degree and order to a linear index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id4" title="equitorch.utils.degrees_in_range"><code class="xref py py-obj docutils literal notranslate"><span class="pre">degrees_in_range</span></code></a>(L)</p></td>
+<td><p>Returns <code class="xref py py-obj docutils literal notranslate"><span class="pre">range(L[0],</span> <span class="pre">L[1]+1)</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.utils.dense_CG" title="equitorch.utils.dense_CG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dense_CG</span></code></a>(L, L1, L2[, condition, dtype])</p></td>
+<td><p>Generate dense Clebsch-Gordan (CG) matrices for given angular momentum ranges.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id5" title="equitorch.utils.blocked_CG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">blocked_CG</span></code></a>(L, L1, L2[, condition, dtype])</p></td>
+<td><p>Generate blocked Clebsch-Gordan (CG) coefficients for given angular momentum ranges.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.utils.coo_CG" title="equitorch.utils.coo_CG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">coo_CG</span></code></a>(L, L1, L2[, condition, dtype, device])</p></td>
+<td><p>Generate sparse Clebsch-Gordan (CG) coefficients in coordinate format.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id5" title="equitorch.utils.blocked_CG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">blocked_CG</span></code></a>(L, L1, L2[, condition, dtype])</p></td>
+<td><p>Generate blocked Clebsch-Gordan (CG) coefficients for given angular momentum ranges.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.utils.so3_weights_to_so2" title="equitorch.utils.so3_weights_to_so2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">so3_weights_to_so2</span></code></a>(weight_so3, L_in, L_out[, channel_wise])</p></td>
+<td><p>Transform the weights used for <code class="xref py py-obj docutils literal notranslate"><span class="pre">SO3Linear</span></code> to the weights for <code class="xref py py-obj docutils literal notranslate"><span class="pre">SO2Linear</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.utils.so2_weights_to_so3" title="equitorch.utils.so2_weights_to_so3"><code class="xref py py-obj docutils literal notranslate"><span class="pre">so2_weights_to_so3</span></code></a>(weight_so2, L_in, L_out[, channel_wise])</p></td>
+<td><p>Transform the weights used for <code class="xref py py-obj docutils literal notranslate"><span class="pre">SO2Linear</span></code> to the weights for <code class="xref py py-obj docutils literal notranslate"><span class="pre">SO3Linear</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="package-contents">
+<h2>Package Contents<a class="headerlink" href="#package-contents" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.check_degree_range">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">check_degree_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#equitorch.utils.check_degree_range" title="Link to this definition"></a></dt>
+<dd><p>Check and normalize the degree range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>L</strong> (<em>DegreeRange</em>) – The input degree range. Can be an int or a tuple of two ints.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple representing the normalized degree range (l_min, l_max).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[int, int]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">(1, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">L</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">(0, 5)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.degrees_in_range">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">degrees_in_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.degrees_in_range" title="Link to this definition"></a></dt>
+<dd><p>Returns <code class="xref py py-obj docutils literal notranslate"><span class="pre">range(L[0],</span> <span class="pre">L[1]+1)</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.get_center_of_mass">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">get_center_of_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ptr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atom_mass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.get_center_of_mass" title="Link to this definition"></a></dt>
+<dd><p>Calculate the center of mass for each molecule in a batch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>Tensor</em>) – Tensor of shape (N, 3) containing the positions of all atoms.</p></li>
+<li><p><strong>ptr</strong> (<em>Tensor</em>) – Tensor containing the cumulative sum of atoms for each molecule in the batch.</p></li>
+<li><p><strong>atom_mass</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – Tensor of shape (N,) containing the mass of each atom.
+If None, all atoms are assumed to have equal mass.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tensor of shape (B, 3) containing the center of mass for each molecule in the batch,
+where B is the number of molecules.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.zero_center_of_mass">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">zero_center_of_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_of_mass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.zero_center_of_mass" title="Link to this definition"></a></dt>
+<dd><p>Shift the positions of atoms in each molecule so that their center of mass is at the origin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>Tensor</em>) – Tensor of shape (N, 3) containing the positions of all atoms.</p></li>
+<li><p><strong>batch</strong> (<em>Tensor</em>) – Tensor of shape (N,) indicating which molecule each atom belongs to.</p></li>
+<li><p><strong>center_of_mass</strong> (<em>Tensor</em>) – Tensor of shape (B, 3) containing the center of mass for each molecule,
+where B is the number of molecules.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tensor of shape (N, 3) containing the shifted positions of all atoms.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function subtracts the center of mass of each molecule from the positions of its atoms,
+effectively centering each molecule at the origin.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.align_to_z_mat">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">align_to_z_mat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">need_normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.align_to_z_mat" title="Link to this definition"></a></dt>
+<dd><p>Calculate the rotation matrix R that aligns the vector r with the z-axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>Tensor</em>) – Input vector to be aligned.</p></li>
+<li><p><strong>need_normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to normalize the input vector. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Rotation matrix R such that R &#64; r = z.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.edge_align_to_z_mat">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">edge_align_to_z_mat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.edge_align_to_z_mat" title="Link to this definition"></a></dt>
+<dd><p>Calculate the rotation matrix R that aligns the edge vector with the z-axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>Tensor</em>) – Tensor of node positions.</p></li>
+<li><p><strong>edge_index</strong> (<em>Tensor</em>) – Tensor of edge indices.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Rotation matrix R such that R &#64; r = z, where r is the edge vector.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.edge_align_to_z_angles">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">edge_align_to_z_angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.edge_align_to_z_angles" title="Link to this definition"></a></dt>
+<dd><p>Calculate the angles (phi, theta) that describe the rotation to align an edge vector with the z-axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>Tensor</em>) – Tensor of node positions.</p></li>
+<li><p><strong>edge_index</strong> (<em>Tensor</em>) – Tensor of edge indices.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple (phi, theta) where:
+- r can be generated by rotating z on y by theta, and then rotating on z by phi.
+- r can be aligned to z by rotating on z by -phi, and then on y by -theta.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[Tensor, Tensor]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.align_to_z_wigner">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">align_to_z_wigner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">need_normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.align_to_z_wigner" title="Link to this definition"></a></dt>
+<dd><p>Returns the Wigner-D matrix corresponding to the return of align_to_z_mat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>Tensor</em>) – Input vector to be aligned.</p></li>
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – Range of degrees for the Wigner-D matrix.</p></li>
+<li><p><strong>need_normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to normalize the input vector. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Wigner-D matrix corresponding to the rotation returned by align_to_z_mat.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.edge_align_to_z_wigner">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">edge_align_to_z_wigner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.edge_align_to_z_wigner" title="Link to this definition"></a></dt>
+<dd><p>Calculate the Wigner-D matrix corresponding to the rotation that aligns an edge vector with the z-axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>Tensor</em>) – Tensor of node positions.</p></li>
+<li><p><strong>edge_index</strong> (<em>Tensor</em>) – Tensor of edge indices.</p></li>
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – Range of degrees for the Wigner-D matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Wigner-D matrix corresponding to the rotation that aligns the edge vector with the z-axis.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.rot_on">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">rot_on</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.rot_on" title="Link to this definition"></a></dt>
+<dd><p>Performs rotation of matrix ‘mat’ on tensor ‘x’.</p>
+<p>This function applies the rotation defined by ‘mat’ to the tensor ‘x’. The behavior
+depends on the dimensions of both ‘mat’ and ‘x’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mat</strong> (<em>Tensor</em>) – The rotation matrix or matrices. Can be 2D, 3D, or 4D.
+- If 2D: A single rotation matrix applied to all samples in x.
+- If 3D: Batched rotation matrices applied sample-wise to x.
+- If 4D: Batched rotation matrices applied both sample-wise and channel-wise to x.</p></li>
+<li><p><strong>x</strong> (<em>Tensor</em>) – The tensor to be rotated. Can be 2D or 3D.
+- If 2D: Interpreted as a batch of vectors.
+- If 3D: Interpreted as a batch of matrices or multi-channel vectors.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The rotated tensor. The shape will match the input ‘x’, except when ‘mat’
+is 4D, in which case the channel dimension may change.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If x is 2D, it’s temporarily expanded to 3D for computation and then squeezed back.</p></li>
+<li><p>The function uses matrix multiplication for 2D and 3D ‘mat’, and einsum for 4D ‘mat’.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">check_degree_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Check and normalize the degree range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>L</strong> (<em>DegreeRange</em>) – The input degree range. Can be an int or a tuple of two ints.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple representing the normalized degree range (l_min, l_max).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[int, int]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">(1, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">L</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">(0, 5)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">degrees_in_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Returns <code class="xref py py-obj docutils literal notranslate"><span class="pre">range(L[0],</span> <span class="pre">L[1]+1)</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.order_batch">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">order_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.order_batch" title="Link to this definition"></a></dt>
+<dd><p>Generate a tensor of degree indices for each order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – The degree range.</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – The device to place the resulting tensor on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tensor where each element is the degree index for the corresponding order.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">order_batch</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">tensor([0, 1, 1, 1, 2, 2, 2, 2, 2])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.extract_batch_ptr">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">extract_batch_ptr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.extract_batch_ptr" title="Link to this definition"></a></dt>
+<dd><p>key: sorted, int
+returns: batch, ptr, key_value</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.order_ptr">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">order_ptr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.order_ptr" title="Link to this definition"></a></dt>
+<dd><p>Generate a tensor of pointers to the start of each degree’s orders, including the next of the final elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – The degree range.</p></li>
+<li><p><strong>dim</strong> (<em>int</em><em>, </em><em>optional</em>) – The dimension along which to expand the result. Default is 0.</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – The device to place the resulting tensor on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tensor of pointers to the start of each degree’s orders.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">order_ptr</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">tensor([0, 1, 4, 9])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">order_ptr</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">tensor([0, 3, 8, 15])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.order_in_degree_range">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">order_in_degree_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zero_based</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.order_in_degree_range" title="Link to this definition"></a></dt>
+<dd><p>Generate a tensor that specifying the order <span class="math notranslate nohighlight">\(m\)</span> in a feature of
+degree range <span class="math notranslate nohighlight">\(L\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – The degree range.</p></li>
+<li><p><strong>zero_based</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the <span class="math notranslate nohighlight">\(m\)</span> is in <span class="math notranslate nohighlight">\(0,\dots,2l_  ext{max}+1\)</span> or
+<span class="math notranslate nohighlight">\(-l_      ext{max},\dots,l_       ext{max}\)</span>. Default is True.</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – The device to place the resulting tensor on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tensor denoting the degrees.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">order_in_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">tensor([1, 2, 3, 0, 1, 2, 3, 4])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">order_in_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">tensor([-1, 0, 1, -2, -1, 0, 1, 2])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.orders_in_degree">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">orders_in_degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.orders_in_degree" title="Link to this definition"></a></dt>
+<dd><p>returns <code class="xref py py-obj docutils literal notranslate"><span class="pre">range(-l,</span> <span class="pre">l+1)</span></code></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.list_degrees">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">list_degrees</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cond</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.list_degrees" title="Link to this definition"></a></dt>
+<dd><p>Generate a list of valid degree triplets (l, l1, l2). (The triplet satisfies triangular inequality)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – The range for the total angular momentum l.</p></li>
+<li><p><strong>L1</strong> (<em>DegreeRange</em>) – The range for the first angular momentum l1.</p></li>
+<li><p><strong>L2</strong> (<em>DegreeRange</em>) – The range for the second angular momentum l2. default: None, represents the range of all possible l2’s</p></li>
+<li><p><strong>cond</strong> (<em>Callable</em><em>[</em><em>[</em><em>int</em><em>, </em><em>int</em><em>, </em><em>int</em><em>]</em><em>, </em><em>bool</em><em>]</em><em>, </em><em>optional</em>) – An optional condition function to further filter the triplets.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A sorted list of valid (l, l1, l2) triplets.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Tuple[int, int, int]]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">list_degrees</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)))</span>
+<span class="go">[(0, 2, 2), (1, 1, 2), (1, 2, 2), (1, 2, 3)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.num_degree_triplets">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">num_degree_triplets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cond</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.num_degree_triplets" title="Link to this definition"></a></dt>
+<dd><p>Generate the number of valid degree triplets (l, l1, l2). (The triplet satisfies triangular inequality)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – The range for the total angular momentum l.</p></li>
+<li><p><strong>L1</strong> (<em>DegreeRange</em>) – The range for the first angular momentum l1.</p></li>
+<li><p><strong>L2</strong> (<em>DegreeRange</em>) – The range for the second angular momentum l2.</p></li>
+<li><p><strong>cond</strong> (<em>Callable</em><em>[</em><em>[</em><em>int</em><em>, </em><em>int</em><em>, </em><em>int</em><em>]</em><em>, </em><em>bool</em><em>]</em><em>, </em><em>optional</em>) – An optional condition function to further filter the triplets.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of valid degree triplets.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">num_degree_triplets</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)))</span>
+<span class="go">4</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.num_orders_in">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">num_orders_in</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.num_orders_in" title="Link to this definition"></a></dt>
+<dd><p>Calculate the number of spherical orders in a degree range.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.num_orders_between">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">num_orders_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lmin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.num_orders_between" title="Link to this definition"></a></dt>
+<dd><p>Calculate the number of orders between two degrees.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lmin</strong> (<em>int</em>) – The minimum degree.</p></li>
+<li><p><strong>lmax</strong> (<em>int</em>) – The maximum degree.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The total number of orders between lmin and lmax (inclusive).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.num_order_of_degree">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">num_order_of_degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.num_order_of_degree" title="Link to this definition"></a></dt>
+<dd><p>Calculate the number of orders for a given degree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>l</strong> (<em>int</em>) – The degree.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of orders for the given degree (2l + 1).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.degree_index_from">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">degree_index_from</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.degree_index_from" title="Link to this definition"></a></dt>
+<dd><p>Calculate the start and end indices for a given degree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>l</strong> (<em>int</em>) – The degree.</p></li>
+<li><p><strong>l_min</strong> (<em>int</em>) – The minimum degree in the range.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the start and end indices for the given degree.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[int, int]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">l</span><span class="p">,</span> <span class="n">l_min</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">degree_index_from</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">l_min</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">(4, 8)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.degree_order_to_index">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">degree_order_to_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.degree_order_to_index" title="Link to this definition"></a></dt>
+<dd><p>Convert degree and order to a linear index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>l</strong> (<em>int</em>) – The degree.</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – The order.</p></li>
+<li><p><strong>l_min</strong> (<em>int</em><em>, </em><em>optional</em>) – The minimum degree in the range. Default is 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The linear index corresponding to the given degree and order.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">l_min</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">degree_order_to_index</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">l_min</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">7</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.expand_degree_to_order">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">expand_degree_to_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.expand_degree_to_order" title="Link to this definition"></a></dt>
+<dd><p>Expand a tensor from degree to order representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>torch.Tensor</em>) – The input tensor in degree representation.</p></li>
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – The degree range.</p></li>
+<li><p><strong>dim</strong> (<em>int</em>) – The dimension along which to expand the tensor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The expanded tensor in order representation.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.reduce_order_to_degree">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">reduce_order_to_degree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.utils.reduce_order_to_degree" title="Link to this definition"></a></dt>
+<dd><p>Reduce a tensor from order to degree representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>torch.Tensor</em>) – The input tensor in order representation.</p></li>
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – The degree range.</p></li>
+<li><p><strong>dim</strong> (<em>int</em>) – The dimension along which to reduce the tensor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The reduced tensor in degree representation.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">check_degree_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd><p>Check and normalize the degree range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>L</strong> (<em>DegreeRange</em>) – The input degree range. Can be an int or a tuple of two ints.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple representing the normalized degree range (l_min, l_max).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[int, int]</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">L</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">(1, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">L</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">(0, 5)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">degree_order_to_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd><p>Convert degree and order to a linear index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>l</strong> (<em>int</em>) – The degree.</p></li>
+<li><p><strong>m</strong> (<em>int</em>) – The order.</p></li>
+<li><p><strong>l_min</strong> (<em>int</em><em>, </em><em>optional</em>) – The minimum degree in the range. Default is 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The linear index corresponding to the given degree and order.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">l_min</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">degree_order_to_index</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">l_min</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<span class="go">7</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">degrees_in_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd><p>Returns <code class="xref py py-obj docutils literal notranslate"><span class="pre">range(L[0],</span> <span class="pre">L[1]+1)</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.dense_CG">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">dense_CG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/equitorch/utils/_clebsch_gordan.html#dense_CG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#equitorch.utils.dense_CG" title="Link to this definition"></a></dt>
+<dd><p>Generate dense Clebsch-Gordan (CG) matrices for given angular momentum ranges.</p>
+<p>This function computes the Clebsch-Gordan coefficients for coupling two angular momenta
+<span class="math notranslate nohighlight">\(l_1\)</span> and <span class="math notranslate nohighlight">\(l_2\)</span> to a total angular momentum <span class="math notranslate nohighlight">\(l\)</span>. The coefficients are
+organized into a dense matrix format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – Range of total angular momentum <span class="math notranslate nohighlight">\(l\)</span>.</p></li>
+<li><p><strong>L1</strong> (<em>DegreeRange</em>) – Range of first angular momentum <span class="math notranslate nohighlight">\(l_1\)</span>.</p></li>
+<li><p><strong>L2</strong> (<em>DegreeRange</em>) – Range of second angular momentum <span class="math notranslate nohighlight">\(l_2\)</span>.</p></li>
+<li><p><strong>condition</strong> (<em>callable</em><em>, </em><em>optional</em>) – A function that takes <span class="math notranslate nohighlight">\((l, l_1, l_2)\)</span> as arguments and returns a boolean or float.
+If provided, it is used to filter the CG coefficients.</p></li>
+<li><p><strong>dtype</strong> (<em>torch.dtype</em><em>, </em><em>optional</em>) – The desired data type of the output tensor. Default is torch.float.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dense tensor of Clebsch-Gordan coefficients. The shape of the tensor is
+<span class="math notranslate nohighlight">\((l_{max}^2 - l_{min}^2,l_{1,max}^2 - l_{1,min}^2, l_{2,max}^2 - l_{2,min}^2)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.blocked_CG">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">blocked_CG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/equitorch/utils/_clebsch_gordan.html#blocked_CG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#equitorch.utils.blocked_CG" title="Link to this definition"></a></dt>
+<dd><p>Generate blocked Clebsch-Gordan (CG) coefficients for given angular momentum ranges.</p>
+<p>This function computes the Clebsch-Gordan coefficients for coupling two angular momenta
+<span class="math notranslate nohighlight">\(l_1\)</span> and <span class="math notranslate nohighlight">\(l_2\)</span> to a total angular momentum <span class="math notranslate nohighlight">\(l\)</span>. The coefficients are
+organized into a dictionary of tensors, where each tensor corresponds to a specific
+<span class="math notranslate nohighlight">\((l, l_1, l_2)\)</span> combination.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – Range of total angular momentum <span class="math notranslate nohighlight">\(l\)</span>.</p></li>
+<li><p><strong>L1</strong> (<em>DegreeRange</em>) – Range of first angular momentum <span class="math notranslate nohighlight">\(l_1\)</span>.</p></li>
+<li><p><strong>L2</strong> (<em>DegreeRange</em>) – Range of second angular momentum <span class="math notranslate nohighlight">\(l_2\)</span>.</p></li>
+<li><p><strong>condition</strong> (<em>callable</em><em>, </em><em>optional</em>) – A function that takes <span class="math notranslate nohighlight">\((l, l_1, l_2)\)</span> as arguments and returns a boolean.
+If provided, it is used to filter the CG coefficients.</p></li>
+<li><p><strong>dtype</strong> (<em>torch.dtype</em><em>, </em><em>optional</em>) – The desired data type of the output tensors. Default is torch.float.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary where each key is a tuple <span class="math notranslate nohighlight">\((l, l_1, l_2)\)</span>, and each value
+is a tensor of Clebsch-Gordan coefficients for that combination.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[Tuple[int, int, int], torch.Tensor]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.coo_CG">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">coo_CG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/equitorch/utils/_clebsch_gordan.html#coo_CG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#equitorch.utils.coo_CG" title="Link to this definition"></a></dt>
+<dd><p>Generate sparse Clebsch-Gordan (CG) coefficients in coordinate format.</p>
+<p>This function computes the non-zero Clebsch-Gordan coefficients for coupling two angular momenta
+<span class="math notranslate nohighlight">\(l_1\)</span> and <span class="math notranslate nohighlight">\(l_2\)</span> to a total angular momentum <span class="math notranslate nohighlight">\(l\)</span>, and returns them in a sparse format.
+The results are sorted in the order of (l, M, l1, l2, M1, M2).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – Range of total angular momentum <span class="math notranslate nohighlight">\(l\)</span>.</p></li>
+<li><p><strong>L1</strong> (<em>DegreeRange</em>) – Range of first angular momentum <span class="math notranslate nohighlight">\(l_1\)</span>.</p></li>
+<li><p><strong>L2</strong> (<em>DegreeRange</em>) – Range of second angular momentum <span class="math notranslate nohighlight">\(l_2\)</span>.</p></li>
+<li><p><strong>condition</strong> (<em>callable</em><em>, </em><em>optional</em>) – A function that takes <span class="math notranslate nohighlight">\((l, l_1, l_2)\)</span> as arguments and returns a boolean.
+If provided, it is used to filter the CG coefficients.</p></li>
+<li><p><strong>dtype</strong> (<em>torch.dtype</em><em>, </em><em>optional</em>) – The desired data type of the output tensors. Default is torch.float.</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – The desired device of the output tensors. Default is None (uses current device).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple containing:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Cs<span class="classifier">Tensor of shape (N,)</span></dt><dd><p>Non-zero CG coefficient values.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Ms<span class="classifier">Tensor of shape (3, N)</span></dt><dd><p>Indices (M, M1, M2) of non-zero CG values.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>ls_cg<span class="classifier">Tensor of shape (3, N)</span></dt><dd><p>Corresponding degrees (l, l1, l2) for each non-zero CG value.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>l_ind<span class="classifier">Tensor of shape (N,)</span></dt><dd><p>Indices of (l, l1, l2) combinations.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Where N is the number of non-zero CG coefficients.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[Tensor, Tensor, Tensor, Tensor]</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The output is strictly sorted in the order of (l, M, l1, l2, M1, M2) lexigraphically.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">blocked_CG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">torch.float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/equitorch/utils/_clebsch_gordan.html#blocked_CG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd><p>Generate blocked Clebsch-Gordan (CG) coefficients for given angular momentum ranges.</p>
+<p>This function computes the Clebsch-Gordan coefficients for coupling two angular momenta
+<span class="math notranslate nohighlight">\(l_1\)</span> and <span class="math notranslate nohighlight">\(l_2\)</span> to a total angular momentum <span class="math notranslate nohighlight">\(l\)</span>. The coefficients are
+organized into a dictionary of tensors, where each tensor corresponds to a specific
+<span class="math notranslate nohighlight">\((l, l_1, l_2)\)</span> combination.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – Range of total angular momentum <span class="math notranslate nohighlight">\(l\)</span>.</p></li>
+<li><p><strong>L1</strong> (<em>DegreeRange</em>) – Range of first angular momentum <span class="math notranslate nohighlight">\(l_1\)</span>.</p></li>
+<li><p><strong>L2</strong> (<em>DegreeRange</em>) – Range of second angular momentum <span class="math notranslate nohighlight">\(l_2\)</span>.</p></li>
+<li><p><strong>condition</strong> (<em>callable</em><em>, </em><em>optional</em>) – A function that takes <span class="math notranslate nohighlight">\((l, l_1, l_2)\)</span> as arguments and returns a boolean.
+If provided, it is used to filter the CG coefficients.</p></li>
+<li><p><strong>dtype</strong> (<em>torch.dtype</em><em>, </em><em>optional</em>) – The desired data type of the output tensors. Default is torch.float.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary where each key is a tuple <span class="math notranslate nohighlight">\((l, l_1, l_2)\)</span>, and each value
+is a tensor of Clebsch-Gordan coefficients for that combination.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[Tuple[int, int, int], torch.Tensor]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.so3_weights_to_so2">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">so3_weights_to_so2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight_so3</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_wise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/equitorch/utils/_weights.html#so3_weights_to_so2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#equitorch.utils.so3_weights_to_so2" title="Link to this definition"></a></dt>
+<dd><p>Transform the weights used for <code class="xref py py-obj docutils literal notranslate"><span class="pre">SO3Linear</span></code> to the weights for <code class="xref py py-obj docutils literal notranslate"><span class="pre">SO2Linear</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>weight_so3</strong> (<em>torch.Tensor</em>) – The weights used for <cite>SO3Linear</cite>. Shape depends on <cite>channel_wise</cite>:
+- If not channel_wise: <span class="math notranslate nohighlight">\((N,       ext{num_degree_in},     ext{in_channels},       ext{out_channels})\)</span> or <span class="math notranslate nohighlight">\(( ext{num_degree_in},     ext{in_channels},       ext{out_channels})\)</span>
+- If channel_wise: <span class="math notranslate nohighlight">\((N,   ext{num_degree_in},     ext{channels})\)</span> or <span class="math notranslate nohighlight">\((     ext{num_degree_in},     ext{channels})\)</span>
+It should be sorted by <span class="math notranslate nohighlight">\((l_       ext{out}, l_    ext{in}, l_     ext{edge})\)</span> lexicographically in the <cite>num_degree_in</cite> dimension.
+<span class="math notranslate nohighlight">\(l_       ext{edge}\)</span> should take all values from <span class="math notranslate nohighlight">\(|l_       ext{out}-l_     ext{in}|\)</span> to <span class="math notranslate nohighlight">\(l_  ext{out}+l_     ext{in}\)</span> for a given pair of <span class="math notranslate nohighlight">\(l_  ext{out}\)</span> and <span class="math notranslate nohighlight">\(l_ ext{in}\)</span>.</p></li>
+<li><p><strong>L_in</strong> (<em>DegreeRange</em>) – The degree range of input features.</p></li>
+<li><p><strong>L_out</strong> (<em>DegreeRange</em>) – The degree range of output features.</p></li>
+<li><p><strong>channel_wise</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the weights are channel-wise. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>weight_so2</strong> – Transformed weights for <cite>SO2Linear</cite>, with the same shape as <cite>weight_so3</cite>,
+sorted by <span class="math notranslate nohighlight">\((l_    ext{out}, l_    ext{in}, m)\)</span> lexicographically in the <cite>num_degree_in</cite> dimension.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.utils.so2_weights_to_so3">
+<span class="sig-prename descclassname"><span class="pre">equitorch.utils.</span></span><span class="sig-name descname"><span class="pre">so2_weights_to_so3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight_so2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_wise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/equitorch/utils/_weights.html#so2_weights_to_so3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#equitorch.utils.so2_weights_to_so3" title="Link to this definition"></a></dt>
+<dd><p>Transform the weights used for <code class="xref py py-obj docutils literal notranslate"><span class="pre">SO2Linear</span></code> to the weights for <code class="xref py py-obj docutils literal notranslate"><span class="pre">SO3Linear</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>weight_so2</strong> (<em>torch.Tensor</em>) – The weights used for <cite>SO2Linear</cite>. Shape depends on <cite>channel_wise</cite>:
+- If not channel_wise: <span class="math notranslate nohighlight">\((N,       ext{num_degree_in},     ext{in_channels},       ext{out_channels})\)</span> or <span class="math notranslate nohighlight">\(( ext{num_degree_in},     ext{in_channels},       ext{out_channels})\)</span>
+- If channel_wise: <span class="math notranslate nohighlight">\((N,   ext{num_degree_in},     ext{channels})\)</span> or <span class="math notranslate nohighlight">\((     ext{num_degree_in},     ext{channels})\)</span>
+It should be sorted by <span class="math notranslate nohighlight">\((l_       ext{out}, l_    ext{in}, m)\)</span> lexicographically in the <cite>num_degree_in</cite> dimension.</p></li>
+<li><p><strong>L_in</strong> (<em>DegreeRange</em>) – The degree range of input features.</p></li>
+<li><p><strong>L_out</strong> (<em>DegreeRange</em>) – The degree range of output features.</p></li>
+<li><p><strong>channel_wise</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the weights are channel-wise. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>weight_so3</strong> – Transformed weights for <cite>SO3Linear</cite>, with the same shape as <cite>weight_so2</cite>,
+sorted by <span class="math notranslate nohighlight">\((l_    ext{out}, l_    ext{in}, l_     ext{edge})\)</span> lexicographically in the <cite>num_degree_in</cite> dimension.
+<span class="math notranslate nohighlight">\(l_       ext{edge}\)</span> will take all values from <span class="math notranslate nohighlight">\(|l_ ext{out}-l_     ext{in}|\)</span> to <span class="math notranslate nohighlight">\(l_  ext{out}+l_     ext{in}\)</span> for a given pair of <span class="math notranslate nohighlight">\(l_  ext{out}\)</span> and <span class="math notranslate nohighlight">\(l_ ext{in}\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../typing/index.html" class="btn btn-neutral float-left" title="equitorch.typing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Tong Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

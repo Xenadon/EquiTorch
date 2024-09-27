@@ -1,0 +1,288 @@
+equitorch.transforms
+====================
+
+.. py:module:: equitorch.transforms
+
+.. autoapi-nested-parse::
+
+   Some data transforms.
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   equitorch.transforms.DegreeRange
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   equitorch.transforms.RadiusGraph
+   equitorch.transforms.AddEdgeSphericalHarmonics
+   equitorch.transforms.AddEdgeAlignMatrix
+   equitorch.transforms.AddEdgeAlignWignerD
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   equitorch.transforms.check_degree_range
+   equitorch.transforms.align_to_z_mat
+   equitorch.transforms.align_to_z_wigner
+   equitorch.transforms.edge_align_to_z_mat
+   equitorch.transforms.spherical_harmonics
+
+
+Package Contents
+----------------
+
+.. py:function:: check_degree_range(L: equitorch.typing.DegreeRange) -> Tuple[int, int]
+
+   Check and normalize the degree range.
+
+   :param L: The input degree range. Can be an int or a tuple of two ints.
+   :type L: DegreeRange
+
+   :returns: A tuple representing the normalized degree range (l_min, l_max).
+   :rtype: Tuple[int, int]
+
+   .. rubric:: Example
+
+   >>> L = (1, 3)
+   >>> result = check_degree_range(L)
+   >>> print(result)
+   (1, 3)
+   >>> L = 5
+   >>> result = check_degree_range(L)
+   >>> print(result)
+   (0, 5)
+
+
+.. py:function:: align_to_z_mat(r: torch.Tensor, need_normalize: bool = True)
+
+   Calculate the rotation matrix R that aligns the vector r with the z-axis.
+
+   :param r: Input vector to be aligned.
+   :type r: Tensor
+   :param need_normalize: Whether to normalize the input vector. Default is True.
+   :type need_normalize: bool, optional
+
+   :returns: Rotation matrix R such that R @ r = z.
+   :rtype: Tensor
+
+
+.. py:function:: align_to_z_wigner(r: torch.Tensor, L: equitorch.typing.DegreeRange, need_normalize: bool = True)
+
+   Returns the Wigner-D matrix corresponding to the return of align_to_z_mat.
+
+   :param r: Input vector to be aligned.
+   :type r: Tensor
+   :param L: Range of degrees for the Wigner-D matrix.
+   :type L: DegreeRange
+   :param need_normalize: Whether to normalize the input vector. Default is True.
+   :type need_normalize: bool, optional
+
+   :returns: Wigner-D matrix corresponding to the rotation returned by align_to_z_mat.
+   :rtype: Tensor
+
+
+.. py:function:: edge_align_to_z_mat(pos: torch.Tensor, edge_index: torch.Tensor)
+
+   Calculate the rotation matrix R that aligns the edge vector with the z-axis.
+
+   :param pos: Tensor of node positions.
+   :type pos: Tensor
+   :param edge_index: Tensor of edge indices.
+   :type edge_index: Tensor
+
+   :returns: Rotation matrix R such that R @ r = z, where r is the edge vector.
+   :rtype: Tensor
+
+
+.. py:function:: spherical_harmonics(X: torch.Tensor, L: equitorch.typing.DegreeRange, need_normalize: bool = False, dim: int = -1)
+
+   Compute spherical harmonics for given Cartesian coordinates.
+
+   Gives the spherical harmonics of exactly the same shape
+   as in `here <https://en.wikipedia.org/wiki/Spherical_harmonics#/media/File:Sphericalfunctions.svg>`_
+   in the form
+
+   .. math::
+       Y_m^{(l)}(\theta,\phi) = (-1)^m\sqrt{2}\sqrt{\frac{2l+1}{4\pi}\frac{(l-|m|)!}{(l+|m|)!}}P_{l}^{|m|}(\cos\theta)B_m(\phi)
+
+   where where :math:`\theta` and :math:`\phi` are the polar and azimuth angles respectively,
+   :math:`P_l^{|m|}(z)` are the associated Legendre functions and
+
+   .. math::
+       B_{m}(\phi)=\begin{cases}
+       \sin(|m|\phi), & m < 0,\\
+       \frac{1}{\sqrt{2}}, & m = 0,\\
+       \cos(|m|\phi), & m > 0.
+       \end{cases}
+
+   The returned harmonics are ordered as :math:`m = -l, -l+1, ..., l-1, l` for each degree :math:`l`.
+
+   Here we listed the examples of first several spherical harmonics,
+   for :math:`\mathbf{r}=(x,y,z)` lying on the unit sphere :math:`S^2`:
+
+       .. math::
+           \begin{aligned}
+               \mathbf{Y}^{(0)}(\mathbf{r})&=\bigg[\sqrt{\frac{1}{4\pi}}\bigg]\\
+               \mathbf{Y}^{(1)}(\mathbf{r})&=\begin{bmatrix}\sqrt{\frac{3}{4\pi}}y\\\sqrt{\frac{3}{4\pi}}z\\\sqrt{\frac{3}{4\pi}}x\end{bmatrix}\\
+               \mathbf{Y}^{(2)}(\mathbf{r})&=\begin{bmatrix}\sqrt{\frac{15}{4\pi}}xy\\ \sqrt{\frac{15}{4\pi}}yz\\ \sqrt{\frac{5}{16\pi}}(2z^2-x^2-y^2)\\ -\sqrt{\frac{15}{4\pi}}xz\\ \sqrt{\frac{15}{16\pi}}(x^2-y^2)\end{bmatrix}
+           \end{aligned}
+
+
+
+   If there is a channel dimension in X, it will also be included in the returned spherical harmonics.
+
+   :param X: The coordinate tensor.
+   :type X: Tensor
+   :param L: The degree range of spherical harmonics that we need.
+             The maximum degree in L should not execeed 17.
+   :type L: DegreeRange
+   :param need_normalize: Whether the input needs to be normalized. Default is False.
+   :type need_normalize: bool, optional
+   :param dim: The 'xyz' dimension in X. Default is -1.
+   :type dim: int, optional
+
+   :returns: Tensor of spherical harmonics.
+   :rtype: Tensor
+
+   .. rubric:: Notes
+
+   The shape of the output tensor depends on the input shape and the degree range L.
+
+
+.. py:data:: DegreeRange
+
+   Degree Range
+
+   Denoting the range of spherical harmonics degrees.
+   It can be a tuple :math:`(l_{\text{min}}, l_{\text{max}})`
+   or a single int :math:`l_{\text{max}}`.
+   In Equitorch, a :obj:`DegreeRange` object is usually denoted by :math:`L`.
+
+.. py:class:: RadiusGraph(r: float, loop: bool = False, max_num_neighbors: int = 32, flow: str = 'source_to_target', pos_attr: str = 'pos', edge_index_attr: str = 'edge_index', edge_vector_attr: str = 'edge_vec', num_workers: int = 1)
+
+   Bases: :py:obj:`torch_geometric.transforms.BaseTransform`
+
+
+   Creates edges based on node positions :obj:`pos_attr` to all points
+   within a given cutoff distance (functional name: :obj:`radius_graph_et`).
+
+   :param r: The cutoff distance.
+   :type r: float
+   :param loop: If True, the graph will contain self-loops. Default is False.
+   :type loop: bool, optional
+   :param max_num_neighbors: The maximum number of neighbors to return for each element.
+                             This flag is only needed for CUDA tensors. Default is 32.
+   :type max_num_neighbors: int, optional
+   :param flow: The flow direction when using in combination with message passing
+                ("source_to_target" or "target_to_source"). Default is "source_to_target".
+   :type flow: str, optional
+   :param pos_attr: The attribute name for positions in the data. Default is "pos".
+   :type pos_attr: str, optional
+   :param edge_index_attr: The attribute name for creating edge index in the data. Default is "edge_index".
+   :type edge_index_attr: str, optional
+   :param edge_vector_attr: The attribute name for creating edge vectors in the data. Default is "edge_vec".
+   :type edge_vector_attr: str, optional
+   :param num_workers: Number of workers to use for computation. Has no effect in case batch is
+                       not None, or the input lies on the GPU. Default is 1.
+   :type num_workers: int, optional
+
+   .. rubric:: Examples
+
+   >>> N = 50
+   >>> pos = torch.randn(N,3)
+   >>> data = Data(pos=pos)
+   >>> print(data)
+   Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])
+   >>> data = RadiusGraph(0.5)(data)
+   >>> print(data)
+   Data(pos=[50, 3])
+
+
+.. py:class:: AddEdgeSphericalHarmonics(L: equitorch.typing.DegreeRange, edge_vector_attr: str = 'edge_vec', edge_sh_attr: str = 'edge_sh')
+
+   Bases: :py:obj:`torch_geometric.transforms.BaseTransform`
+
+
+   Creates edge spherical harmonics embedding
+   based on edge direction vectors :obj:`edge_vector_attr`
+   (functional name: :obj:`add_edge_spherical_harmonics`).
+
+   :param L: The degree range of spherical harmonics.
+   :type L: DegreeRange
+   :param edge_vector_attr: The attribute name for edge direction vectors. Default is "edge_vec".
+   :type edge_vector_attr: str, optional
+   :param edge_sh_attr: The attribute name for creating edge spherical harmonics in the data. Default is "edge_sh".
+   :type edge_sh_attr: str, optional
+
+   .. rubric:: Examples
+
+   >>> print(data)
+   Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])
+   >>> data = AddEdgeSphericalHarmonics(L=3)(data)
+   >>> print(data)
+   Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3], edge_sh=[36, 16])
+
+
+.. py:class:: AddEdgeAlignMatrix(edge_vector_attr: str = 'edge_vec', align_mat_attr: str = 'R')
+
+   Bases: :py:obj:`torch_geometric.transforms.BaseTransform`
+
+
+   Creates rotation matrices that can align each edge to z
+   based on edge direction vectors :obj:`edge_vector_attr`
+   (functional name: :obj:`add_edge_align_matrix`).
+
+   :param edge_vector_attr: The attribute name for edge direction vectors. Default is "edge_vec".
+   :type edge_vector_attr: str, optional
+   :param align_mat_attr: The attribute name for creating edge alignment matrices in the data. Default is "R".
+   :type align_mat_attr: str, optional
+
+   .. rubric:: Examples
+
+   >>> print(data)
+   Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])
+   >>> data = AddEdgeAlignMatrix()(data)
+   >>> print(data)
+   Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3], R=[36, 3, 3])
+
+
+.. py:class:: AddEdgeAlignWignerD(L: equitorch.typing.DegreeRange, edge_vector_attr: str = 'edge_vec', align_wigner_attr: str = 'D')
+
+   Bases: :py:obj:`torch_geometric.transforms.BaseTransform`
+
+
+   Creates Wigner-D matrices for the roation matrices that
+   can align each edge to z based on edge direction vectors
+   :obj:`edge_vector_attr`. (functional name: :obj:`add_edge_align_matrix`).
+
+   :param L: The degree range for the Wigner D matrices.
+   :type L: DegreeRange
+   :param edge_vector_attr: The attribute name for edge direction vectors. Default is "edge_vec".
+   :type edge_vector_attr: str, optional
+   :param align_wigner_attr: The attribute name for creating edge alignment matrices in the data. Default is "D".
+   :type align_wigner_attr: str, optional
+
+   .. rubric:: Examples
+
+   >>> print(data)
+   Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])
+   >>> data = AddEdgeAlignWignerD(L=1)(data)
+   >>> print(data)
+   Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3], D=[36, 4, 4])
+   >>> data = AddEdgeAlignWignerD(L=3, align_wigner_attr='D_3')(data)
+   >>> print(data)
+   Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3], D=[36, 4, 4], D_3=[36, 16, 16])
+
+

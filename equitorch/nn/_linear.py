@@ -16,7 +16,7 @@ from ..utils._indices import (
     check_degree_range,
     extract_batch_ptr,
     extract_in_degree,
-    num_order_between,
+    num_orders_between,
     degrees_in_range
 )
 from ..utils._clebsch_gordan import coo_CG
@@ -431,7 +431,7 @@ class SO2Linear(nn.Module):
         self.L_in = check_degree_range(L_in)
         self.L_out = check_degree_range(L_out)
         self.in_channels = in_channels
-        self.out_ms = num_order_between(*self.L_out)
+        self.out_ms = num_orders_between(*self.L_out)
         self.out_channels = out_channels 
         self.channel_wise = channel_wise
 

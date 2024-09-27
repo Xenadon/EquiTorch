@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>equitorch.utils._clebsch_gordan &mdash; equitorch  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            equitorch
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">equitorch</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">equitorch.utils._clebsch_gordan</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for equitorch.utils._clebsch_gordan</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.utils</span> <span class="kn">import</span> <span class="n">scatter</span>
+<span class="kn">import</span> <span class="nn">e3nn</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+
+<span class="kn">from</span> <span class="nn">..utils._indices</span> <span class="kn">import</span> <span class="n">check_degree_range</span><span class="p">,</span> <span class="n">degree_order_to_index</span><span class="p">,</span> <span class="n">degrees_in_range</span>
+
+<span class="kn">from</span> <span class="nn">..typing</span> <span class="kn">import</span> <span class="n">DegreeRange</span>
+
+<div class="viewcode-block" id="dense_CG">
+<a class="viewcode-back" href="../../../autoapi/equitorch/utils/index.html#equitorch.utils.dense_CG">[docs]</a>
+<span class="k">def</span> <span class="nf">dense_CG</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">L1</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">L2</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">condition</span><span class="p">:</span><span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate dense Clebsch-Gordan (CG) matrices for given angular momentum ranges.</span>
+
+<span class="sd">    This function computes the Clebsch-Gordan coefficients for coupling two angular momenta</span>
+<span class="sd">    :math:`l_1` and :math:`l_2` to a total angular momentum :math:`l`. The coefficients are</span>
+<span class="sd">    organized into a dense matrix format.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : DegreeRange</span>
+<span class="sd">        Range of total angular momentum :math:`l`.</span>
+<span class="sd">    L1 : DegreeRange</span>
+<span class="sd">        Range of first angular momentum :math:`l_1`.</span>
+<span class="sd">    L2 : DegreeRange</span>
+<span class="sd">        Range of second angular momentum :math:`l_2`.</span>
+<span class="sd">    condition : callable, optional</span>
+<span class="sd">        A function that takes :math:`(l, l_1, l_2)` as arguments and returns a boolean or float.</span>
+<span class="sd">        If provided, it is used to filter the CG coefficients.</span>
+<span class="sd">    dtype : torch.dtype, optional</span>
+<span class="sd">        The desired data type of the output tensor. Default is torch.float.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    torch.Tensor</span>
+<span class="sd">        A dense tensor of Clebsch-Gordan coefficients. The shape of the tensor is</span>
+<span class="sd">        :math:`(l_{max}^2 - l_{min}^2,l_{1,max}^2 - l_{1,min}^2, l_{2,max}^2 - l_{2,min}^2)`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">l_min</span><span class="p">,</span> <span class="n">l_max</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">l1_min</span><span class="p">,</span> <span class="n">l1_max</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L1</span><span class="p">)</span>
+    <span class="n">l2_min</span><span class="p">,</span> <span class="n">l2_max</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">condition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">CGs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span>
+                <span class="p">[</span>
+                    <span class="n">e3nn</span><span class="o">.</span><span class="n">o3</span><span class="o">.</span><span class="n">_wigner</span><span class="o">.</span><span class="n">_so3_clebsch_gordan</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">l2</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> <span class="o">*</span> <span class="n">condition</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">l2</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">l2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l2_min</span><span class="p">,</span> <span class="n">l2_max</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">l1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l1_min</span><span class="p">,</span><span class="n">l1_max</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l_min</span><span class="p">,</span><span class="n">l_max</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">CGs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">[</span>
+                <span class="p">[</span>
+                    <span class="n">e3nn</span><span class="o">.</span><span class="n">o3</span><span class="o">.</span><span class="n">_wigner</span><span class="o">.</span><span class="n">_so3_clebsch_gordan</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">l2</span><span class="p">)</span>
+                        <span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span> 
+                <span class="k">for</span> <span class="n">l2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l2_min</span><span class="p">,</span> <span class="n">l2_max</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">l1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l1_min</span><span class="p">,</span><span class="n">l1_max</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l_min</span><span class="p">,</span><span class="n">l_max</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">CG</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+                <span class="n">CGs_LL1</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> 
+            <span class="k">for</span> <span class="n">CGs_LL1</span> <span class="ow">in</span> <span class="n">CGs_L</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">2</span>
+        <span class="p">)</span> <span class="k">for</span> <span class="n">CGs_L</span> <span class="ow">in</span> <span class="n">CGs</span><span class="p">],</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">CG</span></div>
+
+
+<div class="viewcode-block" id="blocked_CG">
+<a class="viewcode-back" href="../../../autoapi/equitorch/utils/index.html#equitorch.utils.blocked_CG">[docs]</a>
+<span class="k">def</span> <span class="nf">blocked_CG</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">L1</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">L2</span><span class="p">:</span><span class="n">DegreeRange</span><span class="p">,</span> <span class="n">condition</span><span class="p">:</span><span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate blocked Clebsch-Gordan (CG) coefficients for given angular momentum ranges.</span>
+
+<span class="sd">    This function computes the Clebsch-Gordan coefficients for coupling two angular momenta</span>
+<span class="sd">    :math:`l_1` and :math:`l_2` to a total angular momentum :math:`l`. The coefficients are</span>
+<span class="sd">    organized into a dictionary of tensors, where each tensor corresponds to a specific</span>
+<span class="sd">    :math:`(l, l_1, l_2)` combination.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : DegreeRange</span>
+<span class="sd">        Range of total angular momentum :math:`l`.</span>
+<span class="sd">    L1 : DegreeRange</span>
+<span class="sd">        Range of first angular momentum :math:`l_1`.</span>
+<span class="sd">    L2 : DegreeRange</span>
+<span class="sd">        Range of second angular momentum :math:`l_2`.</span>
+<span class="sd">    condition : callable, optional</span>
+<span class="sd">        A function that takes :math:`(l, l_1, l_2)` as arguments and returns a boolean.</span>
+<span class="sd">        If provided, it is used to filter the CG coefficients.</span>
+<span class="sd">    dtype : torch.dtype, optional</span>
+<span class="sd">        The desired data type of the output tensors. Default is torch.float.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Dict[Tuple[int, int, int], torch.Tensor]</span>
+<span class="sd">        A dictionary where each key is a tuple :math:`(l, l_1, l_2)`, and each value</span>
+<span class="sd">        is a tensor of Clebsch-Gordan coefficients for that combination.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">L1</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L1</span><span class="p">)</span>
+    <span class="n">L2</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">condition</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">):</span><span class="n">e3nn</span><span class="o">.</span><span class="n">o3</span><span class="o">.</span><span class="n">_wigner</span><span class="o">.</span><span class="n">_so3_clebsch_gordan</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">l2</span><span class="p">)</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">degrees_in_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">l1</span> <span class="ow">in</span> <span class="n">degrees_in_range</span><span class="p">(</span><span class="n">L1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">l2</span> <span class="ow">in</span> <span class="n">degrees_in_range</span><span class="p">(</span><span class="n">L2</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">l</span> <span class="o">&gt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">l1</span><span class="o">-</span><span class="n">l2</span><span class="p">)</span> <span class="ow">and</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">l1</span><span class="o">+</span><span class="n">l2</span>
+        <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">):</span><span class="n">e3nn</span><span class="o">.</span><span class="n">o3</span><span class="o">.</span><span class="n">_wigner</span><span class="o">.</span><span class="n">_so3_clebsch_gordan</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">l2</span><span class="p">)</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">degrees_in_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">l1</span> <span class="ow">in</span> <span class="n">degrees_in_range</span><span class="p">(</span><span class="n">L1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">l2</span> <span class="ow">in</span> <span class="n">degrees_in_range</span><span class="p">(</span><span class="n">L2</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">l</span> <span class="o">&gt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">l1</span><span class="o">-</span><span class="n">l2</span><span class="p">)</span> <span class="ow">and</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">l1</span><span class="o">+</span><span class="n">l2</span> <span class="ow">and</span> <span class="n">condition</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">l2</span><span class="p">)</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="coo_CG">
+<a class="viewcode-back" href="../../../autoapi/equitorch/utils/index.html#equitorch.utils.coo_CG">[docs]</a>
+<span class="k">def</span> <span class="nf">coo_CG</span><span class="p">(</span><span class="n">L</span><span class="p">:</span><span class="n">DegreeRange</span><span class="p">,</span> <span class="n">L1</span><span class="p">:</span><span class="n">DegreeRange</span><span class="p">,</span> <span class="n">L2</span><span class="p">:</span><span class="n">DegreeRange</span><span class="p">,</span> 
+           <span class="n">condition</span><span class="p">:</span><span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate sparse Clebsch-Gordan (CG) coefficients in coordinate format.</span>
+
+<span class="sd">    This function computes the non-zero Clebsch-Gordan coefficients for coupling two angular momenta</span>
+<span class="sd">    :math:`l_1` and :math:`l_2` to a total angular momentum :math:`l`, and returns them in a sparse format.</span>
+<span class="sd">    The results are sorted in the order of (l, M, l1, l2, M1, M2).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : DegreeRange</span>
+<span class="sd">        Range of total angular momentum :math:`l`.</span>
+<span class="sd">    L1 : DegreeRange</span>
+<span class="sd">        Range of first angular momentum :math:`l_1`.</span>
+<span class="sd">    L2 : DegreeRange</span>
+<span class="sd">        Range of second angular momentum :math:`l_2`.</span>
+<span class="sd">    condition : callable, optional</span>
+<span class="sd">        A function that takes :math:`(l, l_1, l_2)` as arguments and returns a boolean.</span>
+<span class="sd">        If provided, it is used to filter the CG coefficients.</span>
+<span class="sd">    dtype : torch.dtype, optional</span>
+<span class="sd">        The desired data type of the output tensors. Default is torch.float.</span>
+<span class="sd">    device : torch.device, optional</span>
+<span class="sd">        The desired device of the output tensors. Default is None (uses current device).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tuple[Tensor, Tensor, Tensor, Tensor]</span>
+<span class="sd">        A tuple containing:</span>
+
+<span class="sd">        - Cs : Tensor of shape (N,)</span>
+<span class="sd">            Non-zero CG coefficient values.</span>
+<span class="sd">        - Ms : Tensor of shape (3, N)</span>
+<span class="sd">            Indices (M, M1, M2) of non-zero CG values.</span>
+<span class="sd">        - ls_cg : Tensor of shape (3, N)</span>
+<span class="sd">            Corresponding degrees (l, l1, l2) for each non-zero CG value.</span>
+<span class="sd">        - l_ind : Tensor of shape (N,)</span>
+<span class="sd">            Indices of (l, l1, l2) combinations.</span>
+
+<span class="sd">        Where N is the number of non-zero CG coefficients.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - The output is strictly sorted in the order of (l, M, l1, l2, M1, M2) lexigraphically.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">L1</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L1</span><span class="p">)</span>
+    <span class="n">L2</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L2</span><span class="p">)</span>
+    <span class="n">CG_blocks</span> <span class="o">=</span> <span class="n">blocked_CG</span><span class="p">(</span><span class="n">L</span><span class="p">,</span><span class="n">L1</span><span class="p">,</span><span class="n">L2</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="n">condition</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span>
+        <span class="p">(</span> <span class="n">l</span><span class="p">,</span> <span class="n">degree_order_to_index</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">m</span><span class="p">,</span><span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">,</span> 
+        <span class="n">degree_order_to_index</span><span class="p">(</span><span class="n">l1</span><span class="p">,</span><span class="n">m1</span><span class="p">,</span><span class="n">L1</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> 
+        <span class="n">degree_order_to_index</span><span class="p">(</span><span class="n">l2</span><span class="p">,</span><span class="n">m2</span><span class="p">,</span><span class="n">L2</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+        <span class="n">l_ind</span><span class="p">,</span>
+        <span class="n">CG</span><span class="p">[</span><span class="n">m</span><span class="o">+</span><span class="n">l</span><span class="p">,</span><span class="n">m1</span><span class="o">+</span><span class="n">l1</span><span class="p">,</span><span class="n">m2</span><span class="o">+</span><span class="n">l2</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">())</span> 
+            <span class="k">for</span> <span class="n">l_ind</span><span class="p">,</span> <span class="p">((</span><span class="n">l</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">),</span> <span class="n">CG</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">CG_blocks</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> 
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">l</span><span class="p">,</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> 
+            <span class="k">for</span> <span class="n">m1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">l1</span><span class="p">,</span><span class="n">l1</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> 
+            <span class="k">for</span> <span class="n">m2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">l2</span><span class="p">,</span><span class="n">l2</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> 
+            <span class="k">if</span> <span class="n">CG_blocks</span><span class="p">[</span><span class="n">l</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">l2</span><span class="p">][</span><span class="n">m</span><span class="o">+</span><span class="n">l</span><span class="p">,</span><span class="n">m1</span><span class="o">+</span><span class="n">l1</span><span class="p">,</span><span class="n">m2</span><span class="o">+</span><span class="n">l2</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span>
+    <span class="p">])</span>
+    <span class="c1"># [ l, M, l1, l2, M1, M2, l_ind, CGs[l,l1,l2][m,m1,m2] ]</span>
+    <span class="n">ls_cg</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">l_ind</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">])</span>
+    <span class="n">Ms</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="mi">5</span><span class="p">]]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">Cs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">t</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ret</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">Cs</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">Ms</span><span class="p">,</span> <span class="n">ls_cg</span><span class="p">,</span> <span class="n">l_ind</span></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Tong Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

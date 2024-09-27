@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>equitorch.math._sht &mdash; equitorch  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            equitorch
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">equitorch</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">equitorch.math._sht</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for equitorch.math._sht</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
+
+<span class="kn">from</span> <span class="nn">torch_geometric.utils</span> <span class="kn">import</span> <span class="n">scatter</span>
+
+<span class="kn">import</span> <span class="nn">e3nn</span>
+<span class="kn">from</span> <span class="nn">e3nn</span> <span class="kn">import</span> <span class="n">o3</span>
+<span class="kn">from</span> <span class="nn">e3nn.o3._s2grid</span> <span class="kn">import</span> <span class="n">ToS2Grid</span><span class="p">,</span> <span class="n">FromS2Grid</span><span class="p">,</span> <span class="n">_quadrature_weights</span>
+
+
+<span class="kn">from</span> <span class="nn">..utils._indices</span> <span class="kn">import</span> <span class="n">check_degree_range</span><span class="p">,</span> <span class="n">degrees_in_range</span><span class="p">,</span> <span class="n">order_in_degree_range</span>
+<span class="kn">from</span> <span class="nn">..typing</span> <span class="kn">import</span> <span class="n">DegreeRange</span>
+
+<span class="k">def</span> <span class="nf">s2_grid</span><span class="p">(</span><span class="n">num_thetas</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num_phis</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">device</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the regular grid points on a sphere as defined by the spherical coordinates theta and phi.</span>
+
+<span class="sd">    The grid points are calculated according to the following formulas:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \begin{aligned}</span>
+<span class="sd">        \theta_i &amp;= \pi\cdot\frac{(i+\frac{1}{2})}{N}, &amp;i = 0,1,\dots N-1,\\</span>
+<span class="sd">        \phi_j &amp;= 2\pi\cdot\frac{j}{M}, &amp;j = 0,1,\dots M-1,</span>
+<span class="sd">        \end{aligned}</span>
+
+<span class="sd">    where :math:`N` and :math:`M` are the number of points along the </span>
+<span class="sd">    :math:`\theta` and :math:`\phi` axes, respectively.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    num_thetas : int</span>
+<span class="sd">        The number of grid points along the :math:`\theta` axis.</span>
+<span class="sd">    num_phis : int</span>
+<span class="sd">        The number of grid points along the :math:`\phi` axis.</span>
+<span class="sd">    device : optional</span>
+<span class="sd">        The device to store the resulting tensors on. Defaults is None.</span>
+<span class="sd">    dtype : torch.dtype, optional</span>
+<span class="sd">        The data type of the resulting tensors. Defaults is None.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    (Tensor, Tensor)</span>
+<span class="sd">        A tuple of two tensors of the grid points along the :math:`\theta` and :math:`\phi` axes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">o3</span><span class="o">.</span><span class="n">s2_grid</span><span class="p">(</span><span class="n">num_thetas</span><span class="p">,</span> <span class="n">num_phis</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+
+<span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_isht_prepare</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">num_thetas</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num_phis</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">num_thetas</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">thetas</span><span class="p">,</span> <span class="n">phis</span> <span class="o">=</span> <span class="n">s2_grid</span><span class="p">(</span><span class="n">num_thetas</span><span class="p">,</span> <span class="n">num_phis</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+    <span class="n">weighted_legendre</span> <span class="o">=</span> <span class="n">o3</span><span class="o">.</span><span class="n">Legendre</span><span class="p">(</span>
+        <span class="nb">list</span><span class="p">(</span><span class="n">degrees_in_range</span><span class="p">(</span><span class="n">L</span><span class="p">)))(</span><span class="n">thetas</span><span class="o">.</span><span class="n">cos</span><span class="p">(),</span> <span class="n">thetas</span><span class="o">.</span><span class="n">sin</span><span class="p">()</span><span class="o">.</span><span class="n">abs</span><span class="p">())</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># [num_thetas, M, 1]</span>
+    <span class="n">fourier</span> <span class="o">=</span> <span class="n">o3</span><span class="o">.</span><span class="n">spherical_harmonics_alpha</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">phis</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># [1, num_phis, m]</span>
+    <span class="n">m_in_range</span> <span class="o">=</span> <span class="n">order_in_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_isht</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        X must be of shape [...,M,C]</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">X_</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">inter</span> <span class="o">=</span> <span class="n">X_</span> <span class="o">*</span> <span class="n">weighted_legendre</span>
+        <span class="n">reduced_l</span> <span class="o">=</span> <span class="n">scatter</span><span class="p">(</span><span class="n">inter</span><span class="p">,</span> <span class="n">m_in_range</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># ([...,theta),m,C]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">fourier</span> <span class="o">@</span> <span class="n">reduced_l</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]),</span><span class="n">num_thetas</span><span class="p">,</span><span class="n">num_phis</span><span class="p">,</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">_isht</span>
+
+<span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_sht_prepare</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">num_thetas</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num_phis</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">num_thetas</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">thetas</span><span class="p">,</span> <span class="n">phis</span> <span class="o">=</span> <span class="n">s2_grid</span><span class="p">(</span><span class="n">num_thetas</span><span class="p">,</span> <span class="n">num_phis</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
+    <span class="n">weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">_quadrature_weights</span><span class="p">(</span><span class="n">num_thetas</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span> <span class="o">*</span> <span class="n">num_thetas</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">num_phis</span>
+    <span class="n">weighted_legendre</span> <span class="o">=</span> <span class="n">o3</span><span class="o">.</span><span class="n">Legendre</span><span class="p">(</span>
+        <span class="nb">list</span><span class="p">(</span><span class="n">degrees_in_range</span><span class="p">(</span><span class="n">L</span><span class="p">)))(</span><span class="n">thetas</span><span class="o">.</span><span class="n">cos</span><span class="p">(),</span> <span class="n">thetas</span><span class="o">.</span><span class="n">sin</span><span class="p">()</span><span class="o">.</span><span class="n">abs</span><span class="p">())</span> <span class="o">*</span> <span class="n">weight</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="c1"># [num_thetas, M]</span>
+    <span class="n">fourier</span> <span class="o">=</span> <span class="n">o3</span><span class="o">.</span><span class="n">spherical_harmonics_alpha</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">phis</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># [1, m, num_phis]</span>
+    <span class="n">m_in_range</span> <span class="o">=</span> <span class="n">order_in_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_sht</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        x must be of shape [...,theta,phi,C]</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># x_ = x.view(-1,x.shape[-2],x.shape[-1])</span>
+        <span class="n">inter</span> <span class="o">=</span> <span class="p">(</span><span class="n">fourier</span> <span class="o">@</span> <span class="n">x</span><span class="p">)</span> <span class="c1"># ...,theta, m, C</span>
+        <span class="n">expand_l</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="n">m_in_range</span><span class="p">)</span> <span class="c1"># ..., theta, M, C</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;...tMC,tM-&gt;...MC&#39;</span><span class="p">,</span> <span class="n">expand_l</span><span class="p">,</span> <span class="n">weighted_legendre</span><span class="p">)</span><span class="o">.</span><span class="n">unflatten</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">_sht</span>
+
+
+<span class="c1"># @lru_cache(None)</span>
+<span class="c1"># def _get_ToS2Grid(lmax, res, dtype=None, device=None):</span>
+<span class="c1">#     return ToS2Grid(lmax, res, dtype, device)</span>
+
+<span class="c1"># @lru_cache(None)</span>
+<span class="c1"># def _get_FromS2Grid(lmax, res, dtype=None, device=None):</span>
+<span class="c1">#     return FromS2Grid(res, lmax, dtype, device)</span>
+
+<div class="viewcode-block" id="isht">
+<a class="viewcode-back" href="../../../autoapi/equitorch/math/index.html#equitorch.math.isht">[docs]</a>
+<span class="k">def</span> <span class="nf">isht</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">num_thetas</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num_phis</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Inverse spherical harmonics transform.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        F(\theta_{i},\phi_j)=\sum_{l=0}^L\sum_{m=-l}^l X_{m}^{(l)}Y_{m}^{(l)}(\theta_i,\phi_j),\\</span>
+<span class="sd">    </span>
+<span class="sd">    where :math:`\theta_i=\frac{\pi i+\frac{\pi}{2}}{\text{num_thetas}}`, :math:`\phi_j=\frac{2\pi j}{\text{num_phis}}`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : Tensor</span>
+<span class="sd">        Input tensor of shape :math:`(..., \text{num_orders}, C)`.</span>
+<span class="sd">    L : DegreeRange</span>
+<span class="sd">        The degree range of spherical harmonics.</span>
+<span class="sd">    num_thetas : int</span>
+<span class="sd">        The number of grid points of :math:`\theta`.</span>
+<span class="sd">    num_phis : int</span>
+<span class="sd">        The number of grid points of :math:`\phi`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tensor</span>
+<span class="sd">        Output tensor of shape :math:`(..., \text{num_thetas}, \text{num_phis}, C)`.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">_isht</span> <span class="o">=</span> <span class="n">_isht_prepare</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">num_thetas</span><span class="p">,</span> <span class="n">num_phis</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_isht</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="sht">
+<a class="viewcode-back" href="../../../autoapi/equitorch/math/index.html#equitorch.math.sht">[docs]</a>
+<span class="k">def</span> <span class="nf">sht</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">num_thetas</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num_phis</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The spherical harmonics transform of a function :math:`F(\theta, \phi)` is</span>
+<span class="sd">    defined as:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        X_{m}^{(l)} = \int_{S^2} F(\theta, \phi) Y_{m}^{(l)}(\theta, \phi) \sin\theta \mathrm{d}\phi \mathrm{d}\theta</span>
+
+<span class="sd">    approximated by:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        X_{m}^{(l)} \approx \sum_{i=0}^{\text{num_thetas}-1} \sum_{j=0}^{\text{num_phis}-1} F(\theta_i, \phi_j) Y_{m}^{(l)}(\theta_i, \phi_j) \sin\theta_i \Delta\theta \Delta\phi</span>
+
+<span class="sd">    where :math:`\theta_i=\frac{\pi i+\frac{\pi}{2}}{\text{num_thetas}}`,</span>
+<span class="sd">    :math:`\phi_j=\frac{2\pi j}{\text{num_phis}}`,</span>
+<span class="sd">    :math:`\Delta\theta=\frac{\pi}{\text{num_thetas}}`,</span>
+<span class="sd">    :math:`\Delta\phi=\frac{2\pi}{\text{num_phis}}`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : Tensor</span>
+<span class="sd">        Input tensor of shape :math:`(..., \text{num_thetas}, \text{num_phis}, C)`.</span>
+<span class="sd">    L : DegreeRange</span>
+<span class="sd">        The degree range of spherical harmonics.</span>
+<span class="sd">    num_thetas : int</span>
+<span class="sd">        The number of grid points of :math:`\theta`.</span>
+<span class="sd">    num_phis : int</span>
+<span class="sd">        The number of grid points of :math:`\phi`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tensor</span>
+<span class="sd">        Output tensor of shape :math:`(..., \text{num_orders}, C)`.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">_sht</span> <span class="o">=</span> <span class="n">_sht_prepare</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">num_thetas</span><span class="p">,</span> <span class="n">num_phis</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_sht</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Tong Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

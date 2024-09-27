@@ -1,0 +1,1117 @@
+equitorch.nn
+============
+
+.. py:module:: equitorch.nn
+
+.. autoapi-nested-parse::
+
+   Some neural network layers.
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   equitorch.nn.DegreeWiseLinear
+   equitorch.nn.SO3Linear
+   equitorch.nn.SO2Linear
+   equitorch.nn.ElementWiseLinear
+   equitorch.nn.WeightedTensorProduct
+   equitorch.nn.TensorProduct
+   equitorch.nn.TensorDot
+   equitorch.nn.SO2Linear
+   equitorch.nn.ScaledDotAttention
+   equitorch.nn.AttentionalBlock
+   equitorch.nn.GaussianBasisExpansion
+   equitorch.nn.BesselBasisExpansion
+   equitorch.nn.SineBasisExpansion
+   equitorch.nn.CosineBasisExpansion
+   equitorch.nn.FourierBasisExpansion
+   equitorch.nn.CosineCutoff
+   equitorch.nn.MollifierCutoff
+   equitorch.nn.PolynomialCutoff
+
+
+Package Contents
+----------------
+
+.. py:class:: DegreeWiseLinear(L_in: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, in_channels: int, out_channels: int)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Perform degree-wise linear operation (channel mixing) as the self-interaction
+   of Tensor field networks.
+
+   This class implements the operation described in `Tensor field
+   networks: Rotation- and translation-equivariant neural networks for 3D
+   point clouds <https://arxiv.org/abs/1802.08219>`_.
+
+   The operation is defined as:
+
+   .. math::
+       \mathbf{x'}^{(l)}_c = \sum_{c'} \mathbf{W}^{(l)}_{cc'} \mathbf{x}_{c'}^{(l)}
+
+   .. note::
+   The :obj:`L_out` range must be contained within the :obj:`L_in` range, and the degrees in
+   :obj:`L_in` but not in :obj:`L_out` will be ignored.
+
+   :param L_in: Input degree range.
+   :type L_in: DegreeRange
+   :param L_out: Output degree range.
+   :type L_out: DegreeRange
+   :param in_channels: Number of input channels.
+   :type in_channels: int
+   :param out_channels: Number of output channels.
+   :type out_channels: int
+
+
+   .. py:method:: forward(x: torch.Tensor)
+
+      Applies the degree wise linear operation to the input tensor.
+
+      :param x: The input tensor of shape :math:`(N, \text{num_orders_in}, C_{\text{in}})`,
+                where :math:`N` is the batch size and :math:`C_{\text{in}}` is the number of channels.
+      :type x: Tensor
+
+      :returns: The output tensor of shape :math:`(N, \text{num_orders_out}, C_{\text{out}})`.
+      :rtype: Tensor
+
+
+
+.. py:class:: SO3Linear(L_in: equitorch.typing.DegreeRange, L_edge: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, in_channels: int, out_channels: int, external_weight: bool = False, channel_wise: bool = False)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   The SO(3) equivariant linear operation.
+
+   The SO(3) equivariant linear operation first proposed by `Tensor field
+   networks: Rotation- and translation-equivariant neural networks for 3D
+   point clouds <https://arxiv.org/abs/1802.08219>`_. The name of "linear
+   operation" comes from `Geometric and Physical Quantities Improve E(3)
+   Equivariant Message Passing <https://arxiv.org/abs/2110.02905>`_.
+
+   This operation can be expressed as
+
+   .. math::
+       \mathbf{x'}^{(l)}=\sum_{l_1,l_2}\mathbf{W}_{l_1,l_2}^{l}(\|\mathbf{r}\|)\mathbf{x}^{(l_1)}\otimes \mathbf{Y}^{(l_2)}(\mathbf{r}),
+
+   or
+
+   .. math::
+       \mathbf{x'}^{(l)}_{m}=\sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}\mathbf{W}_{l_1,l_2}^{l}(\|\mathbf{r}\|)\mathbf{x}_{m_1}^{(l_1)}\mathbf{Y}_{m_2}^{(l_2)}(\mathbf{r}),
+
+   where the summation of :math:`(l_1,l_2)` is over all the values such that
+   :math:`l_1\in L_1, l_2\in L_2` and :math:`|l_1-l_2|\le l\le l_1+l_2`,
+   :math:`C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}` are the Clebsch-Gordan coefficients and
+   :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}_{m_1}^{(l_i)}` means
+   :math:`\sum_{c'}\mathbf{W}_{l_1,l_2,cc'}^{l}\mathbf{x}_{m_1,c'}^{(l_i)}`
+   if :obj:`channel_wise` is :obj:`False`, or
+   :math:`\mathbf{W}_{l_1,l_2,c}^{l}\mathbf{x}_{m_1,c}^{(l_i)}` if :obj:`channel_wise` is :obj:`True`.
+   :math:`\mathbf{W}(\|\mathbf{r}\|)` means the weights can depend on the length of the
+   vector :math:`\mathbf{r}\in\mathbb{R}^3` (but not necessary).
+
+   When there are no ambiguities on :obj:`L_in`, :obj:`L_edge` and :obj:`L_out`,
+   we also denote this operation as
+
+   .. math::
+       \mathbf{x'}=\tilde{\mathbf{W}}({\mathbf{r}})\mathbf{x},
+
+   We use "tilde" to denote this is an equivariant operation.
+   This looks more like a linear operation where the weight can depend on :math:`\mathbf{r}`.
+
+   The SO(3) equivariance means that for any rotation matrix :math:`\mathbf{R}\in\mathrm{SO(3)}`
+   and corresponding Wigner-D matrices :math:`\mathbf{D}_{\text{in}}`,
+   :math:`\mathbf{D}_{\text{out}}` in input/output feature spaces, it satisfies that
+
+   .. math::
+       \mathbf{D}_{\text{out}}\tilde{\mathbf{W}}({\mathbf{r}})\mathbf{x}=\tilde{\mathbf{W}}(\mathbf{R}{\mathbf{r}})(\mathbf{D}_{\text{in}}\mathbf{x}).
+
+   .. note::
+       By using sparse contraction on :math:`m_1,m_2`, the time complexity of this operation is :math:`O(L^5)`
+       for the maximum degree :math:`L`.
+
+       Whenever possible, it is recommended to use :obj:`SO2Linear` for
+       equivariant operation on large :math:`L`.
+
+   :param L_in: The degree range of the input.
+   :type L_in: DegreeRange
+   :param L_edge: The degree range of the edge.
+   :type L_edge: DegreeRange
+   :param L_out: The degree range of the output.
+   :type L_out: DegreeRange
+   :param in_channels: The number of input channels.
+   :type in_channels: int
+   :param out_channels: The number of output channels.
+   :type out_channels: int
+   :param external_weight: Whether to use an external weight. Defaults to False.
+   :type external_weight: bool, optional
+   :param channel_wise: Whether to perform the operation channel-wise. Defaults to False.
+   :type channel_wise: bool, optional
+
+
+   .. py:method:: forward(x: torch.Tensor, edge_feat: torch.Tensor, weight: Optional[torch.Tensor] = None)
+
+      Applies the SO(3) linear operation to the input tensor.
+
+      :param x: The input tensor of shape :math:`(N, \text{num_orders_in}, C_{\text{in}})`,
+                where :math:`N` is the batch size and :math:`C_{\text{in}}` is the number of channels.
+      :type x: Tensor
+      :param edge_feat: The edge spherical harmonics tensor of shape :math:`(N, \text{num_orders_edge})`.
+      :type edge_feat: Tensor
+      :param weight: The external weights to use for the linear operation. If :obj:`None`, the
+                     internal weights will be used.
+                     The shape of the weights depends on the value of :obj:`channel_wise`.
+                     If :obj:`channel_wise` is :obj:`True`, the shape should be :math:`(N, \text{num_weights}, C_{\text{in}})`.
+                     If :obj:`channel_wise` is :obj:`False`, the shape should be :math:`(N, \text{num_weights}, C_{\text{in}}, C_{\text{out}})`,
+      :type weight: Tensor, optional
+
+      :returns: The output tensor of shape :math:`(N, \text{num_orders_out}, C_{\text{out}})`.
+      :rtype: Tensor
+
+      .. rubric:: Notes
+
+      If :obj:`external_weight` is :obj:`True`, the :obj:`weight` parameter must be provided.
+      If :obj:`external_weight` is :obj:`False`, the :obj:`weight` will still be used if provided.
+
+
+
+.. py:class:: SO2Linear(L_in: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, in_channels: int, out_channels: int, external_weight: bool = False, channel_wise: bool = False)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   The SO(3) equivariant linear operation of complexity :math:`O(L^3)` for the
+   maximum degree :math:`L` as described in the paper `Reducing SO(3)
+   Convolutions to SO(2) for Efficient Equivariant GNNs
+   <https://arxiv.org/abs/2302.03655>`_.
+
+   It works as a more efficient alternative for SO(3) linear operation.
+
+   .. math::
+       \begin{aligned}
+       \mathbf{x}_{m}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}-\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, & m < 0,\\
+       \mathbf{x}_{0}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{0}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{0}^{(l_i)}, &\\
+       \mathbf{x}_{m}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m}^{(l_i)}-\mathbf{W}_{-m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, & m > 0,\\
+       \end{aligned}
+
+   where :math:`\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m'}^{(l_i)}` means
+   :math:`\sum_{c'}\mathbf{W}_{m,cc'}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c'}^{(l_i)}`
+   if :obj:`channel_wise` is :obj:`False`, or
+   :math:`\mathbf{W}_{m,c}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c}^{(l_i)}` if :obj:`channel_wise` is :obj:`True`.
+   :math:`\mathbf{W}(\|\mathbf{r}\|)` means the weights can depend on the length of the
+   vector :math:`\mathbf{r}\in\mathbb{R}^3` (but not necessary).
+
+   When there is no ambiguity, we also denote the operation as
+
+   .. math::
+       \mathbf{x}'=\tilde{\mathbf{W}}(\|\mathbf{r}\|)\mathbf{x}.
+
+   The operation satisfies the following property:
+
+   for any possible SO(3) linear operation :math:`\tilde{\mathbf{W}}(\mathbf{r})`,
+   there exists an SO(2) linear operation :math:`\tilde{\mathbf{W'}}(\|\mathbf{r}\|)` such that:
+
+   .. math::
+       \mathbf{D}_{\mathbf{r},\text{out}}^\top\tilde{\mathbf{W}}'(\|\mathbf{r}\|)(\mathbf{D}_{\mathbf{r},\text{in}}\mathbf{x})=\tilde{\mathbf{W}}(\mathbf {r})\mathbf{x}
+
+   and vice versa, where :math:`\mathbf{D}_{\mathbf{r},\text{in}}` and :math:`\mathbf{D}_{\mathbf{r},\text{out}}` are the Wigner-D
+   matrices on the input/output spaces corresponding to the rotation matrix that can align :math:`\mathbf{r}`
+   to the z axis. (See Appendix 2 of the paper above for the proof of the bijection.)
+
+   To explicitly convert from or to the weight for :obj:`SO3Linear` operation, see
+   :obj:`so3_weights_to_so2` and :obj:`so2_weights_to_so3` in :obj:`utils`.
+
+   .. note::
+       If dense Wigner-D matrix is used before the SO(2) linear operation, the
+       :math:`O(L^4)` complexity of :math:`\mathbf{Dx}` can be the bottleneck.
+       When channels :math:`C` explicitly considered, the linear operation will
+       be of complexity :math:`O(L^3C)` if channel wise or :math:`O(L^3CC')` if
+       not, but the rotation :math:`\mathbf{Dx}` will always be of complexity
+       :math:`O(L^4C)`.
+
+       Whenever possible, it is recommended to use :obj:`SO2Linear` rather than :obj:`SO3Linear` for
+       equivariant operation on large :math:`L`.
+
+   :param L_in: The input degree range.
+   :type L_in: DegreeRange
+   :param L_out: The output degree range.
+   :type L_out: DegreeRange
+   :param in_channels: The number of input channels.
+   :type in_channels: int
+   :param out_channels: The number of output channels.
+   :type out_channels: int
+   :param external_weight: Whether the user will pass external weights (that may depend on data or edges) or keep a set of independent weights inside.
+                           Default to False.
+   :type external_weight: bool, optional
+   :param channel_wise: Whether the weight is performed channel-wise.
+                        Default to False.
+   :type channel_wise: bool, optional
+
+
+   .. py:method:: forward(x: torch.Tensor, weight: Optional[torch.Tensor] = None)
+
+      Applies the SO(2) linear operation to the input tensor.
+
+      :param x: The input tensor of shape :math:`(N, \text{num_orders_in}, C_{\text{in}})`,
+                where :math:`N` is the batch size, :math:`\text{num_orders_in}`
+                is the number of input orders, and :math:`C_{\text{in}}` is the number of channels.
+                before passed into this function, :math:`x` must have been transformed by
+                :math:`\mathbf{D}_{\text{in}}`.
+      :type x: Tensor
+      :param weight: The external weights to use for the linear operation. If `None`, the
+                     internal weights will be used.
+                     The shape of the weights depends on the value of `channel_wise`.
+                     If `channel_wise` is `True`, the shape should be :math:`(N, \text{num_weights}, C_{\text{in}})`.
+                     If `channel_wise` is `False`, the shape should be :math:`(N, \text{num_weights}, C_{\text{in}}, C_{\text{out}})`,
+      :type weight: Tensor, optional
+
+      :returns: The output tensor of shape :math:`(N, \text{num_orders_out}, C_{\text{out}})`.
+                The returned feature should then be transformed by :math:`\mathbf{D}_{\text{out}}^\top`.
+      :rtype: Tensor
+
+      .. rubric:: Notes
+
+      If :obj:`external_weight` is :obj:`True`, the :obj:`weight` parameter must be provided.
+      If :obj:`external_weight` is :obj:`False`, the :obj:`weight` will still be used if provided.
+
+
+
+.. py:class:: ElementWiseLinear(in_channels: int, out_channels: int, channel_wise=False)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Applies an element wise linear transformation to the input tensor.
+
+   The transformation can be either channel-wise or not channel-wise.
+
+   If :obj:`channel_wise` is False, the transformation is calculated as:
+
+   .. math:: \mathbf{x}'_{mc'} = \sum_{c}  \mathbf{W}_{cc'} \mathbf{x}_{mc},
+
+   If :obj:`channel_wise` is True, the transformation is calculated as:
+
+   .. math:: \mathbf{x}'_{mc} = \mathbf{W}_{c} \mathbf{x}_{mc},
+
+   which is exactly a gate operation.
+
+
+   :param in_channels: Number of input channels.
+   :type in_channels: int
+   :param out_channels: Number of output channels.
+   :type out_channels: int
+   :param channel_wise: If True, the transformation is channel-wise. Defaults to False.
+   :type channel_wise: bool, optional
+
+
+   .. py:method:: forward(x: torch.Tensor, weight: torch.Tensor)
+
+      Applies the element-wise linear transformation to the input tensor.
+
+      :param x: Input tensor of shape :math:`(N, \text{num_orders}, C_{\text{in}})`.
+      :type x: Tensor
+      :param weight: Weight tensor of shape :math:`(N, C_{\text{in}})` if :obj:`channel_wise` is False, or
+                     :math:`(N, C_{\text{in}}, C_{\text{out}})` if :obj:`channel_wise` is True.
+      :type weight: Tensor
+
+      :returns: The transformed input tensor of shape :math:`(N, \text{num_orders}, C_{\text{out}})`.
+      :rtype: Tensor
+
+
+
+.. py:class:: WeightedTensorProduct(L_in1: equitorch.typing.DegreeRange, L_in2: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, in1_channels: int, in2_channels: int, out_channels: Optional[int] = None, connected: bool = False, channel_wise: bool = True, tp_type: Optional[str] = None, external_weight: bool = False)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Weighted Tensor Product
+
+   .. math::
+       \mathbf{z}^{(l)} = \sum_{l_1,l_2}\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)},
+       l \in L_{out},
+
+   or
+
+   .. math::
+       \mathbf{z}^{(l)}_m = \sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}
+       \mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2},
+       l \in L_{out}, m=-l,\dots,l,
+
+   where the summation of :math:`(l_1,l_2)` is over all the values such that
+   :math:`l_1\in L_1, l_2\in L_2` and :math:`|l_1-l_2|\le l\le l_1+l_2` and
+   :math:`C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}` are the Clebsch-Gordan coefficients.
+
+   When considering multiple channel inputs, the effect of weights :math:`\mathbf{W}_{l_1,l_2}^{l}`
+   on input pairs :math:`(\mathbf{x}^{(l_1)}, \mathbf{y}^{(l_2)})` will depend on :obj:`tp_type`:
+
+   * Channel wise:
+
+       When :obj:`tp_type=\'cw\'` or :obj:`connected = False and channel_wise = True`,
+       :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C,)` shaped tensor.
+       :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}` means that
+
+       .. math::
+           [\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_c=
+           [\mathbf{W}_{l_1,l_2}^{l}]_c [\mathbf{x}^{(l_1)}_{m_1}]_c[\mathbf{y}^{(l_2)}_{m_2}]_c
+
+   * Pair wise:
+
+       When :obj:`tp_type=\'pw\'` or :obj:`connected = False and channel_wise = False`,
+       :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C_1,C_2)` shaped tensor.
+       :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}` means that
+
+       .. math::
+           [\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_{c_1,c_2}=
+           [\mathbf{W}_{l_1,l_2}^{l}]_{c_1,c_2} [\mathbf{x}^{(l_1)}_{m_1}]_{c_1}[\mathbf{y}^{(l_2)}_{m_2}]_{c_2}
+
+   * Channel-wise connected:
+
+       When :obj:`tp_type=\'cwc\'` or :obj:`connected = True and channel_wise = True`,
+       :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C_{\text{in}},C_{\text{out}})` shaped tensor.
+       :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}` means that
+
+       .. math::
+           [\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_{c'}=
+           \sum_c[\mathbf{W}_{l_1,l_2}^{l}]_{c,c'} [\mathbf{x}^{(l_1)}_{m_1}]_c[\mathbf{y}^{(l_2)}_{m_2}]_c
+
+   * Fully connected:
+
+       When :obj:`tp_type=\'fc\'` or :obj:`connected = False and channel_wise = False`,
+       :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C_{\text{in1}},C_{\text{in2}},C_{\text{out}})` shaped tensor.
+       :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}` means that
+
+       .. math::
+           [\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_{c'}=
+           \sum_{c_1,c_2}[\mathbf{W}_{l_1,l_2}^{l}]_{c_1,c_2,c'} [\mathbf{x}^{(l_1)}_{m_1}]_{c_1}[\mathbf{y}^{(l_2)}_{m_2}]_{c_2}
+
+   Also, we allow different weights for different input pairs when :obj:`external_weight` is :obj:`True`.
+
+   .. note::
+
+      - When :obj:`channel_wise` is :obj:`True`, :obj:`in1_channels` must be equal to :obj:`in2_channels`.
+      - When :obj:`connected` is :obj:`False`, :obj:`out_channels` must not be specified.
+      - When :obj:`connected` is :obj:`True`, :obj:`out_channels` must be specified.
+
+   :param L_in1: The degree range of the first input.
+   :type L_in1: DegreeRange
+   :param L_in2: The degree range of the second input.
+   :type L_in2: DegreeRange
+   :param L_out: The degree range of the output.
+   :type L_out: DegreeRange
+   :param in1_channels: The number of channels in the first input.
+   :type in1_channels: int
+   :param in2_channels: The number of channels in the second input. Must be the same as :obj:`in1_channels` if :obj:`channel_wise` is :obj:`True`.
+   :type in2_channels: int
+   :param out_channels: The number of channels in the output. Must be specified if :obj:`connected` is :obj:`True`, and must not be specified if :obj:`connected` is :obj:`False`.
+   :type out_channels: int, optional
+   :param connected: Whether the weights are connected or not. Default is :obj:`False`. Will be overridden if :obj:`tp_type` is specified.
+   :type connected: bool, optional
+   :param channel_wise: Whether the weights are channel-wise or not. Default is :obj:`True`. Will be overridden if :obj:`tp_type` is specified.
+   :type channel_wise: bool, optional
+   :param tp_type:
+                   The type of tensor product. Can be one of the following:
+
+                       - :obj:`'channel_wise'` or :obj:`'cw'`: Channel-wise tensor product with :obj:`connected=False` and :obj:`channel_wise=True`.
+                       - :obj:`'pair_wise'` or :obj:`'pw'`: Pair-wise tensor product with :obj:`connected=False` and :obj:`channel_wise=False`.
+                       - :obj:`'channel_wise_connected'` or :obj:`'cwc'`: Channel-wise connected tensor product with :obj:`connected=True` and :obj:`channel_wise=True`.
+                       - :obj:`'fully_connected'` or :obj:`'fc'`: Fully connected tensor product with :obj:`connected=True` and :obj:`channel_wise=False`.
+
+                   If not provided, :obj:`connected` and :obj:`channel_wise` will be used to determine the type of tensor product.
+   :type tp_type: str, optional
+   :param external_weight: Whether to use external weights or not. Default is :obj:`False`.
+   :type external_weight: bool, optional
+
+
+   .. py:method:: forward(x1: torch.Tensor, x2: torch.Tensor, weight: Optional[torch.Tensor] = None)
+
+      Performs the weighted tensor product operation.
+
+      :param x1: The first input tensor of shape :math:`(N,\text{num_orders_1},C_1)`.
+      :type x1: Tensor
+      :param x2: The second input tensor of shape :math:`(N,\text{num_orders_2},C_2)`.
+      :type x2: Tensor
+      :param weight: The weight of shape :math:`(N,\text{num_weights},...)`, where ":math:`...`"
+                     depends on the tensor product type as listed above.
+                     Default is None.
+
+                     It will be used if :obj:`external_weight` is True
+                     or if provided even when :obj:`external_weight` is False.
+      :type weight: Optional[Tensor], optional
+
+      :returns: The tensor product of shape :math:`(N,\text{num_orders_out},C_{out})`,
+                where :math:`C_{out}` will be :math:`C=C_1=C_2` if :obj:`tp_type='cw'`,
+                :math:`(C_1,C_2)` if :obj:`tp_type='pw'` or the specified value otherwise.
+      :rtype: Tensor
+
+      Where :math:`N` is the batch-size that will automatically broadcast if set to :math:`1`
+      and :math:`C` is the corresponding number of channels.
+
+
+
+
+
+.. py:class:: TensorProduct(L_in1: equitorch.typing.DegreeRange, L_in2: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, channel_wise: bool = True)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   The traditional tensor product with no weights
+
+   .. math::
+       \mathbf{z}^{(l)} = \sum_{l_1,l_2}\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)},
+       l \in L_{out},
+
+   or
+
+   - if :obj:`channel_wise`:
+
+       .. math::
+           [\mathbf{z}^{(l)}_m]_c = \sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}
+           [\mathbf{x}^{(l_1)}_{m_1}]_c[\mathbf{y}^{(l_2)}_{m_2}]_c,
+           l \in L_{out}, m=-l,\dots,l,
+
+   - otherwise:
+
+       .. math::
+           [\mathbf{z}^{(l)}_m]_{c_1,c_2} = \sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}
+           [\mathbf{x}^{(l_1)}_{m_1}]_{c_1}[\mathbf{y}^{(l_2)}_{m_2}]_{c_2},
+           l \in L_{out}, m=-l,\dots,l,
+
+   where the summation of :math:`(l_1,l_2)` is over all the values such that
+   :math:`l_1\in L_1, l_2\in L_2` and :math:`|l_1-l_2|\le l\le l_1+l_2` and
+   :math:`C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}` are the Clebsch-Gordan coefficients.
+
+   :param L_in1: The degree range of the first input.
+   :type L_in1: DegreeRange
+   :param L_in2: The degree range of the second input.
+   :type L_in2: DegreeRange
+   :param L_out: The degree range of the output.
+   :type L_out: DegreeRange
+   :param channel_wise: Whether the product is performed channel-wise.
+   :type channel_wise: bool
+
+
+   .. py:method:: forward(x1: torch.Tensor, x2: torch.Tensor)
+
+      Perform tensor product
+
+      :param x1: The first input tensor of shape :math:`(N,\text{num_orders_1},C_1)`
+      :type x1: Tensor
+      :param x2: The second input tensor of shape :math:`(N,\text{num_orders_2},C_2)`
+      :type x2: Tensor
+
+      :returns: The tensor product of two input tensors
+                of shape :math:`(N,\text{num_orders_out},C)` if :obj:`channel_wise` is :obj:`True`
+                or :math:`(N,\text{num_orders_out},C_1, C_2)` otherwise.
+      :rtype: Tensor
+
+      Where :math:`N` is the batch-size that will automatically broadcast if set to :math:`1`
+      and :math:`C_1,C_2,C` are corresponding number of channels.
+      If :obj:`channel_wise` is :obj:`True`, :math:`C_1=C_2=C` should be satisfied.
+
+
+
+.. py:class:: TensorDot(L: equitorch.typing.DegreeRange, channel_wise: bool = True)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   The module that computes the degree-wise dot product between spherical features
+
+   .. math::
+
+       d_c^{(l)} = \sum_{m=-l}^l [{\mathbf{x}_m^{(l)}}]_c [{\mathbf{y}_m^{(l)}}]_c
+
+   if :obj:`channel_wise`, or
+
+   .. math::
+
+       d_{c_1,c_2}^{(l)} = \sum_{m=-l}^l [{\mathbf{x}_m^{(l)}}]_{c_1} [{\mathbf{y}_m^{(l)}}]_{c_2}
+
+   otherwise.
+
+   :param L: The degree range of inputs.
+   :type L: DegreeRange
+   :param channel_wise: If True, compute channel-wise dot product. Default is True.
+   :type channel_wise: bool, optional
+
+   .. rubric:: Examples
+
+   >>> L = DegreeRange(0, 3)
+   >>> tensor_dot = TensorDot(L, channel_wise=True)
+   >>> x1 = torch.randn(32, 16, 64)  # (N, num_orders, C1)
+   >>> x2 = torch.randn(32, 16, 64)  # (N, num_orders, C2)
+   >>> result = tensor_dot(x1, x2)
+   >>> print(result.shape)
+   torch.Size([32, 4, 64])  # (N, num_degrees, C)
+
+
+   .. py:method:: forward(x1: torch.Tensor, x2: torch.Tensor)
+
+      Compute the degree-wise dot product between two input tensors.
+
+      :param x1: First input tensor of shape :math:`(N, \text{num_orders_1}, C_1)`.
+      :type x1: Tensor
+      :param x2: Second input tensor of shape :math:`(N, \text{num_orders_1}, C_2)`.
+      :type x2: Tensor
+
+      :returns: The result of the dot product of shape
+                :math:`(N, \text{num_degrees}, C)` if :obj:`channel_wise` is :obj:`True`
+                or :math:`(N, \text{num_degrees}, C_1, C_2)` if :obj:`channel_wise` is :obj:`False`.
+      :rtype: Tensor
+
+      Where :math:`N` is the batch-size that will automatically broadcast if set to :math:`1`
+      and :math:`C_1,C_2,C` are corresponding number of channels.
+      If :obj:`channel_wise` is :obj:`True`, :math:`C_1=C_2=C` should be satisfied.
+
+
+
+.. py:class:: SO2Linear(L_in: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, in_channels: int, out_channels: int, external_weight: bool = False, channel_wise: bool = False)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   The SO(3) equivariant linear operation of complexity :math:`O(L^3)` for the
+   maximum degree :math:`L` as described in the paper `Reducing SO(3)
+   Convolutions to SO(2) for Efficient Equivariant GNNs
+   <https://arxiv.org/abs/2302.03655>`_.
+
+   It works as a more efficient alternative for SO(3) linear operation.
+
+   .. math::
+       \begin{aligned}
+       \mathbf{x}_{m}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}-\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, & m < 0,\\
+       \mathbf{x}_{0}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{0}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{0}^{(l_i)}, &\\
+       \mathbf{x}_{m}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m}^{(l_i)}-\mathbf{W}_{-m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, & m > 0,\\
+       \end{aligned}
+
+   where :math:`\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m'}^{(l_i)}` means
+   :math:`\sum_{c'}\mathbf{W}_{m,cc'}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c'}^{(l_i)}`
+   if :obj:`channel_wise` is :obj:`False`, or
+   :math:`\mathbf{W}_{m,c}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c}^{(l_i)}` if :obj:`channel_wise` is :obj:`True`.
+   :math:`\mathbf{W}(\|\mathbf{r}\|)` means the weights can depend on the length of the
+   vector :math:`\mathbf{r}\in\mathbb{R}^3` (but not necessary).
+
+   When there is no ambiguity, we also denote the operation as
+
+   .. math::
+       \mathbf{x}'=\tilde{\mathbf{W}}(\|\mathbf{r}\|)\mathbf{x}.
+
+   The operation satisfies the following property:
+
+   for any possible SO(3) linear operation :math:`\tilde{\mathbf{W}}(\mathbf{r})`,
+   there exists an SO(2) linear operation :math:`\tilde{\mathbf{W'}}(\|\mathbf{r}\|)` such that:
+
+   .. math::
+       \mathbf{D}_{\mathbf{r},\text{out}}^\top\tilde{\mathbf{W}}'(\|\mathbf{r}\|)(\mathbf{D}_{\mathbf{r},\text{in}}\mathbf{x})=\tilde{\mathbf{W}}(\mathbf {r})\mathbf{x}
+
+   and vice versa, where :math:`\mathbf{D}_{\mathbf{r},\text{in}}` and :math:`\mathbf{D}_{\mathbf{r},\text{out}}` are the Wigner-D
+   matrices on the input/output spaces corresponding to the rotation matrix that can align :math:`\mathbf{r}`
+   to the z axis. (See Appendix 2 of the paper above for the proof of the bijection.)
+
+   To explicitly convert from or to the weight for :obj:`SO3Linear` operation, see
+   :obj:`so3_weights_to_so2` and :obj:`so2_weights_to_so3` in :obj:`utils`.
+
+   .. note::
+       If dense Wigner-D matrix is used before the SO(2) linear operation, the
+       :math:`O(L^4)` complexity of :math:`\mathbf{Dx}` can be the bottleneck.
+       When channels :math:`C` explicitly considered, the linear operation will
+       be of complexity :math:`O(L^3C)` if channel wise or :math:`O(L^3CC')` if
+       not, but the rotation :math:`\mathbf{Dx}` will always be of complexity
+       :math:`O(L^4C)`.
+
+       Whenever possible, it is recommended to use :obj:`SO2Linear` rather than :obj:`SO3Linear` for
+       equivariant operation on large :math:`L`.
+
+   :param L_in: The input degree range.
+   :type L_in: DegreeRange
+   :param L_out: The output degree range.
+   :type L_out: DegreeRange
+   :param in_channels: The number of input channels.
+   :type in_channels: int
+   :param out_channels: The number of output channels.
+   :type out_channels: int
+   :param external_weight: Whether the user will pass external weights (that may depend on data or edges) or keep a set of independent weights inside.
+                           Default to False.
+   :type external_weight: bool, optional
+   :param channel_wise: Whether the weight is performed channel-wise.
+                        Default to False.
+   :type channel_wise: bool, optional
+
+
+   .. py:method:: forward(x: torch.Tensor, weight: Optional[torch.Tensor] = None)
+
+      Applies the SO(2) linear operation to the input tensor.
+
+      :param x: The input tensor of shape :math:`(N, \text{num_orders_in}, C_{\text{in}})`,
+                where :math:`N` is the batch size, :math:`\text{num_orders_in}`
+                is the number of input orders, and :math:`C_{\text{in}}` is the number of channels.
+                before passed into this function, :math:`x` must have been transformed by
+                :math:`\mathbf{D}_{\text{in}}`.
+      :type x: Tensor
+      :param weight: The external weights to use for the linear operation. If `None`, the
+                     internal weights will be used.
+                     The shape of the weights depends on the value of `channel_wise`.
+                     If `channel_wise` is `True`, the shape should be :math:`(N, \text{num_weights}, C_{\text{in}})`.
+                     If `channel_wise` is `False`, the shape should be :math:`(N, \text{num_weights}, C_{\text{in}}, C_{\text{out}})`,
+      :type weight: Tensor, optional
+
+      :returns: The output tensor of shape :math:`(N, \text{num_orders_out}, C_{\text{out}})`.
+                The returned feature should then be transformed by :math:`\mathbf{D}_{\text{out}}^\top`.
+      :rtype: Tensor
+
+      .. rubric:: Notes
+
+      If :obj:`external_weight` is :obj:`True`, the :obj:`weight` parameter must be provided.
+      If :obj:`external_weight` is :obj:`False`, the :obj:`weight` will still be used if provided.
+
+
+
+.. py:class:: ScaledDotAttention(L_in: equitorch.typing.DegreeRange, L_k: equitorch.typing.DegreeRange, in_channels: int, k_channels: int, num_heads: int = 1, weight_k_producer: Optional[Callable] = None, weight_q_producer: Optional[Callable] = None)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Computes invariant attention score using scaled dot product attention as:
+
+   .. math::
+       \begin{aligned}
+       \mathbf{q}_{k} &= \tilde{\mathbf{W}}_Q(\|\mathbf{r}\|_Q)\mathbf{x}_{Q,k}, \\
+       \mathbf{k}_{k} &= \tilde{\mathbf{W}}_K(\|\mathbf{r}\|_K)\mathbf{x}_{K,k}, \\
+       {z}_{k} &= \frac{1}{\sqrt{\text{k_channels}}}\sum_{l,m,c}(\mathbf{q}_{k})_{m,c}^{(l)}(\mathbf{k}_{k})_{m,c}^{(l)}\\
+       \alpha_{k} &= \mathop{\mathrm{softmax\ }}_{\text{index}[k]}{z}_k\\
+                  &= \frac{\exp({z}_{k})}{\displaystyle \sum_{k':\text{index}[k']=\text{index}[k]}\exp({z}_{k'})},        \\
+       \end{aligned}
+
+   where :math:`\tilde{\mathbf{W}}_Q(\|\mathbf{r}\|_Q), \tilde{\mathbf{W}}_K(\|\mathbf{r}\|_K)`
+   are two :obj:`SO2Linear` operations that may depend on additional query/key features
+   :math:`\mathbf{r}_Q` and :math:`\mathbf{r}_K`.
+
+   The attention is normalized over all samples :math:`k` with the same index :math:`\text{index}[k]`.
+
+   For more details on how the softmax is computed, see `softmax <https://pytorch-geometric.readthedocs.io/en/latest/modules/utils.html#torch_geometric.utils.softmax>`_.
+
+   In the case where :math:`k` represents the edges :math:`(i,j)`,
+   queries are from target nodes :math:`i`, keys are from source nodes
+   :math:`j`, the index is the target index :math:`i`, the query projector is
+   edge-independent and the key projector depends on the edge vector
+   :math:`\mathbf{r}_{ij}`, the attention score is computed as
+
+   .. math ::
+       \begin{aligned}
+       \mathbf{q}_{ij} &= \tilde{\mathbf{W}}_Q\mathbf{x}_{i}, \\
+       \mathbf{k}_{ij} &= \tilde{\mathbf{W}}_K(\|\mathbf{r}_{ij}\|)\mathbf{x}_{j}, \\
+       {z}_{ij} &= \frac{1}{\sqrt{\text{k_channels}}}\sum_{l,m,c}(\mathbf{q}_{ij})_{m,c}^{(l)}(\mathbf{k}_{ij})_{m,c}^{(l)}\\
+       \alpha_{ij} &= \mathop{\mathrm{softmax\ }}_{j\in\mathcal{N}(i)}{z}_{ij}\\
+                  &= \frac{\exp({z}_{ij})}{\displaystyle \sum_{j'\in\mathcal{N}(i)}\exp({z}_{ij'})},        \\
+       \end{aligned}
+
+   This is equivalent to the attention score (11) in `SE(3)-Transformers:
+   3D Roto-Translation Equivariant Attention Networks <https://arxiv.org/abs/2006.10503>`_
+   except that we use the more efficient :obj:`SO2Linear` here instead of :obj:`SO3Linear`.
+
+   :param L_in: The degree range of the input.
+   :type L_in: DegreeRange
+   :param L_k: The degree range of the keys and values.
+   :type L_k: DegreeRange
+   :param in_channels: The number of input channels.
+   :type in_channels: int
+   :param k_channels: The number of key and value channels.
+   :type k_channels: int
+   :param num_heads: The number of heads, Default is 1.
+   :type num_heads: int, optional
+   :param weight_k_producer: The module to produce weights of the key projector from
+                             additional key features. Default is None.
+                             If not provided, the key projector will not use :obj:`external_weight`.
+   :type weight_k_producer: Callable, optional
+   :param weight_q_producer: The module to produce weights of the query projector from
+                             additional query features. Default is None.
+                             If not provided, the key projector will not use :obj:`external_weight`.
+   :type weight_q_producer: Callable, optional
+
+
+   .. py:method:: forward(x_q: torch.Tensor, x_k: torch.Tensor, q_feat: Optional[torch.Tensor] = None, k_feat: Optional[torch.Tensor] = None, index: Optional[torch.Tensor] = None, ptr: Optional[torch.Tensor] = None, num_nodes: Optional[int] = None)
+
+      forward
+
+      :param x_q: The query tensor with shape :math:`[K, \text{num_orders}, C]`, where
+                  :math:`K` is the number of key-query pairs and :math:`C` is the number of channels.
+      :type x_q: Tensor
+      :param x_k: The key tensor with shape :math:`[K, \text{num_orders}, C]`, where
+                  :math:`K` is the number of key-query pairs and :math:`C` is the number of channels.
+      :type x_k: Tensor
+      :param q_feat: Additional feature to produce weights for query projector. Default is None
+      :type q_feat: Tensor, optional
+      :param k_feat: Additional feature to produce weights for key projector. Default is None
+      :type k_feat: Tensor, optional
+      :param index: The indices of elements for applying the softmax. Default is None
+      :type index: Tensor, optional
+      :param ptr: If given, computes the softmax based on sorted inputs in CSR representation. Default is None
+      :type ptr: Tensor, optional
+      :param num_nodes: The number of nodes. Default is None.
+      :type num_nodes: int, optional
+
+      :returns: The attention weights with shape :math:`[K, \text{num_heads}]`
+      :rtype: Tensor
+
+
+
+.. py:class:: AttentionalBlock(L_in: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, in_channels: int, k_channels: int, out_channels: int, num_heads: int = 1, attention_score_producer: Optional[Callable] = None, v_producer: Optional[Callable] = None, weight_q_producer: Optional[Callable] = None, weight_k_producer: Optional[Callable] = None, weight_v_producer: Optional[Callable] = None)
+
+   Bases: :py:obj:`torch_geometric.nn.MessagePassing`
+
+
+   Perform attentional aggregation
+
+   .. math::
+       \mathbf{x}'_i=\sum_{j\in\mathcal{N}(i)}\alpha_{ij}\mathbf{v}_j,
+
+   where
+
+   .. math::
+       \begin{aligned}
+       \alpha_{ij}&=\text{attention_score_producer}(\mathbf{x}_i,\mathbf{x}_j),\\
+       \mathbf{v}_j &= \text{v_producer}(\mathbf{x}_j).
+       \end{aligned}
+
+   :math:`\alpha` should be SO(3) invariant and :math:`\mathbf{v}` should be
+   SO(3) equivariant. Then the whole block will be SO(3) equivariant.
+
+   :param L_in: The degree range of the input.
+   :type L_in: DegreeRange
+   :param L_out: The degree range of the output.
+   :type L_out: DegreeRange
+   :param in_channels: The number of input channels.
+   :type in_channels: int
+   :param k_channels: The number of key and value channels.
+   :type k_channels: int
+   :param out_channels: The number of output channels.
+   :type out_channels: int
+   :param num_heads: The number of heads, Default is 1.
+   :type num_heads: int, optional
+   :param attention_score_producer: The module to produce attention scores, Default is None.
+                                    It should take two tensors representing the (q,k) pairs
+                                    and return the attention score between them.
+                                    If not provided, the :obj:`ScaledDotAttention` will be used,
+   :type attention_score_producer: Callable, optional
+   :param v_producer: The module to produce values. Default is None.
+                      If not provided, the :obj:`SO2Linear` will be used and the
+                      :obj:`external_weight` will be True only when `weight_v_producer`
+                      is provided.
+   :type v_producer: Callable, optional
+   :param weight_q_producer: The module to produce weight from edge embeddings for :obj:`attention_score_producer`.
+                             This will not be used when the :obj:`attention_score_producer`
+                             is explicitly passed.
+                             Default is None.
+   :type weight_q_producer: Callable, optional
+   :param weight_k_producer: The module to produce weights from edge embeddings for :obj:`attention_score_producer`.
+                             This will not be used when the :obj:`attention_score_producer`
+                             is explicitly passed.
+                             Default is None.
+   :type weight_k_producer: Callable, optional
+   :param weight_v_producer: The module to produce weights from edge embeddings for :obj:`v_producer`.
+                             This will not be used when the :obj:`v_producer`
+                             is explicitly passed.
+                             Default is None.
+   :type weight_v_producer: Callable, optional
+
+
+   .. py:method:: forward(x: torch.Tensor, edge_index: torch.Tensor, edge_emb: Optional[torch.Tensor] = None, D_in: Optional[torch.Tensor] = None, DT_out: Optional[torch.Tensor] = None, edge_weight: Optional[torch.Tensor] = None)
+
+      Runs the forward pass of the module
+
+      :param x:
+      :type x: torch.Tensor
+      :param edge_index:
+      :type edge_index: torch.Tensor
+      :param edge_emb: The edge features that will be used to produce
+                       weights for Q/K/V projectors, Default is None.
+      :type edge_emb: Tensor, optional
+      :param D_in: The Wigner-D matrix on input space corresponding to the
+                   rotation that aligns the edge vector to z axis.
+                   If provided, the input feature will first be rotated by :obj:`D_in`
+                   Default is None.
+      :type D_in: Tensor, optional
+      :param DT_out: The transpose of Wigner-D matrix on output space corresponding to the
+                     rotation that aligns the edge vector to z axis.
+                     If provided, the value vector of each edge will be rotated by :obj:`D_out` before aggregated.
+                     Default is None.
+      :type DT_out: Tensor, optional
+      :param edge_weight: The weight of each edge, used to scale the message along the edges.
+      :type edge_weight: Tensor, optional
+
+      :rtype: Tensor
+
+
+
+   .. py:method:: message(x_j: torch.Tensor, x_i: torch.Tensor, edge_index: torch.Tensor, edge_emb: Optional[torch.Tensor], DT_out: Optional[torch.Tensor], edge_weight: Optional[torch.Tensor])
+
+      
+
+
+
+.. py:class:: GaussianBasisExpansion(gamma: Union[torch.Tensor, float], num_basis: float = None, start: float = None, end: float = None, mu: torch.Tensor = None, trainable: bool = False)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Gaussian Basis Expansion module.
+
+   This module implements a Gaussian basis expansion of the form:
+
+   .. math::
+
+       \exp[-\gamma_k(r-\mu_k)^2],\ k = 1,2,\dots,\text{num_basis}.
+
+   :param gamma: The gamma parameter for the Gaussian basis function.
+   :type gamma: Union[Tensor, float]
+   :param num_basis: The number of basis functions to use. If None, mu must be provided.
+   :type num_basis: int, optional
+   :param start: The start value for generating mu values. Required if num_basis is provided.
+   :type start: float, optional
+   :param end: The end value for generating mu values. Required if num_basis is provided.
+   :type end: float, optional
+   :param mu: The mu values for the Gaussian basis functions. Required if num_basis is None.
+   :type mu: Tensor, optional
+   :param trainable: Whether the mu and gamma parameters should be trainable. Default is False.
+   :type trainable: bool, optional
+
+   .. rubric:: Notes
+
+   If :obj:`num_basis` is provided, :math:`\mu_k` are generated evenly in :math:`[\text{start},\text{end}]`.
+   If :obj:`gamma` is a float, it is expanded to match the shape of :math:`\mu`.
+   If :obj:`trainable` is :obj:`True`, :obj:`mu` and :obj:`gamma` become :obj:`nn.Parameter` objects.
+
+
+   .. py:method:: forward(x: torch.Tensor)
+
+      
+
+
+
+.. py:class:: BesselBasisExpansion(num_basis: int, cutoff: float = 1, trainable: bool = False, eps: float = 1e-06)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Bessel Basis Expansion module.
+
+   This module implements a Bessel basis expansion of the form:
+
+   .. math::
+
+       \frac{\sin(\omega_k (\hat r + \epsilon))}{\hat r + \epsilon},\ k = 1,2,\dots,\text{num_basis}.
+
+   where :math:`\omega_k` is the frequency, default to be :math:`k\pi`,
+   :math:`\hat r=r/c` is the cutoff-normalized distance,
+   and :math:`\epsilon` is a small value for stability near zero.
+
+   :param num_basis: The number of basis functions to use.
+   :type num_basis: int
+   :param cutoff: The cutoff value for the distance. Default is 1.
+   :type cutoff: float, optional
+   :param trainable: Whether the frequency parameters should be trainable. Default is False.
+   :type trainable: bool, optional
+   :param eps: A small value for stability near zero. Default is 1e-6.
+   :type eps: float, optional
+
+   .. rubric:: Notes
+
+   If :obj:`trainable` is :obj:`True`, the frequency parameters become :obj:`nn.Parameter` objects.
+
+
+   .. py:method:: forward(x: torch.Tensor) -> torch.Tensor
+
+      
+
+
+
+.. py:class:: SineBasisExpansion(max_freq: int)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Sine Basis Expansion module.
+
+   This module implements a sine basis expansion of the form:
+
+   .. math::
+
+       \sin(n x),\ n=1,2,\dots,\text{max_freq}.
+
+   :param max_freq: The maximum frequency to use.
+   :type max_freq: int
+
+
+   .. py:method:: forward(x: torch.Tensor)
+
+      
+
+
+
+.. py:class:: CosineBasisExpansion(max_freq: int)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Cosine Basis Expansion module.
+
+   This module implements a cosine basis expansion of the form:
+
+   .. math::
+
+       \cos(n x), n=1,2,\dots,\text{max_freq}.
+
+   :param max_freq: The maximum frequency to use.
+   :type max_freq: int
+
+
+   .. py:method:: forward(x: torch.Tensor)
+
+      
+
+
+
+.. py:class:: FourierBasisExpansion(max_freq: int, include_freq_0: bool = False)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Fourier Basis Expansion module.
+
+   This module implements a Fourier basis expansion of the form:
+
+   .. math::
+
+       [\sin(nx), \cos(nx)],\ n=1,2,\dots,\text{max_freq}.
+
+   :param max_freq: The maximum frequency to use.
+   :type max_freq: int
+   :param include_freq_0: Whether to include a constant term (frequency 0) in the expansion.
+                          Default is False.
+   :type include_freq_0: bool, optional
+
+   .. rubric:: Notes
+
+   The output tensor is organized in the following frequency order:
+
+   .. math::
+       [\sin(\text{max_freq}\cdot x), ..., \sin(2x), \sin(x), \\
+           1 \text{(if include_freq_0)}, \\
+               \cos(x), \cos(2x), ..., \cos(\text{max_freq}\cdot x)]
+
+   This arrangement places lower frequencies closer to the center of the output tensor,
+   with sine terms in descending order followed by cosine terms in ascending order.
+
+   It is recommended to not include frequency 0. It will be equivalent to add a bias in
+   the following linear operation.
+
+
+   .. py:method:: forward(x: torch.Tensor)
+
+      
+
+
+
+.. py:class:: CosineCutoff(cutoff: float, start: float = 0)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Implements a cosine cutoff function
+
+   .. math::
+       f(r)=\begin{cases}
+       1, & r < \text{start},\\
+       \dfrac{1}{2}\left[1 + \cos\left(\pi\cdot u\right)\right], & \text{start}\le r \le \text{cutoff},\\
+       0, & r > \text{cutoff},
+       \end{cases}
+   where :math:`u=\dfrac{r-\text{start}}{\text{cutoff}-\text{start}}`.
+
+   This cutoff function smoothly decreases from 1 to 0 in the range
+   :math:`[\text{start}, \text{cutoff}]` using a cosine function.
+
+   :param cutoff: The cutoff distance where the function reaches zero.
+   :type cutoff: float
+   :param start: The starting distance where the function begins to decrease from 1.
+                 Must be less than `cutoff`. Default is 0.
+   :type start: float, optional
+
+
+   .. py:method:: forward(x: torch.Tensor)
+
+      
+
+
+
+.. py:class:: MollifierCutoff(cutoff: float, start: float = 0, eps: float = 1e-09)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Implements a mollifier cutoff function.
+
+   The mollifier cutoff function is defined as:
+
+   .. math::
+       f(r) = \begin{cases}
+       1, & r < \text{start}\\
+       \exp \left[{1 - \left({1 - u^2}+\epsilon\right)^{-1}}\right] & \text{start} \le r \le \text{cutoff} \\
+       0, & r > \text{cutoff}  ,
+       \end{cases}
+   where :math:`u=\dfrac{r-\text{start}}{\text{cutoff}-\text{start}}`.
+
+   :param cutoff: The cutoff distance where the function reaches zero.
+   :type cutoff: float
+   :param start: The starting distance where the function begins to decrease from 1.
+                 Must be less than `cutoff`. Default is 0.
+   :type start: float, optional
+   :param eps: A small value to prevent division by zero or numerical instabilities.
+               Default is 1e-9.
+   :type eps: float, optional
+
+
+   .. py:method:: forward(x: torch.Tensor)
+
+      
+
+
+
+.. py:class:: PolynomialCutoff(cutoff: float, start: float = 0, p: int = 5)
+
+   Bases: :py:obj:`torch.nn.Module`
+
+
+   Implements a polynomial cutoff function.
+
+   The polynomial cutoff function is defined as:
+
+   .. math::
+       f(r) = \begin{cases}
+       1, & r < \text{start},\\
+       1-\dfrac{(p+1)(p+2)}{2}u^p+p(p+2)u^{p+1}-\frac{p(p+1)}{2}u^{p+2}& \text{start}, \le r \le \text{cutoff}, \\
+       0, & r > \text{cutoff},
+       \end{cases}
+
+   where :math:`u=\dfrac{r-\text{start}}{\text{cutoff}-\text{start}}`.
+
+   :param cutoff: The cutoff distance where the function reaches zero.
+   :type cutoff: float
+   :param start: The starting distance where the function begins to decrease from 1.
+                 Must be less than `cutoff`. Default is 0.
+   :type start: float, optional
+   :param p: The order of the polynomial.
+             Default is 5.
+   :type p: int, optional
+
+
+   .. py:method:: forward(x: torch.Tensor)
+
+      
+
+
+

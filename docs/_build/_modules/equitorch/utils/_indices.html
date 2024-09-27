@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>equitorch.utils._indices &mdash; equitorch  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            equitorch
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../autoapi/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">equitorch</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">equitorch.utils._indices</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for equitorch.utils._indices</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">from</span> <span class="nn">torch</span> <span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">torch_geometric</span>
+<span class="kn">from</span> <span class="nn">torch_geometric.utils</span> <span class="kn">import</span> <span class="n">scatter</span>
+<span class="kn">import</span> <span class="nn">torch_geometric.utils</span>
+
+<span class="kn">from</span> <span class="nn">..typing</span> <span class="kn">import</span> <span class="n">DegreeRange</span>
+
+<div class="viewcode-block" id="check_degree_range">
+<a class="viewcode-back" href="../../../autoapi/equitorch/transforms/index.html#equitorch.transforms.check_degree_range">[docs]</a>
+<span class="nd">@functools</span><span class="o">.</span><span class="n">lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check and normalize the degree range.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : DegreeRange</span>
+<span class="sd">        The input degree range. Can be an int or a tuple of two ints.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tuple[int, int]</span>
+<span class="sd">        A tuple representing the normalized degree range (l_min, l_max).</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; L = (1, 3)</span>
+<span class="sd">    &gt;&gt;&gt; result = check_degree_range(L)</span>
+<span class="sd">    &gt;&gt;&gt; print(result)</span>
+<span class="sd">    (1, 3)</span>
+<span class="sd">    &gt;&gt;&gt; L = 5</span>
+<span class="sd">    &gt;&gt;&gt; result = check_degree_range(L)</span>
+<span class="sd">    &gt;&gt;&gt; print(result)</span>
+<span class="sd">    (0, 5)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="n">L</span></div>
+
+
+<span class="nd">@functools</span><span class="o">.</span><span class="n">lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">degrees_in_range</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">):</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="nd">@functools</span><span class="o">.</span><span class="n">lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">order_batch</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a tensor of degree indices for each order.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : DegreeRange</span>
+<span class="sd">        The degree range.</span>
+<span class="sd">    device : torch.device, optional</span>
+<span class="sd">        The device to place the resulting tensor on.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    torch.Tensor</span>
+<span class="sd">        A tensor where each element is the degree index for the corresponding order.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; L = (0, 2)</span>
+<span class="sd">    &gt;&gt;&gt; result = order_batch(L)</span>
+<span class="sd">    &gt;&gt;&gt; print(result)</span>
+<span class="sd">    tensor([0, 1, 1, 1, 2, 2, 2, 2, 2])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">L</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="n">acc</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">degrees_in_range</span><span class="p">(</span><span class="n">L</span><span class="p">):</span>
+        <span class="n">ind</span><span class="p">[</span><span class="n">acc</span><span class="p">:</span> <span class="n">acc</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span><span class="o">-</span><span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">acc</span> <span class="o">+=</span> <span class="mi">2</span><span class="o">*</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span>
+    <span class="k">return</span> <span class="n">ind</span>
+
+<span class="k">def</span> <span class="nf">extract_batch_ptr</span><span class="p">(</span><span class="n">keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    key: sorted, int</span>
+<span class="sd">    returns: batch, ptr, key_value</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">k</span><span class="p">[</span><span class="n">ptr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">):</span>
+            <span class="n">ptr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">ptr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">batch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">ptr</span><span class="p">)):</span>
+        <span class="n">batch</span><span class="p">[</span><span class="n">ptr</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span><span class="n">ptr</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span>
+    <span class="n">ptr</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">ptr</span><span class="p">)</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="p">[</span><span class="n">ptr</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">batch</span><span class="p">,</span> <span class="n">ptr</span><span class="p">,</span> <span class="n">val</span>
+
+<span class="c1"># def </span>
+
+<span class="nd">@functools</span><span class="o">.</span><span class="n">lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">order_ptr</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a tensor of pointers to the start of each degree&#39;s orders, including the next of the final elements.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : DegreeRange</span>
+<span class="sd">        The degree range.</span>
+<span class="sd">    dim : int, optional</span>
+<span class="sd">        The dimension along which to expand the result. Default is 0.</span>
+<span class="sd">    device : torch.device, optional</span>
+<span class="sd">        The device to place the resulting tensor on.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    torch.Tensor</span>
+<span class="sd">        A tensor of pointers to the start of each degree&#39;s orders.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; L = (0, 2)</span>
+<span class="sd">    &gt;&gt;&gt; result = order_ptr(L)</span>
+<span class="sd">    &gt;&gt;&gt; print(result)</span>
+<span class="sd">    tensor([0, 1, 4, 9])</span>
+<span class="sd">    &gt;&gt;&gt; L = (1, 3)</span>
+<span class="sd">    &gt;&gt;&gt; result = order_ptr(L)</span>
+<span class="sd">    &gt;&gt;&gt; print(result)</span>
+<span class="sd">    tensor([0, 3, 8, 15])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="n">i</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="p">)])</span><span class="o">.</span><span class="n">reshape</span><span class="p">([</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">dim</span><span class="o">+</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">order_in_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">zero_based</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span>
+        <span class="n">m</span><span class="o">+</span><span class="n">zero_based</span><span class="o">*</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">degrees_in_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">orders_in_degree</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+    <span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">orders_in_degree</span><span class="p">(</span><span class="n">l</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">l</span><span class="p">,</span> <span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="nd">@functools</span><span class="o">.</span><span class="n">lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">list_degrees</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">L1</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">L2</span><span class="p">:</span> <span class="n">DegreeRange</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">cond</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a list of valid degree triplets (l, l1, l2). (The triplet satisfies triangular inequality)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : DegreeRange</span>
+<span class="sd">        The range for the total angular momentum l.</span>
+<span class="sd">    L1 : DegreeRange</span>
+<span class="sd">        The range for the first angular momentum l1.</span>
+<span class="sd">    L2 : DegreeRange</span>
+<span class="sd">        The range for the second angular momentum l2. default: None, represents the range of all possible l2&#39;s</span>
+<span class="sd">    cond : Callable[[int, int, int], bool], optional</span>
+<span class="sd">        An optional condition function to further filter the triplets.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    List[Tuple[int, int, int]]</span>
+<span class="sd">        A sorted list of valid (l, l1, l2) triplets.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; print(list_degrees(1, (1,2), (2,3)))</span>
+<span class="sd">    [(0, 2, 2), (1, 1, 2), (1, 2, 2), (1, 2, 3)]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">L1</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L1</span><span class="p">)</span>
+    <span class="n">L2</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L2</span><span class="p">)</span> <span class="k">if</span> <span class="n">L2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
+        <span class="k">else</span> <span class="p">(</span><span class="nb">min</span><span class="p">([</span><span class="nb">abs</span><span class="p">(</span><span class="n">l1</span><span class="o">-</span><span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l1_min</span><span class="p">,</span><span class="n">l1_max</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">l_min</span><span class="p">,</span><span class="n">l_max</span><span class="o">+</span><span class="mi">1</span><span class="p">)]),</span> <span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">L1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">cond</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ls</span> <span class="o">=</span> <span class="p">[(</span><span class="n">l</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">)</span> 
+              <span class="k">for</span> <span class="n">l1</span> <span class="ow">in</span> <span class="n">degrees_in_range</span><span class="p">(</span><span class="n">L1</span><span class="p">)</span> 
+              <span class="k">for</span> <span class="n">l2</span> <span class="ow">in</span> <span class="n">degrees_in_range</span><span class="p">(</span><span class="n">L2</span><span class="p">)</span>
+              <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">degrees_in_range</span><span class="p">((</span><span class="nb">abs</span><span class="p">(</span><span class="n">l1</span><span class="o">-</span><span class="n">l2</span><span class="p">),</span><span class="n">l1</span><span class="o">+</span><span class="n">l2</span><span class="p">))</span> 
+              <span class="k">if</span> <span class="p">(</span><span class="n">l</span> <span class="o">&gt;=</span> <span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">cond</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">))]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ls</span> <span class="o">=</span> <span class="p">[(</span><span class="n">l</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">l2</span><span class="p">)</span> 
+              <span class="k">for</span> <span class="n">l1</span> <span class="ow">in</span> <span class="n">degrees_in_range</span><span class="p">(</span><span class="n">L1</span><span class="p">)</span> 
+              <span class="k">for</span> <span class="n">l2</span> <span class="ow">in</span> <span class="n">degrees_in_range</span><span class="p">(</span><span class="n">L2</span><span class="p">)</span>
+              <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">degrees_in_range</span><span class="p">((</span><span class="nb">abs</span><span class="p">(</span><span class="n">l1</span><span class="o">-</span><span class="n">l2</span><span class="p">),</span><span class="n">l1</span><span class="o">+</span><span class="n">l2</span><span class="p">))</span>  
+              <span class="k">if</span> <span class="p">(</span><span class="n">l</span> <span class="o">&gt;=</span> <span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">l</span> <span class="o">&lt;=</span> <span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ls</span><span class="p">)</span>
+
+<span class="nd">@functools</span><span class="o">.</span><span class="n">lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">num_degree_triplets</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">L1</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">L2</span><span class="p">:</span> <span class="n">DegreeRange</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+                        <span class="n">cond</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate the number of valid degree triplets (l, l1, l2). (The triplet satisfies triangular inequality)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    L : DegreeRange</span>
+<span class="sd">        The range for the total angular momentum l.</span>
+<span class="sd">    L1 : DegreeRange</span>
+<span class="sd">        The range for the first angular momentum l1.</span>
+<span class="sd">    L2 : DegreeRange</span>
+<span class="sd">        The range for the second angular momentum l2.</span>
+<span class="sd">    cond : Callable[[int, int, int], bool], optional</span>
+<span class="sd">        An optional condition function to further filter the triplets.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        The number of valid degree triplets.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; print(list_degrees(1, (1,2), (2,3)))</span>
+<span class="sd">    4</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_degrees</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">L1</span><span class="p">,</span> <span class="n">L2</span><span class="p">,</span> <span class="n">cond</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">num_orders_in</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">num_orders_between</span><span class="p">(</span><span class="o">*</span><span class="n">L</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">num_orders_between</span><span class="p">(</span><span class="n">lmin</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">lmax</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the number of orders between two degrees.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lmin : int</span>
+<span class="sd">        The minimum degree.</span>
+<span class="sd">    lmax : int</span>
+<span class="sd">        The maximum degree.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        The total number of orders between lmin and lmax (inclusive).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">lmax</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">lmin</span> <span class="o">**</span> <span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">num_order_of_degree</span><span class="p">(</span><span class="n">l</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the number of orders for a given degree.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    l : int</span>
+<span class="sd">        The degree.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        The number of orders for the given degree (2l + 1).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">l</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="k">def</span> <span class="nf">degree_index_from</span><span class="p">(</span><span class="n">l</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">l_min</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the start and end indices for a given degree.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    l : int</span>
+<span class="sd">        The degree.</span>
+<span class="sd">    l_min : int</span>
+<span class="sd">        The minimum degree in the range.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tuple[int, int]</span>
+<span class="sd">        A tuple containing the start and end indices for the given degree.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; l, l_min = 2, 0</span>
+<span class="sd">    &gt;&gt;&gt; result = degree_index_from(l, l_min)</span>
+<span class="sd">    &gt;&gt;&gt; print(result)</span>
+<span class="sd">    (4, 8)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">l</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">l_min</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="p">,</span> <span class="p">(</span><span class="n">l</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">l_min</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">l</span><span class="o">*</span><span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">degree_order_to_index</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">l_min</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert degree and order to a linear index.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    l : int</span>
+<span class="sd">        The degree.</span>
+<span class="sd">    m : int</span>
+<span class="sd">        The order.</span>
+<span class="sd">    l_min : int, optional</span>
+<span class="sd">        The minimum degree in the range. Default is 0.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        The linear index corresponding to the given degree and order.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; l, m, l_min = 2, 1, 0</span>
+<span class="sd">    &gt;&gt;&gt; result = degree_order_to_index(l, m, l_min)</span>
+<span class="sd">    &gt;&gt;&gt; print(result)</span>
+<span class="sd">    7</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">l</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">m</span><span class="o">+</span><span class="n">l</span> <span class="o">-</span> <span class="n">l_min</span> <span class="o">**</span> <span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">expand_degree_to_order</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Expand a tensor from degree to order representation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    src : torch.Tensor</span>
+<span class="sd">        The input tensor in degree representation.</span>
+<span class="sd">    L : DegreeRange</span>
+<span class="sd">        The degree range.</span>
+<span class="sd">    dim : int</span>
+<span class="sd">        The dimension along which to expand the tensor.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    torch.Tensor</span>
+<span class="sd">        The expanded tensor in order representation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">order_batch</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">src</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">src</span><span class="o">.</span><span class="n">index_select</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">ind</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">reduce_order_to_degree</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">dim</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reduce a tensor from order to degree representation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    src : torch.Tensor</span>
+<span class="sd">        The input tensor in order representation.</span>
+<span class="sd">    L : DegreeRange</span>
+<span class="sd">        The degree range.</span>
+<span class="sd">    dim : int</span>
+<span class="sd">        The dimension along which to reduce the tensor.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    torch.Tensor</span>
+<span class="sd">        The reduced tensor in degree representation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">dim</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">ndim</span> <span class="o">+</span> <span class="n">dim</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">order_ptr</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">src</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">torch_geometric</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">ind</span><span class="p">)</span>
+
+<span class="nd">@functools</span><span class="o">.</span><span class="n">lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">order_0_in</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">):</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">ls</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">L</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ls</span><span class="o">+</span><span class="n">ls</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="k">def</span> <span class="nf">extract_in_degree</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">L_x</span><span class="p">:</span><span class="n">DegreeRange</span><span class="p">,</span> <span class="n">L</span><span class="p">:</span><span class="n">DegreeRange</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">L_x</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">narrow</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">L</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">-</span><span class="n">L_x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">num_order_between</span><span class="p">(</span><span class="o">*</span><span class="n">L</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">separate_invariant_equivariant</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">narrow_copy</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> \
+           <span class="n">x</span><span class="o">.</span><span class="n">narrow_copy</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">dim</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">concate_invariant_equivariant</span><span class="p">(</span><span class="n">invariant</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">equivariant</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">2</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">invariant</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="n">equivariant</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">invariant</span> <span class="o">=</span> <span class="n">invariant</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">invariant</span><span class="p">,</span> <span class="n">equivariant</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="n">dim</span><span class="p">)</span>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Tong Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

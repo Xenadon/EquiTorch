@@ -39,6 +39,9 @@ def check_degree_range(L: DegreeRange) -> Tuple[int,int]:
 
 @functools.lru_cache(maxsize=None)
 def degrees_in_range(L: DegreeRange):
+    """
+    Returns :obj:`range(L[0], L[1]+1)`.
+    """
     L = check_degree_range(L)
     return range(L[0], L[1]+1)
 
@@ -128,6 +131,46 @@ def order_ptr(L: DegreeRange, dim:int=0, device=None):
     L = check_degree_range(L)
     return torch.tensor([i**2-L[0]**2 for i in range(L[0], L[1]+2)]).reshape([1]*dim+[-1]).to(device)
 
+def order_in_degree_range(L: DegreeRange, zero_based:bool=True, device=None):
+    """
+    Generate a tensor that specifying the order :math:`m` in a feature of 
+    degree range :math:`L`.
+
+    Parameters
+    ----------
+    L : DegreeRange
+        The degree range.
+    zero_based : bool, optional
+        Whether the :math:`m` is in :math:`0,\dots,2l_\text{max}+1` or 
+        :math:`-l_\text{max},\dots,l_\text{max}`. Default is True.
+    device : torch.device, optional
+        The device to place the resulting tensor on.
+
+    Returns
+    -------
+    Tensor
+        A tensor denoting the degrees.
+
+    Example
+    -------
+    >>> L = (1, 2)
+    >>> result = order_in_degree_range(L, True)
+    >>> print(result)
+    tensor([1, 2, 3, 0, 1, 2, 3, 4])
+    >>> result = order_in_degree_range(L, False)
+    >>> print(result)
+    tensor([-1, 0, 1, -2, -1, 0, 1, 2])
+    """
+    return torch.tensor([
+        m+zero_based*(L[1]) for l in degrees_in_range(L) for m in orders_in_degree(l)
+    ], device=device)
+
+def orders_in_degree(l:int):
+    """
+    returns :obj:`range(-l, l+1)`
+    """
+    return range(-l, l+1)
+
 @functools.lru_cache(maxsize=None)
 def list_degrees(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None, cond: Optional[Callable[[int, int, int], bool]] =None):
     """
@@ -196,12 +239,20 @@ def num_degree_triplets(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None,
 
     Example
     -------
-    >>> print(list_degrees(1, (1,2), (2,3)))
+    >>> print(num_degree_triplets(1, (1,2), (2,3)))
     4
     """
     return len(list_degrees(L, L1, L2, cond))
 
-def num_order_between(lmin: int, lmax: int):
+def num_orders_in(L: DegreeRange):
+    """
+    Calculate the number of spherical orders in a degree range.
+    """
+    L = check_degree_range(L)
+    return num_orders_between(*L)
+
+
+def num_orders_between(lmin: int, lmax: int):
     """
     Calculate the number of orders between two degrees.
 
@@ -340,7 +391,7 @@ def order_0_in(L: DegreeRange):
 def extract_in_degree(x: Tensor, L_x:DegreeRange, L:DegreeRange, dim=-2):
     L = check_degree_range(L)
     L_x = check_degree_range(L)
-    return x.narrow(dim, L[0]**2-L_x[0]**2, num_order_between(*L))
+    return x.narrow(dim, L[0]**2-L_x[0]**2, num_orders_between(*L))
 
 
 def separate_invariant_equivariant(x:Tensor, dim=-2):

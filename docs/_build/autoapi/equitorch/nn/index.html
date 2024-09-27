@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>equitorch.nn &mdash; equitorch  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="equitorch.transforms" href="../transforms/index.html" />
+    <link rel="prev" title="equitorch.math" href="../math/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            equitorch
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">equitorch</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../math/index.html">equitorch.math</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">equitorch.nn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../transforms/index.html">equitorch.transforms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../typing/index.html">equitorch.typing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html">equitorch.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">equitorch</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">equitorch</a></li>
+      <li class="breadcrumb-item active">equitorch.nn</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/autoapi/equitorch/nn/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-equitorch.nn">
+<span id="equitorch-nn"></span><h1>equitorch.nn<a class="headerlink" href="#module-equitorch.nn" title="Link to this heading"></a></h1>
+<p>Some neural network layers.</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.nn.DegreeWiseLinear" title="equitorch.nn.DegreeWiseLinear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DegreeWiseLinear</span></code></a></p></td>
+<td><p>Perform degree-wise linear operation (channel mixing) as the self-interaction</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.nn.SO3Linear" title="equitorch.nn.SO3Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SO3Linear</span></code></a></p></td>
+<td><p>The SO(3) equivariant linear operation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id0" title="equitorch.nn.SO2Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SO2Linear</span></code></a></p></td>
+<td><p>The SO(3) equivariant linear operation of complexity <span class="math notranslate nohighlight">\(O(L^3)\)</span> for the</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.nn.ElementWiseLinear" title="equitorch.nn.ElementWiseLinear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ElementWiseLinear</span></code></a></p></td>
+<td><p>Applies an element wise linear transformation to the input tensor.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.nn.WeightedTensorProduct" title="equitorch.nn.WeightedTensorProduct"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WeightedTensorProduct</span></code></a></p></td>
+<td><p>Weighted Tensor Product</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.nn.TensorProduct" title="equitorch.nn.TensorProduct"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TensorProduct</span></code></a></p></td>
+<td><p>The traditional tensor product with no weights</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.nn.TensorDot" title="equitorch.nn.TensorDot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TensorDot</span></code></a></p></td>
+<td><p>The module that computes the degree-wise dot product between spherical features</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#id0" title="equitorch.nn.SO2Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SO2Linear</span></code></a></p></td>
+<td><p>The SO(3) equivariant linear operation of complexity <span class="math notranslate nohighlight">\(O(L^3)\)</span> for the</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.nn.ScaledDotAttention" title="equitorch.nn.ScaledDotAttention"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScaledDotAttention</span></code></a></p></td>
+<td><p>Computes invariant attention score using scaled dot product attention as:</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.nn.AttentionalBlock" title="equitorch.nn.AttentionalBlock"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AttentionalBlock</span></code></a></p></td>
+<td><p>Perform attentional aggregation</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.nn.GaussianBasisExpansion" title="equitorch.nn.GaussianBasisExpansion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GaussianBasisExpansion</span></code></a></p></td>
+<td><p>Gaussian Basis Expansion module.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.nn.BesselBasisExpansion" title="equitorch.nn.BesselBasisExpansion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BesselBasisExpansion</span></code></a></p></td>
+<td><p>Bessel Basis Expansion module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.nn.SineBasisExpansion" title="equitorch.nn.SineBasisExpansion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SineBasisExpansion</span></code></a></p></td>
+<td><p>Sine Basis Expansion module.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.nn.CosineBasisExpansion" title="equitorch.nn.CosineBasisExpansion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CosineBasisExpansion</span></code></a></p></td>
+<td><p>Cosine Basis Expansion module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.nn.FourierBasisExpansion" title="equitorch.nn.FourierBasisExpansion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FourierBasisExpansion</span></code></a></p></td>
+<td><p>Fourier Basis Expansion module.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.nn.CosineCutoff" title="equitorch.nn.CosineCutoff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CosineCutoff</span></code></a></p></td>
+<td><p>Implements a cosine cutoff function</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.nn.MollifierCutoff" title="equitorch.nn.MollifierCutoff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MollifierCutoff</span></code></a></p></td>
+<td><p>Implements a mollifier cutoff function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.nn.PolynomialCutoff" title="equitorch.nn.PolynomialCutoff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PolynomialCutoff</span></code></a></p></td>
+<td><p>Implements a polynomial cutoff function.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="package-contents">
+<h2>Package Contents<a class="headerlink" href="#package-contents" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.DegreeWiseLinear">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">DegreeWiseLinear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.DegreeWiseLinear" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>Perform degree-wise linear operation (channel mixing) as the self-interaction
+of Tensor field networks.</p>
+<p>This class implements the operation described in <a class="reference external" href="https://arxiv.org/abs/1802.08219">Tensor field
+networks: Rotation- and translation-equivariant neural networks for 3D
+point clouds</a>.</p>
+<p>The operation is defined as:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{x'}^{(l)}_c = \sum_{c'} \mathbf{W}^{(l)}_{cc'} \mathbf{x}_{c'}^{(l)}\]</div>
+<p>The <code class="xref py py-obj docutils literal notranslate"><span class="pre">L_out</span></code> range must be contained within the <code class="xref py py-obj docutils literal notranslate"><span class="pre">L_in</span></code> range, and the degrees in
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">L_in</span></code> but not in <code class="xref py py-obj docutils literal notranslate"><span class="pre">L_out</span></code> will be ignored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L_in</strong> (<em>DegreeRange</em>) – Input degree range.</p></li>
+<li><p><strong>L_out</strong> (<em>DegreeRange</em>) – Output degree range.</p></li>
+<li><p><strong>in_channels</strong> (<em>int</em>) – Number of input channels.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – Number of output channels.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.DegreeWiseLinear.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.DegreeWiseLinear.forward" title="Link to this definition"></a></dt>
+<dd><p>Applies the degree wise linear operation to the input tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>Tensor</em>) – The input tensor of shape <span class="math notranslate nohighlight">\((N, \text{num_orders_in}, C_{\text{in}})\)</span>,
+where <span class="math notranslate nohighlight">\(N\)</span> is the batch size and <span class="math notranslate nohighlight">\(C_{\text{in}}\)</span> is the number of channels.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The output tensor of shape <span class="math notranslate nohighlight">\((N, \text{num_orders_out}, C_{\text{out}})\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.SO3Linear">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">SO3Linear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_wise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.SO3Linear" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>The SO(3) equivariant linear operation.</p>
+<p>The SO(3) equivariant linear operation first proposed by <a class="reference external" href="https://arxiv.org/abs/1802.08219">Tensor field
+networks: Rotation- and translation-equivariant neural networks for 3D
+point clouds</a>. The name of “linear
+operation” comes from <a class="reference external" href="https://arxiv.org/abs/2110.02905">Geometric and Physical Quantities Improve E(3)
+Equivariant Message Passing</a>.</p>
+<p>This operation can be expressed as</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{x'}^{(l)}=\sum_{l_1,l_2}\mathbf{W}_{l_1,l_2}^{l}(\|\mathbf{r}\|)\mathbf{x}^{(l_1)}\otimes \mathbf{Y}^{(l_2)}(\mathbf{r}),\]</div>
+<p>or</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{x'}^{(l)}_{m}=\sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}\mathbf{W}_{l_1,l_2}^{l}(\|\mathbf{r}\|)\mathbf{x}_{m_1}^{(l_1)}\mathbf{Y}_{m_2}^{(l_2)}(\mathbf{r}),\]</div>
+<p>where the summation of <span class="math notranslate nohighlight">\((l_1,l_2)\)</span> is over all the values such that
+<span class="math notranslate nohighlight">\(l_1\in L_1, l_2\in L_2\)</span> and <span class="math notranslate nohighlight">\(|l_1-l_2|\le l\le l_1+l_2\)</span>,
+<span class="math notranslate nohighlight">\(C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}\)</span> are the Clebsch-Gordan coefficients and
+<span class="math notranslate nohighlight">\(\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}_{m_1}^{(l_i)}\)</span> means
+<span class="math notranslate nohighlight">\(\sum_{c'}\mathbf{W}_{l_1,l_2,cc'}^{l}\mathbf{x}_{m_1,c'}^{(l_i)}\)</span>
+if <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code>, or
+<span class="math notranslate nohighlight">\(\mathbf{W}_{l_1,l_2,c}^{l}\mathbf{x}_{m_1,c}^{(l_i)}\)</span> if <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>.
+<span class="math notranslate nohighlight">\(\mathbf{W}(\|\mathbf{r}\|)\)</span> means the weights can depend on the length of the
+vector <span class="math notranslate nohighlight">\(\mathbf{r}\in\mathbb{R}^3\)</span> (but not necessary).</p>
+<p>When there are no ambiguities on <code class="xref py py-obj docutils literal notranslate"><span class="pre">L_in</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">L_edge</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">L_out</span></code>,
+we also denote this operation as</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{x'}=\tilde{\mathbf{W}}({\mathbf{r}})\mathbf{x},\]</div>
+<p>We use “tilde” to denote this is an equivariant operation.
+This looks more like a linear operation where the weight can depend on <span class="math notranslate nohighlight">\(\mathbf{r}\)</span>.</p>
+<p>The SO(3) equivariance means that for any rotation matrix <span class="math notranslate nohighlight">\(\mathbf{R}\in\mathrm{SO(3)}\)</span>
+and corresponding Wigner-D matrices <span class="math notranslate nohighlight">\(\mathbf{D}_{\text{in}}\)</span>,
+<span class="math notranslate nohighlight">\(\mathbf{D}_{\text{out}}\)</span> in input/output feature spaces, it satisfies that</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{D}_{\text{out}}\tilde{\mathbf{W}}({\mathbf{r}})\mathbf{x}=\tilde{\mathbf{W}}(\mathbf{R}{\mathbf{r}})(\mathbf{D}_{\text{in}}\mathbf{x}).\]</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By using sparse contraction on <span class="math notranslate nohighlight">\(m_1,m_2\)</span>, the time complexity of this operation is <span class="math notranslate nohighlight">\(O(L^5)\)</span>
+for the maximum degree <span class="math notranslate nohighlight">\(L\)</span>.</p>
+<p>Whenever possible, it is recommended to use <a class="reference internal" href="#id0" title="equitorch.nn.SO2Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SO2Linear</span></code></a> for
+equivariant operation on large <span class="math notranslate nohighlight">\(L\)</span>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L_in</strong> (<em>DegreeRange</em>) – The degree range of the input.</p></li>
+<li><p><strong>L_edge</strong> (<em>DegreeRange</em>) – The degree range of the edge.</p></li>
+<li><p><strong>L_out</strong> (<em>DegreeRange</em>) – The degree range of the output.</p></li>
+<li><p><strong>in_channels</strong> (<em>int</em>) – The number of input channels.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – The number of output channels.</p></li>
+<li><p><strong>external_weight</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use an external weight. Defaults to False.</p></li>
+<li><p><strong>channel_wise</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to perform the operation channel-wise. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.SO3Linear.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_feat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.SO3Linear.forward" title="Link to this definition"></a></dt>
+<dd><p>Applies the SO(3) linear operation to the input tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Tensor</em>) – The input tensor of shape <span class="math notranslate nohighlight">\((N, \text{num_orders_in}, C_{\text{in}})\)</span>,
+where <span class="math notranslate nohighlight">\(N\)</span> is the batch size and <span class="math notranslate nohighlight">\(C_{\text{in}}\)</span> is the number of channels.</p></li>
+<li><p><strong>edge_feat</strong> (<em>Tensor</em>) – The edge spherical harmonics tensor of shape <span class="math notranslate nohighlight">\((N, \text{num_orders_edge})\)</span>.</p></li>
+<li><p><strong>weight</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – The external weights to use for the linear operation. If <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, the
+internal weights will be used.
+The shape of the weights depends on the value of <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code>.
+If <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>, the shape should be <span class="math notranslate nohighlight">\((N, \text{num_weights}, C_{\text{in}})\)</span>.
+If <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code>, the shape should be <span class="math notranslate nohighlight">\((N, \text{num_weights}, C_{\text{in}}, C_{\text{out}})\)</span>,</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The output tensor of shape <span class="math notranslate nohighlight">\((N, \text{num_orders_out}, C_{\text{out}})\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If <code class="xref py py-obj docutils literal notranslate"><span class="pre">external_weight</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>, the <code class="xref py py-obj docutils literal notranslate"><span class="pre">weight</span></code> parameter must be provided.
+If <code class="xref py py-obj docutils literal notranslate"><span class="pre">external_weight</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code>, the <code class="xref py py-obj docutils literal notranslate"><span class="pre">weight</span></code> will still be used if provided.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.SO2Linear">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">SO2Linear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_wise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.SO2Linear" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>The SO(3) equivariant linear operation of complexity <span class="math notranslate nohighlight">\(O(L^3)\)</span> for the
+maximum degree <span class="math notranslate nohighlight">\(L\)</span> as described in the paper <a class="reference external" href="https://arxiv.org/abs/2302.03655">Reducing SO(3)
+Convolutions to SO(2) for Efficient Equivariant GNNs</a>.</p>
+<p>It works as a more efficient alternative for SO(3) linear operation.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbf{x}_{m}^{(l_o)}&amp;=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}-\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, &amp; m &lt; 0,\\
+\mathbf{x}_{0}^{(l_o)}&amp;=\sum_{l_i\in L_{in}}\mathbf{W}_{0}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{0}^{(l_i)}, &amp;\\
+\mathbf{x}_{m}^{(l_o)}&amp;=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m}^{(l_i)}-\mathbf{W}_{-m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, &amp; m &gt; 0,\\
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m'}^{(l_i)}\)</span> means
+<span class="math notranslate nohighlight">\(\sum_{c'}\mathbf{W}_{m,cc'}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c'}^{(l_i)}\)</span>
+if <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code>, or
+<span class="math notranslate nohighlight">\(\mathbf{W}_{m,c}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c}^{(l_i)}\)</span> if <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>.
+<span class="math notranslate nohighlight">\(\mathbf{W}(\|\mathbf{r}\|)\)</span> means the weights can depend on the length of the
+vector <span class="math notranslate nohighlight">\(\mathbf{r}\in\mathbb{R}^3\)</span> (but not necessary).</p>
+<p>When there is no ambiguity, we also denote the operation as</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{x}'=\tilde{\mathbf{W}}(\|\mathbf{r}\|)\mathbf{x}.\]</div>
+<p>The operation satisfies the following property:</p>
+<p>for any possible SO(3) linear operation <span class="math notranslate nohighlight">\(\tilde{\mathbf{W}}(\mathbf{r})\)</span>,
+there exists an SO(2) linear operation <span class="math notranslate nohighlight">\(\tilde{\mathbf{W'}}(\|\mathbf{r}\|)\)</span> such that:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{D}_{\mathbf{r},\text{out}}^\top\tilde{\mathbf{W}}'(\|\mathbf{r}\|)(\mathbf{D}_{\mathbf{r},\text{in}}\mathbf{x})=\tilde{\mathbf{W}}(\mathbf {r})\mathbf{x}\]</div>
+<p>and vice versa, where <span class="math notranslate nohighlight">\(\mathbf{D}_{\mathbf{r},\text{in}}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{D}_{\mathbf{r},\text{out}}\)</span> are the Wigner-D
+matrices on the input/output spaces corresponding to the rotation matrix that can align <span class="math notranslate nohighlight">\(\mathbf{r}\)</span>
+to the z axis. (See Appendix 2 of the paper above for the proof of the bijection.)</p>
+<p>To explicitly convert from or to the weight for <a class="reference internal" href="#equitorch.nn.SO3Linear" title="equitorch.nn.SO3Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SO3Linear</span></code></a> operation, see
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">so3_weights_to_so2</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">so2_weights_to_so3</span></code> in <code class="xref py py-obj docutils literal notranslate"><span class="pre">utils</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If dense Wigner-D matrix is used before the SO(2) linear operation, the
+<span class="math notranslate nohighlight">\(O(L^4)\)</span> complexity of <span class="math notranslate nohighlight">\(\mathbf{Dx}\)</span> can be the bottleneck.
+When channels <span class="math notranslate nohighlight">\(C\)</span> explicitly considered, the linear operation will
+be of complexity <span class="math notranslate nohighlight">\(O(L^3C)\)</span> if channel wise or <span class="math notranslate nohighlight">\(O(L^3CC')\)</span> if
+not, but the rotation <span class="math notranslate nohighlight">\(\mathbf{Dx}\)</span> will always be of complexity
+<span class="math notranslate nohighlight">\(O(L^4C)\)</span>.</p>
+<p>Whenever possible, it is recommended to use <a class="reference internal" href="#id0" title="equitorch.nn.SO2Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SO2Linear</span></code></a> rather than <a class="reference internal" href="#equitorch.nn.SO3Linear" title="equitorch.nn.SO3Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SO3Linear</span></code></a> for
+equivariant operation on large <span class="math notranslate nohighlight">\(L\)</span>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L_in</strong> (<em>DegreeRange</em>) – The input degree range.</p></li>
+<li><p><strong>L_out</strong> (<em>DegreeRange</em>) – The output degree range.</p></li>
+<li><p><strong>in_channels</strong> (<em>int</em>) – The number of input channels.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – The number of output channels.</p></li>
+<li><p><strong>external_weight</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the user will pass external weights (that may depend on data or edges) or keep a set of independent weights inside.
+Default to False.</p></li>
+<li><p><strong>channel_wise</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the weight is performed channel-wise.
+Default to False.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.SO2Linear.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.SO2Linear.forward" title="Link to this definition"></a></dt>
+<dd><p>Applies the SO(2) linear operation to the input tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Tensor</em>) – The input tensor of shape <span class="math notranslate nohighlight">\((N, \text{num_orders_in}, C_{\text{in}})\)</span>,
+where <span class="math notranslate nohighlight">\(N\)</span> is the batch size, <span class="math notranslate nohighlight">\(\text{num_orders_in}\)</span>
+is the number of input orders, and <span class="math notranslate nohighlight">\(C_{\text{in}}\)</span> is the number of channels.
+before passed into this function, <span class="math notranslate nohighlight">\(x\)</span> must have been transformed by
+<span class="math notranslate nohighlight">\(\mathbf{D}_{\text{in}}\)</span>.</p></li>
+<li><p><strong>weight</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – The external weights to use for the linear operation. If <cite>None</cite>, the
+internal weights will be used.
+The shape of the weights depends on the value of <cite>channel_wise</cite>.
+If <cite>channel_wise</cite> is <cite>True</cite>, the shape should be <span class="math notranslate nohighlight">\((N, \text{num_weights}, C_{\text{in}})\)</span>.
+If <cite>channel_wise</cite> is <cite>False</cite>, the shape should be <span class="math notranslate nohighlight">\((N, \text{num_weights}, C_{\text{in}}, C_{\text{out}})\)</span>,</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The output tensor of shape <span class="math notranslate nohighlight">\((N, \text{num_orders_out}, C_{\text{out}})\)</span>.
+The returned feature should then be transformed by <span class="math notranslate nohighlight">\(\mathbf{D}_{\text{out}}^\top\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If <code class="xref py py-obj docutils literal notranslate"><span class="pre">external_weight</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>, the <code class="xref py py-obj docutils literal notranslate"><span class="pre">weight</span></code> parameter must be provided.
+If <code class="xref py py-obj docutils literal notranslate"><span class="pre">external_weight</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code>, the <code class="xref py py-obj docutils literal notranslate"><span class="pre">weight</span></code> will still be used if provided.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.ElementWiseLinear">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">ElementWiseLinear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_wise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.ElementWiseLinear" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>Applies an element wise linear transformation to the input tensor.</p>
+<p>The transformation can be either channel-wise or not channel-wise.</p>
+<p>If <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is False, the transformation is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{x}'_{mc'} = \sum_{c}  \mathbf{W}_{cc'} \mathbf{x}_{mc},\]</div>
+<p>If <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is True, the transformation is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{x}'_{mc} = \mathbf{W}_{c} \mathbf{x}_{mc},\]</div>
+<p>which is exactly a gate operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – Number of input channels.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – Number of output channels.</p></li>
+<li><p><strong>channel_wise</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the transformation is channel-wise. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.ElementWiseLinear.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.ElementWiseLinear.forward" title="Link to this definition"></a></dt>
+<dd><p>Applies the element-wise linear transformation to the input tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Tensor</em>) – Input tensor of shape <span class="math notranslate nohighlight">\((N, \text{num_orders}, C_{\text{in}})\)</span>.</p></li>
+<li><p><strong>weight</strong> (<em>Tensor</em>) – Weight tensor of shape <span class="math notranslate nohighlight">\((N, C_{\text{in}})\)</span> if <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is False, or
+<span class="math notranslate nohighlight">\((N, C_{\text{in}}, C_{\text{out}})\)</span> if <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transformed input tensor of shape <span class="math notranslate nohighlight">\((N, \text{num_orders}, C_{\text{out}})\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.WeightedTensorProduct">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">WeightedTensorProduct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L_in1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_in2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in1_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in2_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_wise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tp_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.WeightedTensorProduct" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>Weighted Tensor Product</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{z}^{(l)} = \sum_{l_1,l_2}\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)},
+l \in L_{out},\]</div>
+<p>or</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{z}^{(l)}_m = \sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}
+\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2},
+l \in L_{out}, m=-l,\dots,l,\]</div>
+<p>where the summation of <span class="math notranslate nohighlight">\((l_1,l_2)\)</span> is over all the values such that
+<span class="math notranslate nohighlight">\(l_1\in L_1, l_2\in L_2\)</span> and <span class="math notranslate nohighlight">\(|l_1-l_2|\le l\le l_1+l_2\)</span> and
+<span class="math notranslate nohighlight">\(C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}\)</span> are the Clebsch-Gordan coefficients.</p>
+<p>When considering multiple channel inputs, the effect of weights <span class="math notranslate nohighlight">\(\mathbf{W}_{l_1,l_2}^{l}\)</span>
+on input pairs <span class="math notranslate nohighlight">\((\mathbf{x}^{(l_1)}, \mathbf{y}^{(l_2)})\)</span> will depend on <code class="xref py py-obj docutils literal notranslate"><span class="pre">tp_type</span></code>:</p>
+<ul>
+<li><p>Channel wise:</p>
+<blockquote>
+<div><p>When <code class="xref py py-obj docutils literal notranslate"><span class="pre">tp_type='cw'</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">connected</span> <span class="pre">=</span> <span class="pre">False</span> <span class="pre">and</span> <span class="pre">channel_wise</span> <span class="pre">=</span> <span class="pre">True</span></code>,
+<span class="math notranslate nohighlight">\(\mathbf{W}_{l_1,l_2}^{l}\)</span> will be a <span class="math notranslate nohighlight">\((C,)\)</span> shaped tensor.
+<span class="math notranslate nohighlight">\(\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}\)</span> means that</p>
+<div class="math notranslate nohighlight">
+\[[\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_c=
+[\mathbf{W}_{l_1,l_2}^{l}]_c [\mathbf{x}^{(l_1)}_{m_1}]_c[\mathbf{y}^{(l_2)}_{m_2}]_c\]</div>
+</div></blockquote>
+</li>
+<li><p>Pair wise:</p>
+<blockquote>
+<div><p>When <code class="xref py py-obj docutils literal notranslate"><span class="pre">tp_type='pw'</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">connected</span> <span class="pre">=</span> <span class="pre">False</span> <span class="pre">and</span> <span class="pre">channel_wise</span> <span class="pre">=</span> <span class="pre">False</span></code>,
+<span class="math notranslate nohighlight">\(\mathbf{W}_{l_1,l_2}^{l}\)</span> will be a <span class="math notranslate nohighlight">\((C_1,C_2)\)</span> shaped tensor.
+<span class="math notranslate nohighlight">\(\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}\)</span> means that</p>
+<div class="math notranslate nohighlight">
+\[[\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_{c_1,c_2}=
+[\mathbf{W}_{l_1,l_2}^{l}]_{c_1,c_2} [\mathbf{x}^{(l_1)}_{m_1}]_{c_1}[\mathbf{y}^{(l_2)}_{m_2}]_{c_2}\]</div>
+</div></blockquote>
+</li>
+<li><p>Channel-wise connected:</p>
+<blockquote>
+<div><p>When <code class="xref py py-obj docutils literal notranslate"><span class="pre">tp_type='cwc'</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">connected</span> <span class="pre">=</span> <span class="pre">True</span> <span class="pre">and</span> <span class="pre">channel_wise</span> <span class="pre">=</span> <span class="pre">True</span></code>,
+<span class="math notranslate nohighlight">\(\mathbf{W}_{l_1,l_2}^{l}\)</span> will be a <span class="math notranslate nohighlight">\((C_{\text{in}},C_{\text{out}})\)</span> shaped tensor.
+<span class="math notranslate nohighlight">\(\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}\)</span> means that</p>
+<div class="math notranslate nohighlight">
+\[[\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_{c'}=
+\sum_c[\mathbf{W}_{l_1,l_2}^{l}]_{c,c'} [\mathbf{x}^{(l_1)}_{m_1}]_c[\mathbf{y}^{(l_2)}_{m_2}]_c\]</div>
+</div></blockquote>
+</li>
+<li><p>Fully connected:</p>
+<blockquote>
+<div><p>When <code class="xref py py-obj docutils literal notranslate"><span class="pre">tp_type='fc'</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">connected</span> <span class="pre">=</span> <span class="pre">False</span> <span class="pre">and</span> <span class="pre">channel_wise</span> <span class="pre">=</span> <span class="pre">False</span></code>,
+<span class="math notranslate nohighlight">\(\mathbf{W}_{l_1,l_2}^{l}\)</span> will be a <span class="math notranslate nohighlight">\((C_{\text{in1}},C_{\text{in2}},C_{\text{out}})\)</span> shaped tensor.
+<span class="math notranslate nohighlight">\(\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}\)</span> means that</p>
+<div class="math notranslate nohighlight">
+\[[\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_{c'}=
+\sum_{c_1,c_2}[\mathbf{W}_{l_1,l_2}^{l}]_{c_1,c_2,c'} [\mathbf{x}^{(l_1)}_{m_1}]_{c_1}[\mathbf{y}^{(l_2)}_{m_2}]_{c_2}\]</div>
+</div></blockquote>
+</li>
+</ul>
+<p>Also, we allow different weights for different input pairs when <code class="xref py py-obj docutils literal notranslate"><span class="pre">external_weight</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>When <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">in1_channels</span></code> must be equal to <code class="xref py py-obj docutils literal notranslate"><span class="pre">in2_channels</span></code>.</p></li>
+<li><p>When <code class="xref py py-obj docutils literal notranslate"><span class="pre">connected</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">out_channels</span></code> must not be specified.</p></li>
+<li><p>When <code class="xref py py-obj docutils literal notranslate"><span class="pre">connected</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">out_channels</span></code> must be specified.</p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L_in1</strong> (<em>DegreeRange</em>) – The degree range of the first input.</p></li>
+<li><p><strong>L_in2</strong> (<em>DegreeRange</em>) – The degree range of the second input.</p></li>
+<li><p><strong>L_out</strong> (<em>DegreeRange</em>) – The degree range of the output.</p></li>
+<li><p><strong>in1_channels</strong> (<em>int</em>) – The number of channels in the first input.</p></li>
+<li><p><strong>in2_channels</strong> (<em>int</em>) – The number of channels in the second input. Must be the same as <code class="xref py py-obj docutils literal notranslate"><span class="pre">in1_channels</span></code> if <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of channels in the output. Must be specified if <code class="xref py py-obj docutils literal notranslate"><span class="pre">connected</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>, and must not be specified if <code class="xref py py-obj docutils literal notranslate"><span class="pre">connected</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>connected</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the weights are connected or not. Default is <code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code>. Will be overridden if <code class="xref py py-obj docutils literal notranslate"><span class="pre">tp_type</span></code> is specified.</p></li>
+<li><p><strong>channel_wise</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the weights are channel-wise or not. Default is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>. Will be overridden if <code class="xref py py-obj docutils literal notranslate"><span class="pre">tp_type</span></code> is specified.</p></li>
+<li><p><strong>tp_type</strong> (<em>str</em><em>, </em><em>optional</em>) – <p>The type of tensor product. Can be one of the following:</p>
+<blockquote>
+<div><ul>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">'channel_wise'</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">'cw'</span></code>: Channel-wise tensor product with <code class="xref py py-obj docutils literal notranslate"><span class="pre">connected=False</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise=True</span></code>.</p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">'pair_wise'</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">'pw'</span></code>: Pair-wise tensor product with <code class="xref py py-obj docutils literal notranslate"><span class="pre">connected=False</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise=False</span></code>.</p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">'channel_wise_connected'</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">'cwc'</span></code>: Channel-wise connected tensor product with <code class="xref py py-obj docutils literal notranslate"><span class="pre">connected=True</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise=True</span></code>.</p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">'fully_connected'</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">'fc'</span></code>: Fully connected tensor product with <code class="xref py py-obj docutils literal notranslate"><span class="pre">connected=True</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise=False</span></code>.</p></li>
+</ul>
+</div></blockquote>
+<p>If not provided, <code class="xref py py-obj docutils literal notranslate"><span class="pre">connected</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> will be used to determine the type of tensor product.</p>
+</p></li>
+<li><p><strong>external_weight</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use external weights or not. Default is <code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.WeightedTensorProduct.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.WeightedTensorProduct.forward" title="Link to this definition"></a></dt>
+<dd><p>Performs the weighted tensor product operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x1</strong> (<em>Tensor</em>) – The first input tensor of shape <span class="math notranslate nohighlight">\((N,\text{num_orders_1},C_1)\)</span>.</p></li>
+<li><p><strong>x2</strong> (<em>Tensor</em>) – The second input tensor of shape <span class="math notranslate nohighlight">\((N,\text{num_orders_2},C_2)\)</span>.</p></li>
+<li><p><strong>weight</strong> (<em>Optional</em><em>[</em><em>Tensor</em><em>]</em><em>, </em><em>optional</em>) – <p>The weight of shape <span class="math notranslate nohighlight">\((N,\text{num_weights},...)\)</span>, where “<span class="math notranslate nohighlight">\(...\)</span>”
+depends on the tensor product type as listed above.
+Default is None.</p>
+<p>It will be used if <code class="xref py py-obj docutils literal notranslate"><span class="pre">external_weight</span></code> is True
+or if provided even when <code class="xref py py-obj docutils literal notranslate"><span class="pre">external_weight</span></code> is False.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The tensor product of shape <span class="math notranslate nohighlight">\((N,\text{num_orders_out},C_{out})\)</span>,
+where <span class="math notranslate nohighlight">\(C_{out}\)</span> will be <span class="math notranslate nohighlight">\(C=C_1=C_2\)</span> if <code class="xref py py-obj docutils literal notranslate"><span class="pre">tp_type='cw'</span></code>,
+<span class="math notranslate nohighlight">\((C_1,C_2)\)</span> if <code class="xref py py-obj docutils literal notranslate"><span class="pre">tp_type='pw'</span></code> or the specified value otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+<p>Where <span class="math notranslate nohighlight">\(N\)</span> is the batch-size that will automatically broadcast if set to <span class="math notranslate nohighlight">\(1\)</span>
+and <span class="math notranslate nohighlight">\(C\)</span> is the corresponding number of channels.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.TensorProduct">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">TensorProduct</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L_in1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_in2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_wise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.TensorProduct" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>The traditional tensor product with no weights</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{z}^{(l)} = \sum_{l_1,l_2}\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)},
+l \in L_{out},\]</div>
+<p>or</p>
+<ul>
+<li><p>if <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code>:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[[\mathbf{z}^{(l)}_m]_c = \sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}
+[\mathbf{x}^{(l_1)}_{m_1}]_c[\mathbf{y}^{(l_2)}_{m_2}]_c,
+l \in L_{out}, m=-l,\dots,l,\]</div>
+</div></blockquote>
+</li>
+<li><p>otherwise:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[[\mathbf{z}^{(l)}_m]_{c_1,c_2} = \sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}
+[\mathbf{x}^{(l_1)}_{m_1}]_{c_1}[\mathbf{y}^{(l_2)}_{m_2}]_{c_2},
+l \in L_{out}, m=-l,\dots,l,\]</div>
+</div></blockquote>
+</li>
+</ul>
+<p>where the summation of <span class="math notranslate nohighlight">\((l_1,l_2)\)</span> is over all the values such that
+<span class="math notranslate nohighlight">\(l_1\in L_1, l_2\in L_2\)</span> and <span class="math notranslate nohighlight">\(|l_1-l_2|\le l\le l_1+l_2\)</span> and
+<span class="math notranslate nohighlight">\(C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}\)</span> are the Clebsch-Gordan coefficients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L_in1</strong> (<em>DegreeRange</em>) – The degree range of the first input.</p></li>
+<li><p><strong>L_in2</strong> (<em>DegreeRange</em>) – The degree range of the second input.</p></li>
+<li><p><strong>L_out</strong> (<em>DegreeRange</em>) – The degree range of the output.</p></li>
+<li><p><strong>channel_wise</strong> (<em>bool</em>) – Whether the product is performed channel-wise.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.TensorProduct.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.TensorProduct.forward" title="Link to this definition"></a></dt>
+<dd><p>Perform tensor product</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x1</strong> (<em>Tensor</em>) – The first input tensor of shape <span class="math notranslate nohighlight">\((N,\text{num_orders_1},C_1)\)</span></p></li>
+<li><p><strong>x2</strong> (<em>Tensor</em>) – The second input tensor of shape <span class="math notranslate nohighlight">\((N,\text{num_orders_2},C_2)\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The tensor product of two input tensors
+of shape <span class="math notranslate nohighlight">\((N,\text{num_orders_out},C)\)</span> if <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>
+or <span class="math notranslate nohighlight">\((N,\text{num_orders_out},C_1, C_2)\)</span> otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+<p>Where <span class="math notranslate nohighlight">\(N\)</span> is the batch-size that will automatically broadcast if set to <span class="math notranslate nohighlight">\(1\)</span>
+and <span class="math notranslate nohighlight">\(C_1,C_2,C\)</span> are corresponding number of channels.
+If <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>, <span class="math notranslate nohighlight">\(C_1=C_2=C\)</span> should be satisfied.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.TensorDot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">TensorDot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_wise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.TensorDot" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>The module that computes the degree-wise dot product between spherical features</p>
+<div class="math notranslate nohighlight">
+\[d_c^{(l)} = \sum_{m=-l}^l [{\mathbf{x}_m^{(l)}}]_c [{\mathbf{y}_m^{(l)}}]_c\]</div>
+<p>if <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code>, or</p>
+<div class="math notranslate nohighlight">
+\[d_{c_1,c_2}^{(l)} = \sum_{m=-l}^l [{\mathbf{x}_m^{(l)}}]_{c_1} [{\mathbf{y}_m^{(l)}}]_{c_2}\]</div>
+<p>otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – The degree range of inputs.</p></li>
+<li><p><strong>channel_wise</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, compute channel-wise dot product. Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">L</span> <span class="o">=</span> <span class="n">DegreeRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tensor_dot</span> <span class="o">=</span> <span class="n">TensorDot</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">channel_wise</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>  <span class="c1"># (N, num_orders, C1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>  <span class="c1"># (N, num_orders, C2)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">tensor_dot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">torch.Size([32, 4, 64])  # (N, num_degrees, C)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.TensorDot.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.TensorDot.forward" title="Link to this definition"></a></dt>
+<dd><p>Compute the degree-wise dot product between two input tensors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x1</strong> (<em>Tensor</em>) – First input tensor of shape <span class="math notranslate nohighlight">\((N, \text{num_orders_1}, C_1)\)</span>.</p></li>
+<li><p><strong>x2</strong> (<em>Tensor</em>) – Second input tensor of shape <span class="math notranslate nohighlight">\((N, \text{num_orders_1}, C_2)\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The result of the dot product of shape
+<span class="math notranslate nohighlight">\((N, \text{num_degrees}, C)\)</span> if <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>
+or <span class="math notranslate nohighlight">\((N, \text{num_degrees}, C_1, C_2)\)</span> if <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+<p>Where <span class="math notranslate nohighlight">\(N\)</span> is the batch-size that will automatically broadcast if set to <span class="math notranslate nohighlight">\(1\)</span>
+and <span class="math notranslate nohighlight">\(C_1,C_2,C\)</span> are corresponding number of channels.
+If <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>, <span class="math notranslate nohighlight">\(C_1=C_2=C\)</span> should be satisfied.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">SO2Linear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">external_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_wise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>The SO(3) equivariant linear operation of complexity <span class="math notranslate nohighlight">\(O(L^3)\)</span> for the
+maximum degree <span class="math notranslate nohighlight">\(L\)</span> as described in the paper <a class="reference external" href="https://arxiv.org/abs/2302.03655">Reducing SO(3)
+Convolutions to SO(2) for Efficient Equivariant GNNs</a>.</p>
+<p>It works as a more efficient alternative for SO(3) linear operation.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbf{x}_{m}^{(l_o)}&amp;=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}-\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, &amp; m &lt; 0,\\
+\mathbf{x}_{0}^{(l_o)}&amp;=\sum_{l_i\in L_{in}}\mathbf{W}_{0}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{0}^{(l_i)}, &amp;\\
+\mathbf{x}_{m}^{(l_o)}&amp;=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m}^{(l_i)}-\mathbf{W}_{-m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, &amp; m &gt; 0,\\
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m'}^{(l_i)}\)</span> means
+<span class="math notranslate nohighlight">\(\sum_{c'}\mathbf{W}_{m,cc'}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c'}^{(l_i)}\)</span>
+if <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code>, or
+<span class="math notranslate nohighlight">\(\mathbf{W}_{m,c}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c}^{(l_i)}\)</span> if <code class="xref py py-obj docutils literal notranslate"><span class="pre">channel_wise</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>.
+<span class="math notranslate nohighlight">\(\mathbf{W}(\|\mathbf{r}\|)\)</span> means the weights can depend on the length of the
+vector <span class="math notranslate nohighlight">\(\mathbf{r}\in\mathbb{R}^3\)</span> (but not necessary).</p>
+<p>When there is no ambiguity, we also denote the operation as</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{x}'=\tilde{\mathbf{W}}(\|\mathbf{r}\|)\mathbf{x}.\]</div>
+<p>The operation satisfies the following property:</p>
+<p>for any possible SO(3) linear operation <span class="math notranslate nohighlight">\(\tilde{\mathbf{W}}(\mathbf{r})\)</span>,
+there exists an SO(2) linear operation <span class="math notranslate nohighlight">\(\tilde{\mathbf{W'}}(\|\mathbf{r}\|)\)</span> such that:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{D}_{\mathbf{r},\text{out}}^\top\tilde{\mathbf{W}}'(\|\mathbf{r}\|)(\mathbf{D}_{\mathbf{r},\text{in}}\mathbf{x})=\tilde{\mathbf{W}}(\mathbf {r})\mathbf{x}\]</div>
+<p>and vice versa, where <span class="math notranslate nohighlight">\(\mathbf{D}_{\mathbf{r},\text{in}}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{D}_{\mathbf{r},\text{out}}\)</span> are the Wigner-D
+matrices on the input/output spaces corresponding to the rotation matrix that can align <span class="math notranslate nohighlight">\(\mathbf{r}\)</span>
+to the z axis. (See Appendix 2 of the paper above for the proof of the bijection.)</p>
+<p>To explicitly convert from or to the weight for <a class="reference internal" href="#equitorch.nn.SO3Linear" title="equitorch.nn.SO3Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SO3Linear</span></code></a> operation, see
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">so3_weights_to_so2</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">so2_weights_to_so3</span></code> in <code class="xref py py-obj docutils literal notranslate"><span class="pre">utils</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If dense Wigner-D matrix is used before the SO(2) linear operation, the
+<span class="math notranslate nohighlight">\(O(L^4)\)</span> complexity of <span class="math notranslate nohighlight">\(\mathbf{Dx}\)</span> can be the bottleneck.
+When channels <span class="math notranslate nohighlight">\(C\)</span> explicitly considered, the linear operation will
+be of complexity <span class="math notranslate nohighlight">\(O(L^3C)\)</span> if channel wise or <span class="math notranslate nohighlight">\(O(L^3CC')\)</span> if
+not, but the rotation <span class="math notranslate nohighlight">\(\mathbf{Dx}\)</span> will always be of complexity
+<span class="math notranslate nohighlight">\(O(L^4C)\)</span>.</p>
+<p>Whenever possible, it is recommended to use <a class="reference internal" href="#id0" title="equitorch.nn.SO2Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SO2Linear</span></code></a> rather than <a class="reference internal" href="#equitorch.nn.SO3Linear" title="equitorch.nn.SO3Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SO3Linear</span></code></a> for
+equivariant operation on large <span class="math notranslate nohighlight">\(L\)</span>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L_in</strong> (<em>DegreeRange</em>) – The input degree range.</p></li>
+<li><p><strong>L_out</strong> (<em>DegreeRange</em>) – The output degree range.</p></li>
+<li><p><strong>in_channels</strong> (<em>int</em>) – The number of input channels.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – The number of output channels.</p></li>
+<li><p><strong>external_weight</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the user will pass external weights (that may depend on data or edges) or keep a set of independent weights inside.
+Default to False.</p></li>
+<li><p><strong>channel_wise</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the weight is performed channel-wise.
+Default to False.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd><p>Applies the SO(2) linear operation to the input tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Tensor</em>) – The input tensor of shape <span class="math notranslate nohighlight">\((N, \text{num_orders_in}, C_{\text{in}})\)</span>,
+where <span class="math notranslate nohighlight">\(N\)</span> is the batch size, <span class="math notranslate nohighlight">\(\text{num_orders_in}\)</span>
+is the number of input orders, and <span class="math notranslate nohighlight">\(C_{\text{in}}\)</span> is the number of channels.
+before passed into this function, <span class="math notranslate nohighlight">\(x\)</span> must have been transformed by
+<span class="math notranslate nohighlight">\(\mathbf{D}_{\text{in}}\)</span>.</p></li>
+<li><p><strong>weight</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – The external weights to use for the linear operation. If <cite>None</cite>, the
+internal weights will be used.
+The shape of the weights depends on the value of <cite>channel_wise</cite>.
+If <cite>channel_wise</cite> is <cite>True</cite>, the shape should be <span class="math notranslate nohighlight">\((N, \text{num_weights}, C_{\text{in}})\)</span>.
+If <cite>channel_wise</cite> is <cite>False</cite>, the shape should be <span class="math notranslate nohighlight">\((N, \text{num_weights}, C_{\text{in}}, C_{\text{out}})\)</span>,</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The output tensor of shape <span class="math notranslate nohighlight">\((N, \text{num_orders_out}, C_{\text{out}})\)</span>.
+The returned feature should then be transformed by <span class="math notranslate nohighlight">\(\mathbf{D}_{\text{out}}^\top\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If <code class="xref py py-obj docutils literal notranslate"><span class="pre">external_weight</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>, the <code class="xref py py-obj docutils literal notranslate"><span class="pre">weight</span></code> parameter must be provided.
+If <code class="xref py py-obj docutils literal notranslate"><span class="pre">external_weight</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code>, the <code class="xref py py-obj docutils literal notranslate"><span class="pre">weight</span></code> will still be used if provided.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.ScaledDotAttention">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">ScaledDotAttention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_heads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_k_producer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_q_producer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.ScaledDotAttention" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>Computes invariant attention score using scaled dot product attention as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbf{q}_{k} &amp;= \tilde{\mathbf{W}}_Q(\|\mathbf{r}\|_Q)\mathbf{x}_{Q,k}, \\
+\mathbf{k}_{k} &amp;= \tilde{\mathbf{W}}_K(\|\mathbf{r}\|_K)\mathbf{x}_{K,k}, \\
+{z}_{k} &amp;= \frac{1}{\sqrt{\text{k_channels}}}\sum_{l,m,c}(\mathbf{q}_{k})_{m,c}^{(l)}(\mathbf{k}_{k})_{m,c}^{(l)}\\
+\alpha_{k} &amp;= \mathop{\mathrm{softmax\ }}_{\text{index}[k]}{z}_k\\
+           &amp;= \frac{\exp({z}_{k})}{\displaystyle \sum_{k':\text{index}[k']=\text{index}[k]}\exp({z}_{k'})},        \\
+\end{aligned}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\tilde{\mathbf{W}}_Q(\|\mathbf{r}\|_Q), \tilde{\mathbf{W}}_K(\|\mathbf{r}\|_K)\)</span>
+are two <a class="reference internal" href="#id0" title="equitorch.nn.SO2Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SO2Linear</span></code></a> operations that may depend on additional query/key features
+<span class="math notranslate nohighlight">\(\mathbf{r}_Q\)</span> and <span class="math notranslate nohighlight">\(\mathbf{r}_K\)</span>.</p>
+<p>The attention is normalized over all samples <span class="math notranslate nohighlight">\(k\)</span> with the same index <span class="math notranslate nohighlight">\(\text{index}[k]\)</span>.</p>
+<p>For more details on how the softmax is computed, see <a class="reference external" href="https://pytorch-geometric.readthedocs.io/en/latest/modules/utils.html#torch_geometric.utils.softmax">softmax</a>.</p>
+<p>In the case where <span class="math notranslate nohighlight">\(k\)</span> represents the edges <span class="math notranslate nohighlight">\((i,j)\)</span>,
+queries are from target nodes <span class="math notranslate nohighlight">\(i\)</span>, keys are from source nodes
+<span class="math notranslate nohighlight">\(j\)</span>, the index is the target index <span class="math notranslate nohighlight">\(i\)</span>, the query projector is
+edge-independent and the key projector depends on the edge vector
+<span class="math notranslate nohighlight">\(\mathbf{r}_{ij}\)</span>, the attention score is computed as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\mathbf{q}_{ij} &amp;= \tilde{\mathbf{W}}_Q\mathbf{x}_{i}, \\
+\mathbf{k}_{ij} &amp;= \tilde{\mathbf{W}}_K(\|\mathbf{r}_{ij}\|)\mathbf{x}_{j}, \\
+{z}_{ij} &amp;= \frac{1}{\sqrt{\text{k_channels}}}\sum_{l,m,c}(\mathbf{q}_{ij})_{m,c}^{(l)}(\mathbf{k}_{ij})_{m,c}^{(l)}\\
+\alpha_{ij} &amp;= \mathop{\mathrm{softmax\ }}_{j\in\mathcal{N}(i)}{z}_{ij}\\
+           &amp;= \frac{\exp({z}_{ij})}{\displaystyle \sum_{j'\in\mathcal{N}(i)}\exp({z}_{ij'})},        \\
+\end{aligned}\end{split}\]</div>
+<p>This is equivalent to the attention score (11) in <a class="reference external" href="https://arxiv.org/abs/2006.10503">SE(3)-Transformers:
+3D Roto-Translation Equivariant Attention Networks</a>
+except that we use the more efficient <a class="reference internal" href="#id0" title="equitorch.nn.SO2Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SO2Linear</span></code></a> here instead of <a class="reference internal" href="#equitorch.nn.SO3Linear" title="equitorch.nn.SO3Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SO3Linear</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L_in</strong> (<em>DegreeRange</em>) – The degree range of the input.</p></li>
+<li><p><strong>L_k</strong> (<em>DegreeRange</em>) – The degree range of the keys and values.</p></li>
+<li><p><strong>in_channels</strong> (<em>int</em>) – The number of input channels.</p></li>
+<li><p><strong>k_channels</strong> (<em>int</em>) – The number of key and value channels.</p></li>
+<li><p><strong>num_heads</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of heads, Default is 1.</p></li>
+<li><p><strong>weight_k_producer</strong> (<em>Callable</em><em>, </em><em>optional</em>) – The module to produce weights of the key projector from
+additional key features. Default is None.
+If not provided, the key projector will not use <code class="xref py py-obj docutils literal notranslate"><span class="pre">external_weight</span></code>.</p></li>
+<li><p><strong>weight_q_producer</strong> (<em>Callable</em><em>, </em><em>optional</em>) – The module to produce weights of the query projector from
+additional query features. Default is None.
+If not provided, the key projector will not use <code class="xref py py-obj docutils literal notranslate"><span class="pre">external_weight</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.ScaledDotAttention.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_feat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_feat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ptr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.ScaledDotAttention.forward" title="Link to this definition"></a></dt>
+<dd><p>forward</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_q</strong> (<em>Tensor</em>) – The query tensor with shape <span class="math notranslate nohighlight">\([K, \text{num_orders}, C]\)</span>, where
+<span class="math notranslate nohighlight">\(K\)</span> is the number of key-query pairs and <span class="math notranslate nohighlight">\(C\)</span> is the number of channels.</p></li>
+<li><p><strong>x_k</strong> (<em>Tensor</em>) – The key tensor with shape <span class="math notranslate nohighlight">\([K, \text{num_orders}, C]\)</span>, where
+<span class="math notranslate nohighlight">\(K\)</span> is the number of key-query pairs and <span class="math notranslate nohighlight">\(C\)</span> is the number of channels.</p></li>
+<li><p><strong>q_feat</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – Additional feature to produce weights for query projector. Default is None</p></li>
+<li><p><strong>k_feat</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – Additional feature to produce weights for key projector. Default is None</p></li>
+<li><p><strong>index</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – The indices of elements for applying the softmax. Default is None</p></li>
+<li><p><strong>ptr</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – If given, computes the softmax based on sorted inputs in CSR representation. Default is None</p></li>
+<li><p><strong>num_nodes</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of nodes. Default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The attention weights with shape <span class="math notranslate nohighlight">\([K, \text{num_heads}]\)</span></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.AttentionalBlock">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">AttentionalBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_heads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attention_score_producer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_producer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_q_producer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_k_producer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_v_producer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.AttentionalBlock" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch_geometric.nn.MessagePassing</span></code></p>
+<p>Perform attentional aggregation</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{x}'_i=\sum_{j\in\mathcal{N}(i)}\alpha_{ij}\mathbf{v}_j,\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+\alpha_{ij}&amp;=\text{attention_score_producer}(\mathbf{x}_i,\mathbf{x}_j),\\
+\mathbf{v}_j &amp;= \text{v_producer}(\mathbf{x}_j).
+\end{aligned}\end{split}\]</div>
+<p><span class="math notranslate nohighlight">\(\alpha\)</span> should be SO(3) invariant and <span class="math notranslate nohighlight">\(\mathbf{v}\)</span> should be
+SO(3) equivariant. Then the whole block will be SO(3) equivariant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L_in</strong> (<em>DegreeRange</em>) – The degree range of the input.</p></li>
+<li><p><strong>L_out</strong> (<em>DegreeRange</em>) – The degree range of the output.</p></li>
+<li><p><strong>in_channels</strong> (<em>int</em>) – The number of input channels.</p></li>
+<li><p><strong>k_channels</strong> (<em>int</em>) – The number of key and value channels.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – The number of output channels.</p></li>
+<li><p><strong>num_heads</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of heads, Default is 1.</p></li>
+<li><p><strong>attention_score_producer</strong> (<em>Callable</em><em>, </em><em>optional</em>) – The module to produce attention scores, Default is None.
+It should take two tensors representing the (q,k) pairs
+and return the attention score between them.
+If not provided, the <a class="reference internal" href="#equitorch.nn.ScaledDotAttention" title="equitorch.nn.ScaledDotAttention"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ScaledDotAttention</span></code></a> will be used,</p></li>
+<li><p><strong>v_producer</strong> (<em>Callable</em><em>, </em><em>optional</em>) – The module to produce values. Default is None.
+If not provided, the <a class="reference internal" href="#id0" title="equitorch.nn.SO2Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SO2Linear</span></code></a> will be used and the
+<code class="xref py py-obj docutils literal notranslate"><span class="pre">external_weight</span></code> will be True only when <cite>weight_v_producer</cite>
+is provided.</p></li>
+<li><p><strong>weight_q_producer</strong> (<em>Callable</em><em>, </em><em>optional</em>) – The module to produce weight from edge embeddings for <code class="xref py py-obj docutils literal notranslate"><span class="pre">attention_score_producer</span></code>.
+This will not be used when the <code class="xref py py-obj docutils literal notranslate"><span class="pre">attention_score_producer</span></code>
+is explicitly passed.
+Default is None.</p></li>
+<li><p><strong>weight_k_producer</strong> (<em>Callable</em><em>, </em><em>optional</em>) – The module to produce weights from edge embeddings for <code class="xref py py-obj docutils literal notranslate"><span class="pre">attention_score_producer</span></code>.
+This will not be used when the <code class="xref py py-obj docutils literal notranslate"><span class="pre">attention_score_producer</span></code>
+is explicitly passed.
+Default is None.</p></li>
+<li><p><strong>weight_v_producer</strong> (<em>Callable</em><em>, </em><em>optional</em>) – The module to produce weights from edge embeddings for <code class="xref py py-obj docutils literal notranslate"><span class="pre">v_producer</span></code>.
+This will not be used when the <code class="xref py py-obj docutils literal notranslate"><span class="pre">v_producer</span></code>
+is explicitly passed.
+Default is None.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.AttentionalBlock.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_emb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">D_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DT_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.AttentionalBlock.forward" title="Link to this definition"></a></dt>
+<dd><p>Runs the forward pass of the module</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>torch.Tensor</em>)</p></li>
+<li><p><strong>edge_index</strong> (<em>torch.Tensor</em>)</p></li>
+<li><p><strong>edge_emb</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – The edge features that will be used to produce
+weights for Q/K/V projectors, Default is None.</p></li>
+<li><p><strong>D_in</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – The Wigner-D matrix on input space corresponding to the
+rotation that aligns the edge vector to z axis.
+If provided, the input feature will first be rotated by <code class="xref py py-obj docutils literal notranslate"><span class="pre">D_in</span></code>
+Default is None.</p></li>
+<li><p><strong>DT_out</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – The transpose of Wigner-D matrix on output space corresponding to the
+rotation that aligns the edge vector to z axis.
+If provided, the value vector of each edge will be rotated by <code class="xref py py-obj docutils literal notranslate"><span class="pre">D_out</span></code> before aggregated.
+Default is None.</p></li>
+<li><p><strong>edge_weight</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – The weight of each edge, used to scale the message along the edges.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.AttentionalBlock.message">
+<span class="sig-name descname"><span class="pre">message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_j</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_emb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DT_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.AttentionalBlock.message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.GaussianBasisExpansion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">GaussianBasisExpansion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.GaussianBasisExpansion" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>Gaussian Basis Expansion module.</p>
+<p>This module implements a Gaussian basis expansion of the form:</p>
+<div class="math notranslate nohighlight">
+\[\exp[-\gamma_k(r-\mu_k)^2],\ k = 1,2,\dots,\text{num_basis}.\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gamma</strong> (<em>Union</em><em>[</em><em>Tensor</em><em>, </em><em>float</em><em>]</em>) – The gamma parameter for the Gaussian basis function.</p></li>
+<li><p><strong>num_basis</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of basis functions to use. If None, mu must be provided.</p></li>
+<li><p><strong>start</strong> (<em>float</em><em>, </em><em>optional</em>) – The start value for generating mu values. Required if num_basis is provided.</p></li>
+<li><p><strong>end</strong> (<em>float</em><em>, </em><em>optional</em>) – The end value for generating mu values. Required if num_basis is provided.</p></li>
+<li><p><strong>mu</strong> (<em>Tensor</em><em>, </em><em>optional</em>) – The mu values for the Gaussian basis functions. Required if num_basis is None.</p></li>
+<li><p><strong>trainable</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the mu and gamma parameters should be trainable. Default is False.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If <code class="xref py py-obj docutils literal notranslate"><span class="pre">num_basis</span></code> is provided, <span class="math notranslate nohighlight">\(\mu_k\)</span> are generated evenly in <span class="math notranslate nohighlight">\([\text{start},\text{end}]\)</span>.
+If <code class="xref py py-obj docutils literal notranslate"><span class="pre">gamma</span></code> is a float, it is expanded to match the shape of <span class="math notranslate nohighlight">\(\mu\)</span>.
+If <code class="xref py py-obj docutils literal notranslate"><span class="pre">trainable</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">mu</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">gamma</span></code> become <code class="xref py py-obj docutils literal notranslate"><span class="pre">nn.Parameter</span></code> objects.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.GaussianBasisExpansion.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.GaussianBasisExpansion.forward" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.BesselBasisExpansion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">BesselBasisExpansion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_basis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-06</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.BesselBasisExpansion" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>Bessel Basis Expansion module.</p>
+<p>This module implements a Bessel basis expansion of the form:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\sin(\omega_k (\hat r + \epsilon))}{\hat r + \epsilon},\ k = 1,2,\dots,\text{num_basis}.\]</div>
+<p>where <span class="math notranslate nohighlight">\(\omega_k\)</span> is the frequency, default to be <span class="math notranslate nohighlight">\(k\pi\)</span>,
+<span class="math notranslate nohighlight">\(\hat r=r/c\)</span> is the cutoff-normalized distance,
+and <span class="math notranslate nohighlight">\(\epsilon\)</span> is a small value for stability near zero.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_basis</strong> (<em>int</em>) – The number of basis functions to use.</p></li>
+<li><p><strong>cutoff</strong> (<em>float</em><em>, </em><em>optional</em>) – The cutoff value for the distance. Default is 1.</p></li>
+<li><p><strong>trainable</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the frequency parameters should be trainable. Default is False.</p></li>
+<li><p><strong>eps</strong> (<em>float</em><em>, </em><em>optional</em>) – A small value for stability near zero. Default is 1e-6.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If <code class="xref py py-obj docutils literal notranslate"><span class="pre">trainable</span></code> is <code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code>, the frequency parameters become <code class="xref py py-obj docutils literal notranslate"><span class="pre">nn.Parameter</span></code> objects.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.BesselBasisExpansion.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#equitorch.nn.BesselBasisExpansion.forward" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.SineBasisExpansion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">SineBasisExpansion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.SineBasisExpansion" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>Sine Basis Expansion module.</p>
+<p>This module implements a sine basis expansion of the form:</p>
+<div class="math notranslate nohighlight">
+\[\sin(n x),\ n=1,2,\dots,\text{max_freq}.\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>max_freq</strong> (<em>int</em>) – The maximum frequency to use.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.SineBasisExpansion.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.SineBasisExpansion.forward" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.CosineBasisExpansion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">CosineBasisExpansion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.CosineBasisExpansion" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>Cosine Basis Expansion module.</p>
+<p>This module implements a cosine basis expansion of the form:</p>
+<div class="math notranslate nohighlight">
+\[\cos(n x), n=1,2,\dots,\text{max_freq}.\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>max_freq</strong> (<em>int</em>) – The maximum frequency to use.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.CosineBasisExpansion.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.CosineBasisExpansion.forward" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.FourierBasisExpansion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">FourierBasisExpansion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_freq_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.FourierBasisExpansion" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>Fourier Basis Expansion module.</p>
+<p>This module implements a Fourier basis expansion of the form:</p>
+<div class="math notranslate nohighlight">
+\[[\sin(nx), \cos(nx)],\ n=1,2,\dots,\text{max_freq}.\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>max_freq</strong> (<em>int</em>) – The maximum frequency to use.</p></li>
+<li><p><strong>include_freq_0</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include a constant term (frequency 0) in the expansion.
+Default is False.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The output tensor is organized in the following frequency order:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}[\sin(\text{max_freq}\cdot x), ..., \sin(2x), \sin(x), \\
+    1 \text{(if include_freq_0)}, \\
+        \cos(x), \cos(2x), ..., \cos(\text{max_freq}\cdot x)]\end{split}\]</div>
+<p>This arrangement places lower frequencies closer to the center of the output tensor,
+with sine terms in descending order followed by cosine terms in ascending order.</p>
+<p>It is recommended to not include frequency 0. It will be equivalent to add a bias in
+the following linear operation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.FourierBasisExpansion.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.FourierBasisExpansion.forward" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.CosineCutoff">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">CosineCutoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.CosineCutoff" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>Implements a cosine cutoff function</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}f(r)=\begin{cases}
+1, &amp; r &lt; \text{start},\\
+\dfrac{1}{2}\left[1 + \cos\left(\pi\cdot u\right)\right], &amp; \text{start}\le r \le \text{cutoff},\\
+0, &amp; r &gt; \text{cutoff},
+\end{cases}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(u=\dfrac{r-\text{start}}{\text{cutoff}-\text{start}}\)</span>.</p>
+<p>This cutoff function smoothly decreases from 1 to 0 in the range
+<span class="math notranslate nohighlight">\([\text{start}, \text{cutoff}]\)</span> using a cosine function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cutoff</strong> (<em>float</em>) – The cutoff distance where the function reaches zero.</p></li>
+<li><p><strong>start</strong> (<em>float</em><em>, </em><em>optional</em>) – The starting distance where the function begins to decrease from 1.
+Must be less than <cite>cutoff</cite>. Default is 0.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.CosineCutoff.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.CosineCutoff.forward" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.MollifierCutoff">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">MollifierCutoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-09</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.MollifierCutoff" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>Implements a mollifier cutoff function.</p>
+<p>The mollifier cutoff function is defined as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}f(r) = \begin{cases}
+1, &amp; r &lt; \text{start}\\
+\exp \left[{1 - \left({1 - u^2}+\epsilon\right)^{-1}}\right] &amp; \text{start} \le r \le \text{cutoff} \\
+0, &amp; r &gt; \text{cutoff}  ,
+\end{cases}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(u=\dfrac{r-\text{start}}{\text{cutoff}-\text{start}}\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cutoff</strong> (<em>float</em>) – The cutoff distance where the function reaches zero.</p></li>
+<li><p><strong>start</strong> (<em>float</em><em>, </em><em>optional</em>) – The starting distance where the function begins to decrease from 1.
+Must be less than <cite>cutoff</cite>. Default is 0.</p></li>
+<li><p><strong>eps</strong> (<em>float</em><em>, </em><em>optional</em>) – A small value to prevent division by zero or numerical instabilities.
+Default is 1e-9.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.MollifierCutoff.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.MollifierCutoff.forward" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="equitorch.nn.PolynomialCutoff">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">equitorch.nn.</span></span><span class="sig-name descname"><span class="pre">PolynomialCutoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.PolynomialCutoff" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.nn.Module</span></code></p>
+<p>Implements a polynomial cutoff function.</p>
+<p>The polynomial cutoff function is defined as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}f(r) = \begin{cases}
+1, &amp; r &lt; \text{start},\\
+1-\dfrac{(p+1)(p+2)}{2}u^p+p(p+2)u^{p+1}-\frac{p(p+1)}{2}u^{p+2}&amp; \text{start}, \le r \le \text{cutoff}, \\
+0, &amp; r &gt; \text{cutoff},
+\end{cases}\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(u=\dfrac{r-\text{start}}{\text{cutoff}-\text{start}}\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cutoff</strong> (<em>float</em>) – The cutoff distance where the function reaches zero.</p></li>
+<li><p><strong>start</strong> (<em>float</em><em>, </em><em>optional</em>) – The starting distance where the function begins to decrease from 1.
+Must be less than <cite>cutoff</cite>. Default is 0.</p></li>
+<li><p><strong>p</strong> (<em>int</em><em>, </em><em>optional</em>) – The order of the polynomial.
+Default is 5.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="equitorch.nn.PolynomialCutoff.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.nn.PolynomialCutoff.forward" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../math/index.html" class="btn btn-neutral float-left" title="equitorch.math" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../transforms/index.html" class="btn btn-neutral float-right" title="equitorch.transforms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Tong Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

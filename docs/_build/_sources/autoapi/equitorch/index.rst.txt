@@ -1,0 +1,24 @@
+equitorch
+=========
+
+.. py:module:: equitorch
+
+.. autoapi-nested-parse::
+
+   Equitorch.
+
+
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /autoapi/equitorch/math/index
+   /autoapi/equitorch/nn/index
+   /autoapi/equitorch/transforms/index
+   /autoapi/equitorch/typing/index
+   /autoapi/equitorch/utils/index
+
+

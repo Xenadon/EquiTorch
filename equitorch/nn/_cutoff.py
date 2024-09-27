@@ -9,9 +9,10 @@ class CosineCutoff(nn.Module):
     .. math::
         f(r)=\begin{cases}
         1, & r < \text{start},\\
-        \dfrac{1}{2}\left[1 + \cos\left(\pi\cdot\frac{r-\text{start}}{\text{cutoff}-\text{start}}\right)\right], & \text{start}\le r \le \text{cutoff},\\
-        0, & r > \text{cutoff}. 
+        \dfrac{1}{2}\left[1 + \cos\left(\pi\cdot u\right)\right], & \text{start}\le r \le \text{cutoff},\\
+        0, & r > \text{cutoff},
         \end{cases}
+    where :math:`u=\dfrac{r-\text{start}}{\text{cutoff}-\text{start}}`.
 
     This cutoff function smoothly decreases from 1 to 0 in the range 
     :math:`[\text{start}, \text{cutoff}]` using a cosine function.
@@ -46,9 +47,10 @@ class MollifierCutoff(nn.Module):
     .. math::
         f(r) = \begin{cases} 
         1, & r < \text{start}\\
-        \exp \left[{1 - \left({1 - \left(\frac{r-\text{start}}{\text{cutoff}-\text{start}}\right)^2}+\epsilon\right)^{-1}}\right] & \text{start} \le r \le \text{cutoff} \\
-        0, & r > \text{cutoff}  
+        \exp \left[{1 - \left({1 - u^2}+\epsilon\right)^{-1}}\right] & \text{start} \le r \le \text{cutoff} \\
+        0, & r > \text{cutoff}  ,
         \end{cases}
+    where :math:`u=\dfrac{r-\text{start}}{\text{cutoff}-\text{start}}`.
 
     Parameters
     ----------

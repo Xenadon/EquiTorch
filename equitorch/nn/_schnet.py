@@ -4,8 +4,8 @@ from torch import Tensor
 import torch.nn as nn
 from torch_geometric.nn import MessagePassing 
 
-from ._basis_expansion import GaussianBasisExpansion
-from ._activations import shifted_softplus
+from ._radial_basis import GaussianBasisExpansion
+from ._activation import shifted_softplus
 
 class CFConv(MessagePassing):
 

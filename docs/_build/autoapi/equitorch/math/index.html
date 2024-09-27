@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>equitorch.math &mdash; equitorch  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="equitorch.nn" href="../nn/index.html" />
+    <link rel="prev" title="equitorch" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            equitorch
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">equitorch</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">equitorch.math</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../nn/index.html">equitorch.nn</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../transforms/index.html">equitorch.transforms</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../typing/index.html">equitorch.typing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utils/index.html">equitorch.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">equitorch</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">equitorch</a></li>
+      <li class="breadcrumb-item active">equitorch.math</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/autoapi/equitorch/math/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-equitorch.math">
+<span id="equitorch-math"></span><h1>equitorch.math<a class="headerlink" href="#module-equitorch.math" title="Link to this heading"></a></h1>
+<p>Some math functions.</p>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.math.angles_to_xyz" title="equitorch.math.angles_to_xyz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">angles_to_xyz</span></code></a>(theta, phi[, dim])</p></td>
+<td><p>Convert spherical coordinates <span class="math notranslate nohighlight">\((\theta, \phi)\)</span> into Cartesian coordinates <span class="math notranslate nohighlight">\((x, y, z)\)</span> on the unit sphere.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.math.xyz_to_angles" title="equitorch.math.xyz_to_angles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xyz_to_angles</span></code></a>(xyz, need_normalize[, dim])</p></td>
+<td><p>Convert Cartesian coordinates <span class="math notranslate nohighlight">\((x, y, z)\)</span> to spherical coordinates <span class="math notranslate nohighlight">\((\theta, \phi)\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.math.angles_to_matrix" title="equitorch.math.angles_to_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">angles_to_matrix</span></code></a>(alpha, beta, gamma)</p></td>
+<td><p>Convert Z-Y-Z Euler angles to rotation matrices.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.math.wigner_D" title="equitorch.math.wigner_D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wigner_D</span></code></a>(L, alpha, beta, gamma)</p></td>
+<td><p>Wigner D matrix representation of <span class="math notranslate nohighlight">\(\text{SO(3)}\)</span> parameterized by Z-Y-Z angles</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.math.spherical_harmonics" title="equitorch.math.spherical_harmonics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spherical_harmonics</span></code></a>(X, L[, need_normalize, dim])</p></td>
+<td><p>Compute spherical harmonics for given Cartesian coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#equitorch.math.isht" title="equitorch.math.isht"><code class="xref py py-obj docutils literal notranslate"><span class="pre">isht</span></code></a>(X, L, num_thetas, num_phis)</p></td>
+<td><p>Inverse spherical harmonics transform.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#equitorch.math.sht" title="equitorch.math.sht"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sht</span></code></a>(x, L, num_thetas, num_phis)</p></td>
+<td><p>The spherical harmonics transform of a function <span class="math notranslate nohighlight">\(F(\theta, \phi)\)</span> is</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="package-contents">
+<h2>Package Contents<a class="headerlink" href="#package-contents" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.math.angles_to_xyz">
+<span class="sig-prename descclassname"><span class="pre">equitorch.math.</span></span><span class="sig-name descname"><span class="pre">angles_to_xyz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.math.angles_to_xyz" title="Link to this definition"></a></dt>
+<dd><p>Convert spherical coordinates <span class="math notranslate nohighlight">\((\theta, \phi)\)</span> into Cartesian coordinates <span class="math notranslate nohighlight">\((x, y, z)\)</span> on the unit sphere.</p>
+<p>Uses the physics convention of spherical coordinates.
+See: <a class="reference external" href="https://en.wikipedia.org/wiki/Spherical_coordinate_system">https://en.wikipedia.org/wiki/Spherical_coordinate_system</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta</strong> (<em>Tensor</em>) – The polar angles, tensor of shape <span class="math notranslate nohighlight">\((...)\)</span></p></li>
+<li><p><strong>phi</strong> (<em>Tensor</em>) – The azimuthal angles, tensor of shape <span class="math notranslate nohighlight">\((...)\)</span></p></li>
+<li><p><strong>dim</strong> (<em>int</em><em>, </em><em>optional</em>) – The dimension along which to stack the result. Defaults to -1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Cartesian coordinates, tensor of <span class="math notranslate nohighlight">\(\text{shape}[\text{dim}]=3\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.math.xyz_to_angles">
+<span class="sig-prename descclassname"><span class="pre">equitorch.math.</span></span><span class="sig-name descname"><span class="pre">xyz_to_angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xyz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">need_normalize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.math.xyz_to_angles" title="Link to this definition"></a></dt>
+<dd><p>Convert Cartesian coordinates <span class="math notranslate nohighlight">\((x, y, z)\)</span> to spherical coordinates <span class="math notranslate nohighlight">\((\theta, \phi)\)</span>.</p>
+<p>Follows the equation:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{r} = \mathbf{R}_z(\phi) \mathbf{R}_y(\theta) \mathbf{e}_z\]</div>
+<p>::
+where <span class="math notranslate nohighlight">\(\mathbf{R}_z\)</span> and <span class="math notranslate nohighlight">\(\mathbf{R}_y\)</span> are rotation matrices, and <span class="math notranslate nohighlight">\(\mathbf{e}_z\)</span> is the unit vector along z-axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xyz</strong> (<em>Tensor</em>) – Cartesian coordinates, tensor of <span class="math notranslate nohighlight">\(\text{shape}[\text{dim}]=3\)</span>.</p></li>
+<li><p><strong>need_normalize</strong> (<em>bool</em>) – Whether to normalize the input coordinates</p></li>
+<li><p><strong>dim</strong> (<em>int</em><em>, </em><em>optional</em>) – The dimension containing the xyz coordinates. Defaults to -1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>phi : Azimuthal angle, tensor of shape <span class="math notranslate nohighlight">\((...)\)</span></p></li>
+<li><p>theta : Polar angle, tensor of shape <span class="math notranslate nohighlight">\((...)\)</span></p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[Tensor, Tensor]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.math.angles_to_matrix">
+<span class="sig-prename descclassname"><span class="pre">equitorch.math.</span></span><span class="sig-name descname"><span class="pre">angles_to_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.math.angles_to_matrix" title="Link to this definition"></a></dt>
+<dd><p>Convert Z-Y-Z Euler angles to rotation matrices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alpha</strong> (<em>Tensor</em>) – First rotation angle around Z-axis, tensor of shape <span class="math notranslate nohighlight">\((...)\)</span></p></li>
+<li><p><strong>beta</strong> (<em>Tensor</em>) – Second rotation angle around Y-axis, tensor of shape <span class="math notranslate nohighlight">\((...)\)</span></p></li>
+<li><p><strong>gamma</strong> (<em>Tensor</em>) – Third rotation angle around Z-axis, tensor of shape <span class="math notranslate nohighlight">\((...)\)</span></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Rotation matrices of shape <span class="math notranslate nohighlight">\((..., 3, 3)\)</span></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.math.wigner_D">
+<span class="sig-prename descclassname"><span class="pre">equitorch.math.</span></span><span class="sig-name descname"><span class="pre">wigner_D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.math.wigner_D" title="Link to this definition"></a></dt>
+<dd><p>Wigner D matrix representation of <span class="math notranslate nohighlight">\(\text{SO(3)}\)</span> parameterized by Z-Y-Z angles
+on the spaces of degree range <span class="math notranslate nohighlight">\(L\)</span>.</p>
+<p>It satisfies the following properties:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathbf{D}(\mathbf{I}) = \mathbf{I}\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{D}(\mathbf{R}_1 \mathbf{R}_2) = \mathbf{D}(\mathbf{R}_1)\mathbf{D}(\mathbf{R}_2)\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{D}(\mathbf{R}^\top) = \mathbf{D}(\mathbf{R})^\top\)</span></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – The degree range.</p></li>
+<li><p><strong>alpha</strong> (<cite>Tensor</cite>) – tensor of shape <span class="math notranslate nohighlight">\((...)\)</span>
+Rotation <span class="math notranslate nohighlight">\(\alpha\)</span> around Z axis, applied third.</p></li>
+<li><p><strong>beta</strong> (<cite>Tensor</cite>) – tensor of shape <span class="math notranslate nohighlight">\((...)\)</span>
+Rotation <span class="math notranslate nohighlight">\(\beta\)</span> around Y axis, applied second.</p></li>
+<li><p><strong>gamma</strong> (<cite>Tensor</cite>) – tensor of shape <span class="math notranslate nohighlight">\((...)\)</span>
+Rotation <span class="math notranslate nohighlight">\(\gamma\)</span> around Z axis, applied first.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tensor <span class="math notranslate nohighlight">\(D^l(\alpha, \beta, \gamma)\)</span> of shape <span class="math notranslate nohighlight">\((...,\text{num_orders}, \text{num_orders})\)</span></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>Tensor</cite></p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This function is currently not optimized. Thus it is not recommended to use it in iterations.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.math.spherical_harmonics">
+<span class="sig-prename descclassname"><span class="pre">equitorch.math.</span></span><span class="sig-name descname"><span class="pre">spherical_harmonics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">need_normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.math.spherical_harmonics" title="Link to this definition"></a></dt>
+<dd><p>Compute spherical harmonics for given Cartesian coordinates.</p>
+<p>Gives the spherical harmonics of exactly the same shape
+as in <a class="reference external" href="https://en.wikipedia.org/wiki/Spherical_harmonics#/media/File:Sphericalfunctions.svg">here</a>
+in the form</p>
+<div class="math notranslate nohighlight">
+\[Y_m^{(l)}(\theta,\phi) = (-1)^m\sqrt{2}\sqrt{\frac{2l+1}{4\pi}\frac{(l-|m|)!}{(l+|m|)!}}P_{l}^{|m|}(\cos\theta)B_m(\phi)\]</div>
+<p>where where <span class="math notranslate nohighlight">\(\theta\)</span> and <span class="math notranslate nohighlight">\(\phi\)</span> are the polar and azimuth angles respectively,
+<span class="math notranslate nohighlight">\(P_l^{|m|}(z)\)</span> are the associated Legendre functions and</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}B_{m}(\phi)=\begin{cases}
+\sin(|m|\phi), &amp; m &lt; 0,\\
+\frac{1}{\sqrt{2}}, &amp; m = 0,\\
+\cos(|m|\phi), &amp; m &gt; 0.
+\end{cases}\end{split}\]</div>
+<p>The returned harmonics are ordered as <span class="math notranslate nohighlight">\(m = -l, -l+1, ..., l-1, l\)</span> for each degree <span class="math notranslate nohighlight">\(l\)</span>.</p>
+<p>Here we listed the examples of first several spherical harmonics,
+for <span class="math notranslate nohighlight">\(\mathbf{r}=(x,y,z)\)</span> lying on the unit sphere <span class="math notranslate nohighlight">\(S^2\)</span>:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+    \mathbf{Y}^{(0)}(\mathbf{r})&amp;=\bigg[\sqrt{\frac{1}{4\pi}}\bigg]\\
+    \mathbf{Y}^{(1)}(\mathbf{r})&amp;=\begin{bmatrix}\sqrt{\frac{3}{4\pi}}y\\\sqrt{\frac{3}{4\pi}}z\\\sqrt{\frac{3}{4\pi}}x\end{bmatrix}\\
+    \mathbf{Y}^{(2)}(\mathbf{r})&amp;=\begin{bmatrix}\sqrt{\frac{15}{4\pi}}xy\\ \sqrt{\frac{15}{4\pi}}yz\\ \sqrt{\frac{5}{16\pi}}(2z^2-x^2-y^2)\\ -\sqrt{\frac{15}{4\pi}}xz\\ \sqrt{\frac{15}{16\pi}}(x^2-y^2)\end{bmatrix}
+\end{aligned}\end{split}\]</div>
+</div></blockquote>
+<p>If there is a channel dimension in X, it will also be included in the returned spherical harmonics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>Tensor</em>) – The coordinate tensor.</p></li>
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – The degree range of spherical harmonics that we need.
+The maximum degree in L should not execeed 17.</p></li>
+<li><p><strong>need_normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the input needs to be normalized. Default is False.</p></li>
+<li><p><strong>dim</strong> (<em>int</em><em>, </em><em>optional</em>) – The ‘xyz’ dimension in X. Default is -1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tensor of spherical harmonics.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The shape of the output tensor depends on the input shape and the degree range L.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.math.isht">
+<span class="sig-prename descclassname"><span class="pre">equitorch.math.</span></span><span class="sig-name descname"><span class="pre">isht</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_thetas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_phis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.math.isht" title="Link to this definition"></a></dt>
+<dd><p>Inverse spherical harmonics transform.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}F(\theta_{i},\phi_j)=\sum_{l=0}^L\sum_{m=-l}^l X_{m}^{(l)}Y_{m}^{(l)}(\theta_i,\phi_j),\\\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta_i=\frac{\pi i+\frac{\pi}{2}}{\text{num_thetas}}\)</span>, <span class="math notranslate nohighlight">\(\phi_j=\frac{2\pi j}{\text{num_phis}}\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Tensor</em>) – Input tensor of shape <span class="math notranslate nohighlight">\((..., \text{num_orders}, C)\)</span>.</p></li>
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – The degree range of spherical harmonics.</p></li>
+<li><p><strong>num_thetas</strong> (<em>int</em>) – The number of grid points of <span class="math notranslate nohighlight">\(\theta\)</span>.</p></li>
+<li><p><strong>num_phis</strong> (<em>int</em>) – The number of grid points of <span class="math notranslate nohighlight">\(\phi\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Output tensor of shape <span class="math notranslate nohighlight">\((..., \text{num_thetas}, \text{num_phis}, C)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="equitorch.math.sht">
+<span class="sig-prename descclassname"><span class="pre">equitorch.math.</span></span><span class="sig-name descname"><span class="pre">sht</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">equitorch.typing.DegreeRange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_thetas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_phis</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#equitorch.math.sht" title="Link to this definition"></a></dt>
+<dd><p>The spherical harmonics transform of a function <span class="math notranslate nohighlight">\(F(\theta, \phi)\)</span> is
+defined as:</p>
+<div class="math notranslate nohighlight">
+\[X_{m}^{(l)} = \int_{S^2} F(\theta, \phi) Y_{m}^{(l)}(\theta, \phi) \sin\theta \mathrm{d}\phi \mathrm{d}\theta\]</div>
+<p>approximated by:</p>
+<div class="math notranslate nohighlight">
+\[X_{m}^{(l)} \approx \sum_{i=0}^{\text{num_thetas}-1} \sum_{j=0}^{\text{num_phis}-1} F(\theta_i, \phi_j) Y_{m}^{(l)}(\theta_i, \phi_j) \sin\theta_i \Delta\theta \Delta\phi\]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta_i=\frac{\pi i+\frac{\pi}{2}}{\text{num_thetas}}\)</span>,
+<span class="math notranslate nohighlight">\(\phi_j=\frac{2\pi j}{\text{num_phis}}\)</span>,
+<span class="math notranslate nohighlight">\(\Delta\theta=\frac{\pi}{\text{num_thetas}}\)</span>,
+<span class="math notranslate nohighlight">\(\Delta\phi=\frac{2\pi}{\text{num_phis}}\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Tensor</em>) – Input tensor of shape <span class="math notranslate nohighlight">\((..., \text{num_thetas}, \text{num_phis}, C)\)</span>.</p></li>
+<li><p><strong>L</strong> (<em>DegreeRange</em>) – The degree range of spherical harmonics.</p></li>
+<li><p><strong>num_thetas</strong> (<em>int</em>) – The number of grid points of <span class="math notranslate nohighlight">\(\theta\)</span>.</p></li>
+<li><p><strong>num_phis</strong> (<em>int</em>) – The number of grid points of <span class="math notranslate nohighlight">\(\phi\)</span>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Output tensor of shape <span class="math notranslate nohighlight">\((..., \text{num_orders}, C)\)</span>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="equitorch" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../nn/index.html" class="btn btn-neutral float-right" title="equitorch.nn" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Tong Wang.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
