@@ -148,7 +148,7 @@ dependencies:
       - plotly==5.24.1
       - protobuf==4.25.3
       - psutil==6.0.0
-      - pyg-lib==0.4.0+pt23cu121 --install-option="-f https://data.pyg.org/whl/torch-2.3.0+cu121.html"
+      - pyg-lib==0.4.0+pt23cu121 -f https://data.pyg.org/whl/torch-2.3.0+cu121.html
       - pyparsing==3.1.2
       - python-dateutil==2.9.0.post0
       - pytorch-lightning==2.3.3
@@ -175,13 +175,13 @@ dependencies:
       - tensorboard==2.17.0
       - tensorboard-data-server==0.7.2
       - threadpoolctl==3.5.0
-      - torch-cluster==1.6.3+pt23cu121 --install-option="-f https://data.pyg.org/whl/torch-2.3.0+cu121.html"
+      - torch-cluster==1.6.3+pt23cu121 -f https://data.pyg.org/whl/torch-2.3.0+cu121.html
       - torch-ema==0.3
-      - torch-geometric==2.5.3 --install-option="-f https://data.pyg.org/whl/torch-2.3.0+cu121.html"
+      - torch-geometric==2.5.3 -f https://data.pyg.org/whl/torch-2.3.0+cu121.html
       - torch-harmonics==0.6.5
-      - torch-scatter==2.1.2+pt23cu121 --install-option="-f https://data.pyg.org/whl/torch-2.3.0+cu121.html"
-      - torch-sparse==0.6.18+pt23cu121 --install-option="-f https://data.pyg.org/whl/torch-2.3.0+cu121.html"
-      - torch-spline-conv==1.2.2+pt23cu121 --install-option="-f https://data.pyg.org/whl/torch-2.3.0+cu121.html"
+      - torch-scatter==2.1.2+pt23cu121 -f https://data.pyg.org/whl/torch-2.3.0+cu121.html
+      - torch-sparse==0.6.18+pt23cu121 -f https://data.pyg.org/whl/torch-2.3.0+cu121.html
+      - torch-spline-conv==1.2.2+pt23cu121 -f https://data.pyg.org/whl/torch-2.3.0+cu121.html
       - torchmetrics==1.0.1
       - tqdm==4.66.4
       - triton==3.0.0
