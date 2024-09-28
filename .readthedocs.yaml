@@ -3,6 +3,6 @@ version: 2
 build:
   os: "ubuntu-20.04"
   tools:
-    python: "mambaforge-22.9"
+    python: "conda"
 conda:
   environment: "./docs/environment.yml"
