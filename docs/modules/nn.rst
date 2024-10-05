@@ -125,9 +125,6 @@ Cutoffs
 Other Modules
 -------------
 
-Equivariant Normalizations
---------------------------
-
 .. currentmodule:: equitorch.nn
 
 .. autosummary::
