@@ -9,9 +9,9 @@ Equitorch documentation
 This is **Equitorch**, a modularized package for flexibily constructing equivariant (and invariant) GNNs built-upon pyg_.
 
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Get-started
+.. .. toctree:
+..    :maxdepth: 2
+..    :caption: Get-started
 
    .. get_started/symmetries_equivariances
    .. get_started/representations_spherical_harmonics
@@ -19,14 +19,22 @@ This is **Equitorch**, a modularized package for flexibily constructing equivari
 
 
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Tutorials
+.. toctree:
+..    :maxdepth: 2
+..    :caption: Tutorials
 
 .. toctree::
    :maxdepth: 2
+   :caption: API 
 
-   autoapi/index
+
+   .. equivariance_introduction.rst
+
+
+   /modules/nn.rst
+   /modules/math.rst
+   /modules/utils.rst
+
 
 
 .. _pyg: https://pytorch-geometric.readthedocs.io/en/latest/index.html

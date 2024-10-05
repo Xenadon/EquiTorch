@@ -1,14 +1,15 @@
 import torch
+from torch import Tensor
 from ..typing import DegreeRange
 from ._clebsch_gordan import blocked_CG
 
-def so3_weights_to_so2(weight_so3: torch.Tensor, L_in:DegreeRange, L_out:DegreeRange, channel_wise=True):
+def so3_weights_to_so2(weight_so3: Tensor, L_in:DegreeRange, L_out:DegreeRange, channel_wise=True):
     """
     Transform the weights used for :obj:`SO3Linear` to the weights for :obj:`SO2Linear`.
 
     Parameters
     ----------
-    weight_so3 : torch.Tensor
+    weight_so3 : Tensor
         The weights used for `SO3Linear`. Shape depends on `channel_wise`:
         - If not channel_wise: :math:`(N, \text{num_degree_in}, \text{in_channels}, \text{out_channels})` or :math:`(\text{num_degree_in}, \text{in_channels}, \text{out_channels})`
         - If channel_wise: :math:`(N, \text{num_degree_in}, \text{channels})` or :math:`(\text{num_degree_in}, \text{channels})`
@@ -19,11 +20,11 @@ def so3_weights_to_so2(weight_so3: torch.Tensor, L_in:DegreeRange, L_out:DegreeR
     L_out : DegreeRange
         The degree range of output features.
     channel_wise : bool, optional
-        Whether the weights are channel-wise. Default is True.
+        Whether the weights are channel-wise. Default is :obj:`True`.
 
     Returns
     -------
-    weight_so2 : torch.Tensor
+    weight_so2 : Tensor
         Transformed weights for `SO2Linear`, with the same shape as `weight_so3`,
         sorted by :math:`(l_\text{out}, l_\text{in}, m)` lexicographically in the `num_degree_in` dimension.
     """
@@ -49,13 +50,13 @@ def so3_weights_to_so2(weight_so3: torch.Tensor, L_in:DegreeRange, L_out:DegreeR
             offset += 2*l_+1
     return weight_so2.squeeze(dim=-1) if channel_wise else weight_so2
 
-def so2_weights_to_so3(weight_so2: torch.Tensor, L_in:DegreeRange, L_out:DegreeRange, channel_wise=True):
+def so2_weights_to_so3(weight_so2: Tensor, L_in:DegreeRange, L_out:DegreeRange, channel_wise=True):
     """
     Transform the weights used for :obj:`SO2Linear` to the weights for :obj:`SO3Linear`.
 
     Parameters
     ----------
-    weight_so2 : torch.Tensor
+    weight_so2 : Tensor
         The weights used for `SO2Linear`. Shape depends on `channel_wise`:
         - If not channel_wise: :math:`(N, \text{num_degree_in}, \text{in_channels}, \text{out_channels})` or :math:`(\text{num_degree_in}, \text{in_channels}, \text{out_channels})`
         - If channel_wise: :math:`(N, \text{num_degree_in}, \text{channels})` or :math:`(\text{num_degree_in}, \text{channels})`
@@ -65,11 +66,11 @@ def so2_weights_to_so3(weight_so2: torch.Tensor, L_in:DegreeRange, L_out:DegreeR
     L_out : DegreeRange
         The degree range of output features.
     channel_wise : bool, optional
-        Whether the weights are channel-wise. Default is True.
+        Whether the weights are channel-wise. Default is :obj:`True`.
 
     Returns
     -------
-    weight_so3 : torch.Tensor
+    weight_so3 : Tensor
         Transformed weights for `SO3Linear`, with the same shape as `weight_so2`,
         sorted by :math:`(l_\text{out}, l_\text{in}, l_\text{edge})` lexicographically in the `num_degree_in` dimension.
         :math:`l_\text{edge}` will take all values from :math:`|l_\text{out}-l_\text{in}|` to :math:`l_\text{out}+l_\text{in}` for a given pair of :math:`l_\text{out}` and :math:`l_\text{in}`.

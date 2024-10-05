@@ -133,7 +133,7 @@ def coo_CG(L:DegreeRange, L1:DegreeRange, L2:DegreeRange,
     dtype : torch.dtype, optional
         The desired data type of the output tensors. Default is torch.float.
     device : torch.device, optional
-        The desired device of the output tensors. Default is None (uses current device).
+        The desired device of the output tensors. Default is :obj:`None` (uses current device).
 
     Returns
     -------

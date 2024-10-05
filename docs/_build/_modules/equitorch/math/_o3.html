@@ -105,7 +105,7 @@
 <span class="sd">    phi : Tensor</span>
 <span class="sd">        The azimuthal angles, tensor of shape :math:`(...)`</span>
 <span class="sd">    dim : int, optional</span>
-<span class="sd">        The dimension along which to stack the result. Defaults to -1.</span>
+<span class="sd">        The dimension along which to stack the result. Default is -1.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -141,7 +141,7 @@
 <span class="sd">    need_normalize : bool</span>
 <span class="sd">        Whether to normalize the input coordinates</span>
 <span class="sd">    dim : int, optional</span>
-<span class="sd">        The dimension containing the xyz coordinates. Defaults to -1.</span>
+<span class="sd">        The dimension containing the xyz coordinates. Default is -1.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -186,7 +186,7 @@
 <div class="viewcode-block" id="wigner_D">
 <a class="viewcode-back" href="../../../autoapi/equitorch/math/index.html#equitorch.math.wigner_D">[docs]</a>
 <span class="k">def</span> <span class="nf">wigner_D</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Wigner D matrix representation of :math:`\text{SO(3)}` parameterized by Z-Y-Z angles </span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Wigner D matrix representation of SO(3) parameterized by Z-Y-Z angles </span>
 <span class="sd">    on the spaces of degree range :math:`L`.</span>
 
 <span class="sd">    It satisfies the following properties:</span>
@@ -225,7 +225,7 @@
 
 
 <span class="k">def</span> <span class="nf">_wigner_D</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">gamma</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Wigner D matrix representation of :math:`SO(3)` parameterized by Z-Y-Z angles.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Wigner D matrix representation of SO(3) parameterized by Z-Y-Z angles.</span>
 
 <span class="sd">    It satisfies the following properties:</span>
 
@@ -311,7 +311,7 @@
 <span class="sd">        The degree range of spherical harmonics that we need.</span>
 <span class="sd">        The maximum degree in L should not execeed 17.</span>
 <span class="sd">    need_normalize : bool, optional</span>
-<span class="sd">        Whether the input needs to be normalized. Default is False.</span>
+<span class="sd">        Whether the input needs to be normalized. Default is :obj:`False`.</span>
 <span class="sd">    dim : int, optional</span>
 <span class="sd">        The &#39;xyz&#39; dimension in X. Default is -1.</span>
 

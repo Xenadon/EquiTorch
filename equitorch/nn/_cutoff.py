@@ -4,7 +4,7 @@ import torch.nn as nn
 
 class CosineCutoff(nn.Module):
     r"""
-    Implements a cosine cutoff function
+    The cosine cutoff function
 
     .. math::
         f(r)=\begin{cases}
@@ -12,6 +12,7 @@ class CosineCutoff(nn.Module):
         \dfrac{1}{2}\left[1 + \cos\left(\pi\cdot u\right)\right], & \text{start}\le r \le \text{cutoff},\\
         0, & r > \text{cutoff},
         \end{cases}
+
     where :math:`u=\dfrac{r-\text{start}}{\text{cutoff}-\text{start}}`.
 
     This cutoff function smoothly decreases from 1 to 0 in the range 
@@ -40,9 +41,7 @@ class CosineCutoff(nn.Module):
     
 class MollifierCutoff(nn.Module):
     r'''
-    Implements a mollifier cutoff function.
-
-    The mollifier cutoff function is defined as:
+    The mollifier cutoff function
 
     .. math::
         f(r) = \begin{cases} 
@@ -50,6 +49,7 @@ class MollifierCutoff(nn.Module):
         \exp \left[{1 - \left({1 - u^2}+\epsilon\right)^{-1}}\right] & \text{start} \le r \le \text{cutoff} \\
         0, & r > \text{cutoff}  ,
         \end{cases}
+        
     where :math:`u=\dfrac{r-\text{start}}{\text{cutoff}-\text{start}}`.
 
     Parameters
@@ -79,14 +79,12 @@ class MollifierCutoff(nn.Module):
 
 class PolynomialCutoff(nn.Module):
     r'''
-    Implements a polynomial cutoff function.
-
-    The polynomial cutoff function is defined as:
+    Implements a polynomial cutoff function
 
     .. math::
         f(r) = \begin{cases} 
         1, & r < \text{start},\\
-        1-\dfrac{(p+1)(p+2)}{2}u^p+p(p+2)u^{p+1}-\frac{p(p+1)}{2}u^{p+2}& \text{start}, \le r \le \text{cutoff}, \\
+        1-\dfrac{(p+1)(p+2)}{2}u^p+p(p+2)u^{p+1}-\frac{p(p+1)}{2}u^{p+2}& \text{start} \le r \le \text{cutoff}, \\
         0, & r > \text{cutoff},  
         \end{cases}
 

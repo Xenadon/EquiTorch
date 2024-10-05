@@ -37,7 +37,7 @@ Package Contents
    :type theta: Tensor
    :param phi: The azimuthal angles, tensor of shape :math:`(...)`
    :type phi: Tensor
-   :param dim: The dimension along which to stack the result. Defaults to -1.
+   :param dim: The dimension along which to stack the result. Default is -1.
    :type dim: int, optional
 
    :returns: Cartesian coordinates, tensor of :math:`\text{shape}[\text{dim}]=3`.
@@ -61,7 +61,7 @@ Package Contents
    :type xyz: Tensor
    :param need_normalize: Whether to normalize the input coordinates
    :type need_normalize: bool
-   :param dim: The dimension containing the xyz coordinates. Defaults to -1.
+   :param dim: The dimension containing the xyz coordinates. Default is -1.
    :type dim: int, optional
 
    :returns:
@@ -86,9 +86,9 @@ Package Contents
    :rtype: Tensor
 
 
-.. py:function:: wigner_D(L: equitorch.typing.DegreeRange, alpha: torch.Tensor, beta: torch.Tensor, gamma: torch.Tensor)
+.. py:function:: wigner_D(L: equitorch.typing.DegreeRange, alpha: Tensor, beta: Tensor, gamma: Tensor)
 
-   Wigner D matrix representation of :math:`\text{SO(3)}` parameterized by Z-Y-Z angles
+   Wigner D matrix representation of SO(3) parameterized by Z-Y-Z angles
    on the spaces of degree range :math:`L`.
 
    It satisfies the following properties:
@@ -115,7 +115,7 @@ Package Contents
    .. warning:: This function is currently not optimized. Thus it is not recommended to use it in iterations.
 
 
-.. py:function:: spherical_harmonics(X: torch.Tensor, L: equitorch.typing.DegreeRange, need_normalize: bool = False, dim: int = -1)
+.. py:function:: spherical_harmonics(X: Tensor, L: equitorch.typing.DegreeRange, need_normalize: bool = False, dim: int = -1)
 
    Compute spherical harmonics for given Cartesian coordinates.
 
@@ -157,7 +157,7 @@ Package Contents
    :param L: The degree range of spherical harmonics that we need.
              The maximum degree in L should not execeed 17.
    :type L: DegreeRange
-   :param need_normalize: Whether the input needs to be normalized. Default is False.
+   :param need_normalize: Whether the input needs to be normalized. Default is :obj:`False`.
    :type need_normalize: bool, optional
    :param dim: The 'xyz' dimension in X. Default is -1.
    :type dim: int, optional
@@ -170,7 +170,7 @@ Package Contents
    The shape of the output tensor depends on the input shape and the degree range L.
 
 
-.. py:function:: isht(X: torch.Tensor, L: equitorch.typing.DegreeRange, num_thetas: int, num_phis: int)
+.. py:function:: isht(X: Tensor, L: equitorch.typing.DegreeRange, num_thetas: int, num_phis: int)
 
    Inverse spherical harmonics transform.
 
@@ -192,7 +192,7 @@ Package Contents
    :rtype: Tensor
 
 
-.. py:function:: sht(x: torch.Tensor, L: equitorch.typing.DegreeRange, num_thetas: int, num_phis: int)
+.. py:function:: sht(x: Tensor, L: equitorch.typing.DegreeRange, num_thetas: int, num_phis: int)
 
    The spherical harmonics transform of a function :math:`F(\theta, \phi)` is
    defined as:

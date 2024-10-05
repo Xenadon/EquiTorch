@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-
+from torch import Tensor
 
 class SineBasisExpansion(nn.Module):
     r"""
@@ -24,7 +24,7 @@ class SineBasisExpansion(nn.Module):
         freq = torch.arange(1, max_freq+1)
         self.register_buffer('freq', freq)
 
-    def forward(self, x: torch.Tensor):
+    def forward(self, x: Tensor):
         """
         """
         return (self.freq * x.unsqueeze(-1)).sin()
@@ -51,7 +51,7 @@ class CosineBasisExpansion(nn.Module):
         freq = torch.arange(1, max_freq+1)
         self.register_buffer('freq', freq)
 
-    def forward(self, x: torch.Tensor):
+    def forward(self, x: Tensor):
         """
         """
         return (self.freq * x.unsqueeze(-1)).cos()
@@ -72,7 +72,7 @@ class FourierBasisExpansion(nn.Module):
         The maximum frequency to use.
     include_freq_0 : bool, optional
         Whether to include a constant term (frequency 0) in the expansion. 
-        Default is False.
+        Default is :obj:`False`.
 
     Notes
     -----
@@ -98,7 +98,7 @@ class FourierBasisExpansion(nn.Module):
         self.register_buffer('freq', freq)
         self.include_freq_0 = include_freq_0
 
-    def forward(self, x: torch.Tensor):
+    def forward(self, x: Tensor):
         """
         """
         x = x.unsqueeze(-1)

@@ -1,12 +1,18 @@
 from typing import Tuple, List, Optional, Callable
 import torch
+from torch.nn.functional import pad
 from torch import Tensor
 import functools
 import torch_geometric
-from torch_geometric.utils import scatter
+from torch_geometric.utils import scatter, segment
 import torch_geometric.utils
 
 from ..typing import DegreeRange
+
+def expand_left(ptr: Tensor, dim: int, dims: int) -> Tensor:
+    for _ in range(dims + dim if dim < 0 else dim):
+        ptr = ptr.unsqueeze(0)
+    return ptr
 
 @functools.lru_cache(maxsize=None)
 def check_degree_range(L: DegreeRange) -> Tuple[int,int]:
@@ -96,7 +102,6 @@ def extract_batch_ptr(keys: List[Tensor]):
     val = [k[ptr[:-1]] for k in keys]
     return batch, ptr, val
 
-# def 
 
 @functools.lru_cache(maxsize=None)
 def order_ptr(L: DegreeRange, dim:int=0, device=None):
@@ -132,7 +137,7 @@ def order_ptr(L: DegreeRange, dim:int=0, device=None):
     return torch.tensor([i**2-L[0]**2 for i in range(L[0], L[1]+2)]).reshape([1]*dim+[-1]).to(device)
 
 def order_in_degree_range(L: DegreeRange, zero_based:bool=True, device=None):
-    """
+    r"""
     Generate a tensor that specifying the order :math:`m` in a feature of 
     degree range :math:`L`.
 
@@ -142,7 +147,7 @@ def order_in_degree_range(L: DegreeRange, zero_based:bool=True, device=None):
         The degree range.
     zero_based : bool, optional
         Whether the :math:`m` is in :math:`0,\dots,2l_\text{max}+1` or 
-        :math:`-l_\text{max},\dots,l_\text{max}`. Default is True.
+        :math:`-l_\text{max},\dots,l_\text{max}`. Default is :obj:`True`.
     device : torch.device, optional
         The device to place the resulting tensor on.
 
@@ -200,7 +205,7 @@ def list_degrees(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None, cond: 
     L = check_degree_range(L)
     L1 = check_degree_range(L1)
     L2 = check_degree_range(L2) if L2 is not None \
-        else (min([abs(l1-l) for l1 in range(l1_min,l1_max+1) for l in range(l_min,l_max+1)]), L[1] + L1[1])
+        else (0, L[1] + L1[1])
     if cond is not None:
         ls = [(l, l1, l2) 
               for l1 in degrees_in_range(L1) 
@@ -216,9 +221,11 @@ def list_degrees(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None, cond: 
     return sorted(ls)
 
 @functools.lru_cache(maxsize=None)
-def num_degree_triplets(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None, 
+def num_degree_triplets(L: DegreeRange, 
+                        L1: DegreeRange, 
+                        L2: Optional[DegreeRange] = None, 
                         cond: Optional[Callable[[int, int, int], bool]] = None):
-    """
+    r"""
     Generate the number of valid degree triplets (l, l1, l2). (The triplet satisfies triangular inequality)
 
     Parameters
@@ -227,8 +234,10 @@ def num_degree_triplets(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None,
         The range for the total angular momentum l.
     L1 : DegreeRange
         The range for the first angular momentum l1.
-    L2 : DegreeRange
-        The range for the second angular momentum l2.
+    L2 : DegreeRange, optional
+        The range for the second angular momentum l2
+        Default is :obj:`None`. 
+        If not provided, it will be :math:`[0,\max(L1)+\max(L2)]`
     cond : Callable[[int, int, int], bool], optional
         An optional condition function to further filter the triplets.
 
@@ -242,7 +251,19 @@ def num_degree_triplets(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None,
     >>> print(num_degree_triplets(1, (1,2), (2,3)))
     4
     """
-    return len(list_degrees(L, L1, L2, cond))
+    return len(list_degrees(
+        check_degree_range(L),
+        check_degree_range(L1),
+        check_degree_range(L2), cond))
+
+@functools.lru_cache(maxsize=None)
+def range_interact_with(L1: DegreeRange, L2:DegreeRange):
+    L1 = check_degree_range(L1)
+    L2 = check_degree_range(L2)
+    l_min = min(*(abs(l1-l2) for l1 in degrees_in_range(L1) 
+                  for l2 in degrees_in_range(L1)))
+    l_max = L1[1] + L2[1]
+    return (l_min, l_max)
 
 def num_orders_in(L: DegreeRange):
     """
@@ -344,7 +365,7 @@ def expand_degree_to_order(src: Tensor, L: DegreeRange, dim: int):
 
     Parameters
     ----------
-    src : torch.Tensor
+    src : Tensor
         The input tensor in degree representation.
     L : DegreeRange
         The degree range.
@@ -365,7 +386,7 @@ def reduce_order_to_degree(src: Tensor, L: DegreeRange, dim: int):
 
     Parameters
     ----------
-    src : torch.Tensor
+    src : Tensor
         The input tensor in order representation.
     L : DegreeRange
         The degree range.
@@ -389,17 +410,49 @@ def order_0_in(L: DegreeRange):
     return ls+ls**2 - L[0]**2
 
 def extract_in_degree(x: Tensor, L_x:DegreeRange, L:DegreeRange, dim=-2):
+    """
+    L should be contained in L_x! otherwise will produce a wrong result!
+    """
     L = check_degree_range(L)
     L_x = check_degree_range(L)
     return x.narrow(dim, L[0]**2-L_x[0]**2, num_orders_between(*L))
 
+def pad_to_degree(x: Tensor, L_x:DegreeRange, L:DegreeRange, dim=-2):
+    """
+    L_x should be contained in L!!! otherwise will produce a wrong result!
+    """
+    L = check_degree_range(L)
+    L_x = check_degree_range(L)
+    pad_head = L_x[0]**2-L_x[0]**2
+    pad_tail = (L[1]+1)**2 - (L_x[1]+1)**2
+    if dim >= 0:
+        dim = dim - x.ndim
+    dim = -dim - 1
+    p = (0,0)*dim + (pad_head, pad_tail)
+    return pad(x, p)
+
+def range_eq(L: DegreeRange):
+    return (1, L) if isinstance(L, int) else (max(1,L[0]), L[1])
 
 def separate_invariant_equivariant(x:Tensor, dim=-2):
-    return x.narrow_copy(dim=dim, start=0, length=1), \
-           x.narrow_copy(dim=dim, start=0, length=x.shape[dim])
+    return x.narrow(dim=dim, start=0, length=1), \
+           x.narrow(dim=dim, start=1, length=x.shape[dim]-1)
 
 def concate_invariant_equivariant(invariant: Tensor, equivariant: Tensor, dim=-2):
     if invariant.ndim == equivariant.ndim -1:
         invariant = invariant.unsqueeze(dim)
     return torch.cat((invariant, equivariant), dim=dim)
 
+def reduce(x: Tensor, index: Optional[Tensor] = None,
+            ptr: Optional[Tensor] = None, dim_size: Optional[int] = None,
+            dim: int = -2, reduce: str = 'sum', deterministic=False) -> Tensor:
+
+    if ptr is not None:
+        if index is None or deterministic:
+            ptr = expand_left(ptr, dim, dims=x.dim())
+            return segment(x, ptr, reduce=reduce)
+
+    if index is None:
+        raise RuntimeError("Aggregation requires 'index' to be specified")
+
+    return scatter(x, index, dim, dim_size, reduce)

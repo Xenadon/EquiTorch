@@ -1,6 +1,12 @@
 import torch
+from torch import Tensor
 import torch.nn as nn
-from typing import Iterable, Dict, Any
+from typing import Callable, Iterable, Dict, Any
+
+from ..utils._hooks import get_kwargs_filter_hook
+from ..utils._indices import concate_invariant_equivariant, separate_invariant_equivariant
+
+from ..typing import DegreeRange
 
 class BranchedModuleList(nn.Module):
     """
@@ -70,3 +76,53 @@ class BranchedModuleDict(nn.Module):
         """
         return {k:m(*args, **kwargs) for k,m in self.modules.items()}
         
+class Separable(nn.Module):
+    """
+    Separable operation for invariant and equivariant features.
+
+    Parameters
+    ----------
+    op_inv: Callable
+        operation for invariant components.
+    op_eqv: Callable
+        operation for equivariant components.
+    cat_after: bool, optional
+        Whether to concatenate the invariant and equivariant outputs.
+        Default is :obj:`True`.
+    """
+    def __init__(self, op_inv: Callable, op_eqv: Callable,
+                 cat_after: bool = True):
+        super().__init__()
+        self.op_inv = op_inv
+        self.op_eqv = op_eqv
+        self.cat_after = cat_after
+
+        if isinstance(self.op_inv, nn.Module):
+            self.op_inv.register_forward_pre_hook(
+                get_kwargs_filter_hook(self.op_inv), with_kwargs=True)
+
+        if isinstance(self.op_eqv, nn.Module):
+            self.op_eqv.register_forward_pre_hook(
+                get_kwargs_filter_hook(self.op_eqv), with_kwargs=True)
+
+
+    def forward(self, x: Tensor, dim: int=-2, **kwargs):
+        """
+        Parameters
+        ----------
+        x: Tensor
+            The input tensor.
+        dim: int, optional
+            The dimension of spherical orders. Default is :obj:`-2`.
+        kwargs:
+            Any keyword arguments that will be passed to
+            :obj:`op_inv` and :obj:`op_eqv` 
+        """
+        xi, xe = separate_invariant_equivariant(x,dim)
+        xi = self.op_inv(xi.squeeze(dim), **kwargs).unsqueeze(dim)
+        if xe.numel() > 0:
+            xe = self.op_eqv(xe, **kwargs)
+        if self.cat_after:
+            return concate_invariant_equivariant(xi, xe, dim)
+        else:
+            return xi, xe

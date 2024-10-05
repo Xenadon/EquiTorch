@@ -17,7 +17,8 @@ from ..utils._indices import (
     extract_batch_ptr,
     extract_in_degree,
     num_orders_between,
-    degrees_in_range
+    degrees_in_range,
+    pad_to_degree
 )
 from ..utils._clebsch_gordan import coo_CG
 
@@ -35,7 +36,8 @@ class DegreeWiseLinear(nn.Module):
     .. math::
         \mathbf{x'}^{(l)}_c = \sum_{c'} \mathbf{W}^{(l)}_{cc'} \mathbf{x}_{c'}^{(l)}
 
-    .. note::
+    Notes
+    -----
     The :obj:`L_out` range must be contained within the :obj:`L_in` range, and the degrees in
     :obj:`L_in` but not in :obj:`L_out` will be ignored.
 
@@ -63,11 +65,11 @@ class DegreeWiseLinear(nn.Module):
         self.out_channels = out_channels 
         self.L_in = check_degree_range(L_in)
         self.L_out = check_degree_range(L_out)
-        assert self.L_out[0] >= self.L_in[0] and self.L_out[1] <= self.L_in[1],\
-            f"L_out should be contained in L_in, got L_out={L_out}, L_in={L_in}"
+        self.L_eff = (max(self.L_in[0], self.L_out[0]), min(self.L_in[1],self.L_out[1]))
+        assert self.L_eff[0] <= self.L_eff[1], "The input and output degree range should have intersections!"
         self.weight = self.self_interaction_weight = nn.Parameter(
-                    torch.randn(self.L_out[1]+1 - self.L_out[0], in_channels, out_channels) * 2 / sqrt(in_channels + out_channels))
-
+                    torch.randn(self.L_eff[1]+1 - self.L_eff[0], in_channels, out_channels) * 2 / sqrt(in_channels + out_channels))
+        self.L_in
     def forward(self, x: Tensor):
         r"""
         Applies the degree wise linear operation to the input tensor.
@@ -83,9 +85,11 @@ class DegreeWiseLinear(nn.Module):
         Tensor
             The output tensor of shape :math:`(N, \text{num_orders_out}, C_{\text{out}})`.
         """
-        x = extract_in_degree(x, self.L_in, self.L_out)
-        return (x.unsqueeze(-2) @ 
-                expand_degree_to_order(self.weight.unsqueeze(0), self.L_out, dim=-3)).squeeze(-2)
+        x = extract_in_degree(x, self.L_in, self.L_eff)
+        out = (x.unsqueeze(-2) @ 
+                expand_degree_to_order(self.weight.unsqueeze(0), self.L_eff, dim=-3)).squeeze(-2)
+        out = pad_to_degree(x, self.L_eff, self.L_out)
+        return out
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(L_in={self.L_in}, L_out={self.L_out}, in_channels={self.in_channels}, out_channels={self.out_channels})'
 
@@ -247,6 +251,8 @@ class SO3Linear(nn.Module):
 
             self.num_weights = l_ind.unique().numel()
 
+            self.weight_shape = (-1, self.weight_shape, self.in_channels)
+
             if not self.external_weight:
                 self.weight = nn.Parameter(
                     torch.randn(1, self.num_weights,
@@ -265,6 +271,8 @@ class SO3Linear(nn.Module):
             self.register_buffer('CG_vals', CG_vals)
 
             self.num_weights = l_ind.unique().numel()
+
+            self.weight_shape = (-1, self.weight_shape, self.in_channels, self.out_channels)
 
             if not self.external_weight:
                 self.weight = nn.Parameter(
@@ -306,6 +314,8 @@ class SO3Linear(nn.Module):
         """
         if weight is None and not self.external_weight:
             weight = self.weight
+        else:
+            weight = weight.view(self.weight_shape)
 
         if self.channel_wise:
             return _so3_cw_conv(x, edge_feat, weight,
@@ -349,12 +359,12 @@ def _so2_indices(L_in: DegreeRange, L_out: DegreeRange):
 class SO2Linear(nn.Module):
 
     r'''
-    The SO(3) equivariant linear operation of complexity :math:`O(L^3)` for the
-    maximum degree :math:`L` as described in the paper `Reducing SO(3)
+    The SO(2) equivariant linear operation as described in the paper `Reducing SO(3)
     Convolutions to SO(2) for Efficient Equivariant GNNs 
     <https://arxiv.org/abs/2302.03655>`_.
 
-    It works as a more efficient alternative for SO(3) linear operation. 
+
+
 
     .. math::
         \begin{aligned}
@@ -373,22 +383,33 @@ class SO2Linear(nn.Module):
     When there is no ambiguity, we also denote the operation as 
 
     .. math::
-        \mathbf{x}'=\tilde{\mathbf{W}}(\|\mathbf{r}\|)\mathbf{x}.
+        \mathbf{x}'=\tilde{\mathbf{W}}_{\phi}(\|\mathbf{r}\|)\mathbf{x}.
 
-    The operation satisfies the following property:
-    
-    for any possible SO(3) linear operation :math:`\tilde{\mathbf{W}}(\mathbf{r})`,
-    there exists an SO(2) linear operation :math:`\tilde{\mathbf{W'}}(\|\mathbf{r}\|)` such that:
+    The SO(2) equivariance means that, for any rotation 
+    :math:`\mathbf{R}=\begin{bmatrix}\cos\phi&-\sin\phi&0\\\sin\phi&\cos\phi&0\\0&0&1\end{bmatrix}`
+    around z-axis and corresponding Wigner-D matrices :math:`\mathbf{D}_{\text{in}}`, 
+    :math:`\mathbf{D}_{\text{out}}` in input/output feature spaces,
+    it satisfise that
 
     .. math::
-        \mathbf{D}_{\mathbf{r},\text{out}}^\top\tilde{\mathbf{W}}'(\|\mathbf{r}\|)(\mathbf{D}_{\mathbf{r},\text{in}}\mathbf{x})=\tilde{\mathbf{W}}(\mathbf {r})\mathbf{x}
+        \mathbf{D}_{\text{out}}\tilde{\mathbf{W}}_{\phi}(\|{\mathbf{r}}\|)\mathbf{x}=\tilde{\mathbf{W}}_{\phi}(\mathbf{R}{\mathbf{r}})(\mathbf{D}_{\text{in}}\mathbf{x}).
+
+
+    This operation can work as a more efficient alternative for SO(3) linear operation
+    and satisfies: 
+    
+    for any possible SO(3) linear operation :math:`\tilde{\mathbf{W}}(\mathbf{r})`,
+    there exists an SO(2) linear operation :math:`\tilde{\mathbf{W}}_{\phi}'(\|\mathbf{r}\|)` such that:
+
+    .. math::
+        \mathbf{D}_{\mathbf{r},\text{out}}^\top\tilde{\mathbf{W}}'_{\phi}(\|\mathbf{r}\|)(\mathbf{D}_{\mathbf{r},\text{in}}\mathbf{x})=\tilde{\mathbf{W}}(\mathbf {r})\mathbf{x}
 
     and vice versa, where :math:`\mathbf{D}_{\mathbf{r},\text{in}}` and :math:`\mathbf{D}_{\mathbf{r},\text{out}}` are the Wigner-D
     matrices on the input/output spaces corresponding to the rotation matrix that can align :math:`\mathbf{r}`
     to the z axis. (See Appendix 2 of the paper above for the proof of the bijection.)
 
     To explicitly convert from or to the weight for :obj:`SO3Linear` operation, see 
-    :obj:`so3_weights_to_so2` and :obj:`so2_weights_to_so3` in :obj:`utils`.
+    :obj:`~equitorch.utils.so3_weights_to_so2` and :obj:`~equitorch.utils.so2_weights_to_so3`.
     
     .. note::
         If dense Wigner-D matrix is used before the SO(2) linear operation, the 
@@ -412,11 +433,11 @@ class SO2Linear(nn.Module):
     out_channels : int
         The number of output channels.
     external_weight : bool, optional
-        Whether the user will pass external weights (that may depend on data or edges) or keep a set of independent weights inside.
+        Whether to use an external weight. Defaults to False.
         Default to False.
     channel_wise : bool, optional
-        Whether the weight is performed channel-wise.
-        Default to False.
+        Whether to use an external weight. 
+        Defaults to False.
     '''
     def __init__(self, 
                  L_in: DegreeRange, 
@@ -447,11 +468,13 @@ class SO2Linear(nn.Module):
         self.external_weight = external_weight
         
         if self.channel_wise:
+            self.weight_shape = (-1, self.num_weights, self.in_channels)
             if not self.external_weight:
                 self.weight = nn.Parameter(
                     torch.randn(1, self.num_weights,
-                                self.channels))
+                                self.in_channels))
         else:
+            self.weight_shape = (-1, self.num_weights, self.in_channels, self.out_channels)
             if not self.external_weight:
                 self.weight = nn.Parameter(
                     torch.randn(1, self.num_weights,
@@ -491,7 +514,9 @@ class SO2Linear(nn.Module):
         """
         if weight is None and not self.external_weight:
             weight = self.weight
-        
+        else:
+            weight = weight.view(self.weight_shape)
+            
         X = x.index_select(dim=1,index=self.M_in) # N * Num * Ci 
 
         if self.channel_wise:

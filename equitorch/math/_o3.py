@@ -30,7 +30,7 @@ def angles_to_xyz(theta, phi, dim=-1):
     phi : Tensor
         The azimuthal angles, tensor of shape :math:`(...)`
     dim : int, optional
-        The dimension along which to stack the result. Defaults to -1.
+        The dimension along which to stack the result. Default is -1.
 
     Returns
     -------
@@ -63,7 +63,7 @@ def xyz_to_angles(xyz, need_normalize, dim=-1):
     need_normalize : bool
         Whether to normalize the input coordinates
     dim : int, optional
-        The dimension containing the xyz coordinates. Defaults to -1.
+        The dimension containing the xyz coordinates. Default is -1.
 
     Returns
     -------
@@ -102,7 +102,7 @@ def angles_to_matrix(alpha, beta, gamma):
     return o3.matrix_z(alpha) @ o3.matrix_y(beta) @ o3.matrix_z(gamma)
 
 def wigner_D(L: DegreeRange, alpha: Tensor, beta: Tensor, gamma: Tensor):
-    r"""Wigner D matrix representation of :math:`\text{SO(3)}` parameterized by Z-Y-Z angles 
+    r"""Wigner D matrix representation of SO(3) parameterized by Z-Y-Z angles 
     on the spaces of degree range :math:`L`.
 
     It satisfies the following properties:
@@ -140,7 +140,7 @@ def wigner_D(L: DegreeRange, alpha: Tensor, beta: Tensor, gamma: Tensor):
     return e3nn.math.direct_sum(*(_wigner_D(l, alpha, beta, gamma) for l in degrees_in_range(L))).to(alpha.device)
 
 def _wigner_D(l, alpha, beta, gamma):
-    r"""Wigner D matrix representation of :math:`SO(3)` parameterized by Z-Y-Z angles.
+    r"""Wigner D matrix representation of SO(3) parameterized by Z-Y-Z angles.
 
     It satisfies the following properties:
 
@@ -224,7 +224,7 @@ def spherical_harmonics(X: Tensor,
         The degree range of spherical harmonics that we need.
         The maximum degree in L should not execeed 17.
     need_normalize : bool, optional
-        Whether the input needs to be normalized. Default is False.
+        Whether the input needs to be normalized. Default is :obj:`False`.
     dim : int, optional
         The 'xyz' dimension in X. Default is -1.
 

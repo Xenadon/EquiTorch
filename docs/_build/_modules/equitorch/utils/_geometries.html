@@ -91,11 +91,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pos : torch.Tensor</span>
+<span class="sd">    pos : Tensor</span>
 <span class="sd">        Tensor of shape (N, 3) containing the positions of all atoms.</span>
-<span class="sd">    ptr : torch.Tensor</span>
+<span class="sd">    ptr : Tensor</span>
 <span class="sd">        Tensor containing the cumulative sum of atoms for each molecule in the batch.</span>
-<span class="sd">    atom_mass : torch.Tensor, optional</span>
+<span class="sd">    atom_mass : Tensor, optional</span>
 <span class="sd">        Tensor of shape (N,) containing the mass of each atom. </span>
 <span class="sd">        If None, all atoms are assumed to have equal mass.</span>
 
@@ -116,11 +116,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pos : torch.Tensor</span>
+<span class="sd">    pos : Tensor</span>
 <span class="sd">        Tensor of shape (N, 3) containing the positions of all atoms.</span>
-<span class="sd">    batch : torch.Tensor</span>
+<span class="sd">    batch : Tensor</span>
 <span class="sd">        Tensor of shape (N,) indicating which molecule each atom belongs to.</span>
-<span class="sd">    center_of_mass : torch.Tensor</span>
+<span class="sd">    center_of_mass : Tensor</span>
 <span class="sd">        Tensor of shape (B, 3) containing the center of mass for each molecule,</span>
 <span class="sd">        where B is the number of molecules.</span>
 
@@ -143,10 +143,10 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    r : torch.Tensor</span>
+<span class="sd">    r : Tensor</span>
 <span class="sd">        Input vector to be aligned.</span>
 <span class="sd">    need_normalize : bool, optional</span>
-<span class="sd">        Whether to normalize the input vector. Default is True.</span>
+<span class="sd">        Whether to normalize the input vector. Default is :obj:`True`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -165,9 +165,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pos : torch.Tensor</span>
+<span class="sd">    pos : Tensor</span>
 <span class="sd">        Tensor of node positions.</span>
-<span class="sd">    edge_index : torch.Tensor</span>
+<span class="sd">    edge_index : Tensor</span>
 <span class="sd">        Tensor of edge indices.</span>
 
 <span class="sd">    Returns</span>
@@ -185,9 +185,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pos : torch.Tensor</span>
+<span class="sd">    pos : Tensor</span>
 <span class="sd">        Tensor of node positions.</span>
-<span class="sd">    edge_index : torch.Tensor</span>
+<span class="sd">    edge_index : Tensor</span>
 <span class="sd">        Tensor of edge indices.</span>
 
 <span class="sd">    Returns</span>
@@ -209,12 +209,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    r : torch.Tensor</span>
+<span class="sd">    r : Tensor</span>
 <span class="sd">        Input vector to be aligned.</span>
 <span class="sd">    L : DegreeRange</span>
 <span class="sd">        Range of degrees for the Wigner-D matrix.</span>
 <span class="sd">    need_normalize : bool, optional</span>
-<span class="sd">        Whether to normalize the input vector. Default is True.</span>
+<span class="sd">        Whether to normalize the input vector. Default is :obj:`True`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -232,9 +232,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    pos : torch.Tensor</span>
+<span class="sd">    pos : Tensor</span>
 <span class="sd">        Tensor of node positions.</span>
-<span class="sd">    edge_index : torch.Tensor</span>
+<span class="sd">    edge_index : Tensor</span>
 <span class="sd">        Tensor of edge indices.</span>
 <span class="sd">    L : DegreeRange</span>
 <span class="sd">        Range of degrees for the Wigner-D matrix.</span>
@@ -257,12 +257,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    mat : torch.Tensor</span>
+<span class="sd">    mat : Tensor</span>
 <span class="sd">        The rotation matrix or matrices. Can be 2D, 3D, or 4D.</span>
 <span class="sd">        - If 2D: A single rotation matrix applied to all samples in x.</span>
 <span class="sd">        - If 3D: Batched rotation matrices applied sample-wise to x.</span>
 <span class="sd">        - If 4D: Batched rotation matrices applied both sample-wise and channel-wise to x.</span>
-<span class="sd">    x : torch.Tensor</span>
+<span class="sd">    x : Tensor</span>
 <span class="sd">        The tensor to be rotated. Can be 2D or 3D.</span>
 <span class="sd">        - If 2D: Interpreted as a batch of vectors.</span>
 <span class="sd">        - If 3D: Interpreted as a batch of matrices or multi-channel vectors.</span>

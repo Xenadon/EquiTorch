@@ -83,7 +83,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    weight_so3 : torch.Tensor</span>
+<span class="sd">    weight_so3 : Tensor</span>
 <span class="sd">        The weights used for `SO3Linear`. Shape depends on `channel_wise`:</span>
 <span class="sd">        - If not channel_wise: :math:`(N, \text{num_degree_in}, \text{in_channels}, \text{out_channels})` or :math:`(\text{num_degree_in}, \text{in_channels}, \text{out_channels})`</span>
 <span class="sd">        - If channel_wise: :math:`(N, \text{num_degree_in}, \text{channels})` or :math:`(\text{num_degree_in}, \text{channels})`</span>
@@ -94,11 +94,11 @@
 <span class="sd">    L_out : DegreeRange</span>
 <span class="sd">        The degree range of output features.</span>
 <span class="sd">    channel_wise : bool, optional</span>
-<span class="sd">        Whether the weights are channel-wise. Default is True.</span>
+<span class="sd">        Whether the weights are channel-wise. Default is :obj:`True`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    weight_so2 : torch.Tensor</span>
+<span class="sd">    weight_so2 : Tensor</span>
 <span class="sd">        Transformed weights for `SO2Linear`, with the same shape as `weight_so3`,</span>
 <span class="sd">        sorted by :math:`(l_\text{out}, l_\text{in}, m)` lexicographically in the `num_degree_in` dimension.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -133,7 +133,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    weight_so2 : torch.Tensor</span>
+<span class="sd">    weight_so2 : Tensor</span>
 <span class="sd">        The weights used for `SO2Linear`. Shape depends on `channel_wise`:</span>
 <span class="sd">        - If not channel_wise: :math:`(N, \text{num_degree_in}, \text{in_channels}, \text{out_channels})` or :math:`(\text{num_degree_in}, \text{in_channels}, \text{out_channels})`</span>
 <span class="sd">        - If channel_wise: :math:`(N, \text{num_degree_in}, \text{channels})` or :math:`(\text{num_degree_in}, \text{channels})`</span>
@@ -143,11 +143,11 @@
 <span class="sd">    L_out : DegreeRange</span>
 <span class="sd">        The degree range of output features.</span>
 <span class="sd">    channel_wise : bool, optional</span>
-<span class="sd">        Whether the weights are channel-wise. Default is True.</span>
+<span class="sd">        Whether the weights are channel-wise. Default is :obj:`True`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    weight_so3 : torch.Tensor</span>
+<span class="sd">    weight_so3 : Tensor</span>
 <span class="sd">        Transformed weights for `SO3Linear`, with the same shape as `weight_so2`,</span>
 <span class="sd">        sorted by :math:`(l_\text{out}, l_\text{in}, l_\text{edge})` lexicographically in the `num_degree_in` dimension.</span>
 <span class="sd">        :math:`l_\text{edge}` will take all values from :math:`|l_\text{out}-l_\text{in}|` to :math:`l_\text{out}+l_\text{in}` for a given pair of :math:`l_\text{out}` and :math:`l_\text{in}`.</span>

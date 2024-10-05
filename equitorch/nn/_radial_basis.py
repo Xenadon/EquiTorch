@@ -26,7 +26,7 @@ class GaussianBasisExpansion(nn.Module):
     mu : Tensor, optional
         The mu values for the Gaussian basis functions. Required if num_basis is None.
     trainable : bool, optional
-        Whether the mu and gamma parameters should be trainable. Default is False.
+        Whether the mu and gamma parameters should be trainable. Default is :obj:`False`.
 
     Notes
     -----
@@ -83,7 +83,7 @@ class BesselBasisExpansion(torch.nn.Module):
     cutoff : float, optional
         The cutoff value for the distance. Default is 1.
     trainable : bool, optional
-        Whether the frequency parameters should be trainable. Default is False.
+        Whether the frequency parameters should be trainable. Default is :obj:`False`.
     eps : float, optional
         A small value for stability near zero. Default is 1e-6.
 

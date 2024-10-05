@@ -65,20 +65,20 @@ Package Contents
    (0, 5)
 
 
-.. py:function:: align_to_z_mat(r: torch.Tensor, need_normalize: bool = True)
+.. py:function:: align_to_z_mat(r: Tensor, need_normalize: bool = True)
 
    Calculate the rotation matrix R that aligns the vector r with the z-axis.
 
    :param r: Input vector to be aligned.
    :type r: Tensor
-   :param need_normalize: Whether to normalize the input vector. Default is True.
+   :param need_normalize: Whether to normalize the input vector. Default is :obj:`True`.
    :type need_normalize: bool, optional
 
    :returns: Rotation matrix R such that R @ r = z.
    :rtype: Tensor
 
 
-.. py:function:: align_to_z_wigner(r: torch.Tensor, L: equitorch.typing.DegreeRange, need_normalize: bool = True)
+.. py:function:: align_to_z_wigner(r: Tensor, L: equitorch.typing.DegreeRange, need_normalize: bool = True)
 
    Returns the Wigner-D matrix corresponding to the return of align_to_z_mat.
 
@@ -86,14 +86,14 @@ Package Contents
    :type r: Tensor
    :param L: Range of degrees for the Wigner-D matrix.
    :type L: DegreeRange
-   :param need_normalize: Whether to normalize the input vector. Default is True.
+   :param need_normalize: Whether to normalize the input vector. Default is :obj:`True`.
    :type need_normalize: bool, optional
 
    :returns: Wigner-D matrix corresponding to the rotation returned by align_to_z_mat.
    :rtype: Tensor
 
 
-.. py:function:: edge_align_to_z_mat(pos: torch.Tensor, edge_index: torch.Tensor)
+.. py:function:: edge_align_to_z_mat(pos: Tensor, edge_index: Tensor)
 
    Calculate the rotation matrix R that aligns the edge vector with the z-axis.
 
@@ -106,7 +106,7 @@ Package Contents
    :rtype: Tensor
 
 
-.. py:function:: spherical_harmonics(X: torch.Tensor, L: equitorch.typing.DegreeRange, need_normalize: bool = False, dim: int = -1)
+.. py:function:: spherical_harmonics(X: Tensor, L: equitorch.typing.DegreeRange, need_normalize: bool = False, dim: int = -1)
 
    Compute spherical harmonics for given Cartesian coordinates.
 
@@ -148,7 +148,7 @@ Package Contents
    :param L: The degree range of spherical harmonics that we need.
              The maximum degree in L should not execeed 17.
    :type L: DegreeRange
-   :param need_normalize: Whether the input needs to be normalized. Default is False.
+   :param need_normalize: Whether the input needs to be normalized. Default is :obj:`False`.
    :type need_normalize: bool, optional
    :param dim: The 'xyz' dimension in X. Default is -1.
    :type dim: int, optional
@@ -180,7 +180,7 @@ Package Contents
 
    :param r: The cutoff distance.
    :type r: float
-   :param loop: If True, the graph will contain self-loops. Default is False.
+   :param loop: If True, the graph will contain self-loops. Default is :obj:`False`.
    :type loop: bool, optional
    :param max_num_neighbors: The maximum number of neighbors to return for each element.
                              This flag is only needed for CUDA tensors. Default is 32.

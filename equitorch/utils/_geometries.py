@@ -71,7 +71,7 @@ def align_to_z_mat(r: Tensor, need_normalize:bool=True):
     r : Tensor
         Input vector to be aligned.
     need_normalize : bool, optional
-        Whether to normalize the input vector. Default is True.
+        Whether to normalize the input vector. Default is :obj:`True`.
 
     Returns
     -------
@@ -133,7 +133,7 @@ def align_to_z_wigner(r: Tensor, L: DegreeRange, need_normalize:bool=True):
     L : DegreeRange
         Range of degrees for the Wigner-D matrix.
     need_normalize : bool, optional
-        Whether to normalize the input vector. Default is True.
+        Whether to normalize the input vector. Default is :obj:`True`.
 
     Returns
     -------

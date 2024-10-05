@@ -27,7 +27,7 @@ class RadiusGraph(BaseTransform):
     r : float
         The cutoff distance.
     loop : bool, optional
-        If True, the graph will contain self-loops. Default is False.
+        If True, the graph will contain self-loops. Default is :obj:`False`.
     max_num_neighbors : int, optional
         The maximum number of neighbors to return for each element.
         This flag is only needed for CUDA tensors. Default is 32.

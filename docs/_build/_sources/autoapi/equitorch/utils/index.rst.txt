@@ -81,7 +81,7 @@ Package Contents
    Returns :obj:`range(L[0], L[1]+1)`.
 
 
-.. py:function:: get_center_of_mass(pos: torch.Tensor, ptr: torch.Tensor, atom_mass: Optional[torch.Tensor] = None)
+.. py:function:: get_center_of_mass(pos: Tensor, ptr: Tensor, atom_mass: Optional[torch.Tensor] = None)
 
    Calculate the center of mass for each molecule in a batch.
 
@@ -98,7 +98,7 @@ Package Contents
    :rtype: Tensor
 
 
-.. py:function:: zero_center_of_mass(pos: torch.Tensor, batch: torch.Tensor, center_of_mass: torch.Tensor)
+.. py:function:: zero_center_of_mass(pos: Tensor, batch: Tensor, center_of_mass: Tensor)
 
    Shift the positions of atoms in each molecule so that their center of mass is at the origin.
 
@@ -119,20 +119,20 @@ Package Contents
    effectively centering each molecule at the origin.
 
 
-.. py:function:: align_to_z_mat(r: torch.Tensor, need_normalize: bool = True)
+.. py:function:: align_to_z_mat(r: Tensor, need_normalize: bool = True)
 
    Calculate the rotation matrix R that aligns the vector r with the z-axis.
 
    :param r: Input vector to be aligned.
    :type r: Tensor
-   :param need_normalize: Whether to normalize the input vector. Default is True.
+   :param need_normalize: Whether to normalize the input vector. Default is :obj:`True`.
    :type need_normalize: bool, optional
 
    :returns: Rotation matrix R such that R @ r = z.
    :rtype: Tensor
 
 
-.. py:function:: edge_align_to_z_mat(pos: torch.Tensor, edge_index: torch.Tensor)
+.. py:function:: edge_align_to_z_mat(pos: Tensor, edge_index: Tensor)
 
    Calculate the rotation matrix R that aligns the edge vector with the z-axis.
 
@@ -145,7 +145,7 @@ Package Contents
    :rtype: Tensor
 
 
-.. py:function:: edge_align_to_z_angles(pos: torch.Tensor, edge_index: torch.Tensor)
+.. py:function:: edge_align_to_z_angles(pos: Tensor, edge_index: Tensor)
 
    Calculate the angles (phi, theta) that describe the rotation to align an edge vector with the z-axis.
 
@@ -160,7 +160,7 @@ Package Contents
    :rtype: Tuple[Tensor, Tensor]
 
 
-.. py:function:: align_to_z_wigner(r: torch.Tensor, L: equitorch.typing.DegreeRange, need_normalize: bool = True)
+.. py:function:: align_to_z_wigner(r: Tensor, L: equitorch.typing.DegreeRange, need_normalize: bool = True)
 
    Returns the Wigner-D matrix corresponding to the return of align_to_z_mat.
 
@@ -168,14 +168,14 @@ Package Contents
    :type r: Tensor
    :param L: Range of degrees for the Wigner-D matrix.
    :type L: DegreeRange
-   :param need_normalize: Whether to normalize the input vector. Default is True.
+   :param need_normalize: Whether to normalize the input vector. Default is :obj:`True`.
    :type need_normalize: bool, optional
 
    :returns: Wigner-D matrix corresponding to the rotation returned by align_to_z_mat.
    :rtype: Tensor
 
 
-.. py:function:: edge_align_to_z_wigner(pos: torch.Tensor, edge_index: torch.Tensor, L: equitorch.typing.DegreeRange)
+.. py:function:: edge_align_to_z_wigner(pos: Tensor, edge_index: Tensor, L: equitorch.typing.DegreeRange)
 
    Calculate the Wigner-D matrix corresponding to the rotation that aligns an edge vector with the z-axis.
 
@@ -190,7 +190,7 @@ Package Contents
    :rtype: Tensor
 
 
-.. py:function:: rot_on(mat: torch.Tensor, x: torch.Tensor)
+.. py:function:: rot_on(mat: Tensor, x: Tensor)
 
    Performs rotation of matrix 'mat' on tensor 'x'.
 
@@ -254,7 +254,7 @@ Package Contents
    :type device: torch.device, optional
 
    :returns: A tensor where each element is the degree index for the corresponding order.
-   :rtype: torch.Tensor
+   :rtype: Tensor
 
    .. rubric:: Example
 
@@ -282,7 +282,7 @@ Package Contents
    :type device: torch.device, optional
 
    :returns: A tensor of pointers to the start of each degree's orders.
-   :rtype: torch.Tensor
+   :rtype: Tensor
 
    .. rubric:: Example
 
@@ -304,7 +304,7 @@ Package Contents
    :param L: The degree range.
    :type L: DegreeRange
    :param zero_based: Whether the :math:`m` is in :math:`0,\dots,2l_  ext{max}+1` or
-                      :math:`-l_      ext{max},\dots,l_       ext{max}`. Default is True.
+                      :math:`-l_      ext{max},\dots,l_       ext{max}`. Default is :obj:`True`.
    :type zero_based: bool, optional
    :param device: The device to place the resulting tensor on.
    :type device: torch.device, optional
@@ -443,34 +443,34 @@ Package Contents
    7
 
 
-.. py:function:: expand_degree_to_order(src: torch.Tensor, L: equitorch.typing.DegreeRange, dim: int)
+.. py:function:: expand_degree_to_order(src: Tensor, L: equitorch.typing.DegreeRange, dim: int)
 
    Expand a tensor from degree to order representation.
 
    :param src: The input tensor in degree representation.
-   :type src: torch.Tensor
+   :type src: Tensor
    :param L: The degree range.
    :type L: DegreeRange
    :param dim: The dimension along which to expand the tensor.
    :type dim: int
 
    :returns: The expanded tensor in order representation.
-   :rtype: torch.Tensor
+   :rtype: Tensor
 
 
-.. py:function:: reduce_order_to_degree(src: torch.Tensor, L: equitorch.typing.DegreeRange, dim: int)
+.. py:function:: reduce_order_to_degree(src: Tensor, L: equitorch.typing.DegreeRange, dim: int)
 
    Reduce a tensor from order to degree representation.
 
    :param src: The input tensor in order representation.
-   :type src: torch.Tensor
+   :type src: Tensor
    :param L: The degree range.
    :type L: DegreeRange
    :param dim: The dimension along which to reduce the tensor.
    :type dim: int
 
    :returns: The reduced tensor in degree representation.
-   :rtype: torch.Tensor
+   :rtype: Tensor
 
 
 .. py:function:: check_degree_range(L: equitorch.typing.DegreeRange) -> Tuple[int, int]
@@ -544,7 +544,7 @@ Package Contents
 
    :returns: A dense tensor of Clebsch-Gordan coefficients. The shape of the tensor is
              :math:`(l_{max}^2 - l_{min}^2,l_{1,max}^2 - l_{1,min}^2, l_{2,max}^2 - l_{2,min}^2)`.
-   :rtype: torch.Tensor
+   :rtype: Tensor
 
 
 .. py:function:: blocked_CG(L: equitorch.typing.DegreeRange, L1: equitorch.typing.DegreeRange, L2: equitorch.typing.DegreeRange, condition: Optional[Callable] = None, dtype=torch.float)
@@ -592,7 +592,7 @@ Package Contents
    :type condition: callable, optional
    :param dtype: The desired data type of the output tensors. Default is torch.float.
    :type dtype: torch.dtype, optional
-   :param device: The desired device of the output tensors. Default is None (uses current device).
+   :param device: The desired device of the output tensors. Default is :obj:`None` (uses current device).
    :type device: torch.device, optional
 
    :returns: A tuple containing:
@@ -640,7 +640,7 @@ Package Contents
    :rtype: Dict[Tuple[int, int, int], torch.Tensor]
 
 
-.. py:function:: so3_weights_to_so2(weight_so3: torch.Tensor, L_in: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, channel_wise=True)
+.. py:function:: so3_weights_to_so2(weight_so3: Tensor, L_in: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, channel_wise=True)
 
    Transform the weights used for :obj:`SO3Linear` to the weights for :obj:`SO2Linear`.
 
@@ -649,20 +649,20 @@ Package Contents
                       - If channel_wise: :math:`(N,   ext{num_degree_in},     ext{channels})` or :math:`(     ext{num_degree_in},     ext{channels})`
                       It should be sorted by :math:`(l_       ext{out}, l_    ext{in}, l_     ext{edge})` lexicographically in the `num_degree_in` dimension.
                       :math:`l_       ext{edge}` should take all values from :math:`|l_       ext{out}-l_     ext{in}|` to :math:`l_  ext{out}+l_     ext{in}` for a given pair of :math:`l_  ext{out}` and :math:`l_ ext{in}`.
-   :type weight_so3: torch.Tensor
+   :type weight_so3: Tensor
    :param L_in: The degree range of input features.
    :type L_in: DegreeRange
    :param L_out: The degree range of output features.
    :type L_out: DegreeRange
-   :param channel_wise: Whether the weights are channel-wise. Default is True.
+   :param channel_wise: Whether the weights are channel-wise. Default is :obj:`True`.
    :type channel_wise: bool, optional
 
    :returns: **weight_so2** -- Transformed weights for `SO2Linear`, with the same shape as `weight_so3`,
              sorted by :math:`(l_    ext{out}, l_    ext{in}, m)` lexicographically in the `num_degree_in` dimension.
-   :rtype: torch.Tensor
+   :rtype: Tensor
 
 
-.. py:function:: so2_weights_to_so3(weight_so2: torch.Tensor, L_in: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, channel_wise=True)
+.. py:function:: so2_weights_to_so3(weight_so2: Tensor, L_in: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, channel_wise=True)
 
    Transform the weights used for :obj:`SO2Linear` to the weights for :obj:`SO3Linear`.
 
@@ -670,17 +670,17 @@ Package Contents
                       - If not channel_wise: :math:`(N,       ext{num_degree_in},     ext{in_channels},       ext{out_channels})` or :math:`( ext{num_degree_in},     ext{in_channels},       ext{out_channels})`
                       - If channel_wise: :math:`(N,   ext{num_degree_in},     ext{channels})` or :math:`(     ext{num_degree_in},     ext{channels})`
                       It should be sorted by :math:`(l_       ext{out}, l_    ext{in}, m)` lexicographically in the `num_degree_in` dimension.
-   :type weight_so2: torch.Tensor
+   :type weight_so2: Tensor
    :param L_in: The degree range of input features.
    :type L_in: DegreeRange
    :param L_out: The degree range of output features.
    :type L_out: DegreeRange
-   :param channel_wise: Whether the weights are channel-wise. Default is True.
+   :param channel_wise: Whether the weights are channel-wise. Default is :obj:`True`.
    :type channel_wise: bool, optional
 
    :returns: **weight_so3** -- Transformed weights for `SO3Linear`, with the same shape as `weight_so2`,
              sorted by :math:`(l_    ext{out}, l_    ext{in}, l_     ext{edge})` lexicographically in the `num_degree_in` dimension.
              :math:`l_       ext{edge}` will take all values from :math:`|l_ ext{out}-l_     ext{in}|` to :math:`l_  ext{out}+l_     ext{in}` for a given pair of :math:`l_  ext{out}` and :math:`l_ ext{in}`.
-   :rtype: torch.Tensor
+   :rtype: Tensor
 
 

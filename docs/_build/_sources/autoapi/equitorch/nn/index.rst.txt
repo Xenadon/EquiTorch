@@ -68,7 +68,7 @@ Package Contents
    :type out_channels: int
 
 
-   .. py:method:: forward(x: torch.Tensor)
+   .. py:method:: forward(x: Tensor)
 
       Applies the degree wise linear operation to the input tensor.
 
@@ -147,13 +147,13 @@ Package Contents
    :type in_channels: int
    :param out_channels: The number of output channels.
    :type out_channels: int
-   :param external_weight: Whether to use an external weight. Defaults to False.
+   :param external_weight: Whether to use an external weight. Default is :obj:`False`.
    :type external_weight: bool, optional
-   :param channel_wise: Whether to perform the operation channel-wise. Defaults to False.
+   :param channel_wise: Whether to perform the operation channel-wise. Default is :obj:`False`.
    :type channel_wise: bool, optional
 
 
-   .. py:method:: forward(x: torch.Tensor, edge_feat: torch.Tensor, weight: Optional[torch.Tensor] = None)
+   .. py:method:: forward(x: Tensor, edge_feat: Tensor, weight: Optional[torch.Tensor] = None)
 
       Applies the SO(3) linear operation to the input tensor.
 
@@ -252,7 +252,7 @@ Package Contents
    :type channel_wise: bool, optional
 
 
-   .. py:method:: forward(x: torch.Tensor, weight: Optional[torch.Tensor] = None)
+   .. py:method:: forward(x: Tensor, weight: Optional[torch.Tensor] = None)
 
       Applies the SO(2) linear operation to the input tensor.
 
@@ -304,11 +304,11 @@ Package Contents
    :type in_channels: int
    :param out_channels: Number of output channels.
    :type out_channels: int
-   :param channel_wise: If True, the transformation is channel-wise. Defaults to False.
+   :param channel_wise: If True, the transformation is channel-wise. Default is :obj:`False`.
    :type channel_wise: bool, optional
 
 
-   .. py:method:: forward(x: torch.Tensor, weight: torch.Tensor)
+   .. py:method:: forward(x: Tensor, weight: Tensor)
 
       Applies the element-wise linear transformation to the input tensor.
 
@@ -426,7 +426,7 @@ Package Contents
    :type external_weight: bool, optional
 
 
-   .. py:method:: forward(x1: torch.Tensor, x2: torch.Tensor, weight: Optional[torch.Tensor] = None)
+   .. py:method:: forward(x1: Tensor, x2: Tensor, weight: Optional[torch.Tensor] = None)
 
       Performs the weighted tensor product operation.
 
@@ -436,7 +436,7 @@ Package Contents
       :type x2: Tensor
       :param weight: The weight of shape :math:`(N,\text{num_weights},...)`, where ":math:`...`"
                      depends on the tensor product type as listed above.
-                     Default is None.
+                     Default is :obj:`None`.
 
                      It will be used if :obj:`external_weight` is True
                      or if provided even when :obj:`external_weight` is False.
@@ -495,7 +495,7 @@ Package Contents
    :type channel_wise: bool
 
 
-   .. py:method:: forward(x1: torch.Tensor, x2: torch.Tensor)
+   .. py:method:: forward(x1: Tensor, x2: Tensor)
 
       Perform tensor product
 
@@ -536,7 +536,7 @@ Package Contents
 
    :param L: The degree range of inputs.
    :type L: DegreeRange
-   :param channel_wise: If True, compute channel-wise dot product. Default is True.
+   :param channel_wise: If True, compute channel-wise dot product. Default is :obj:`True`.
    :type channel_wise: bool, optional
 
    .. rubric:: Examples
@@ -550,7 +550,7 @@ Package Contents
    torch.Size([32, 4, 64])  # (N, num_degrees, C)
 
 
-   .. py:method:: forward(x1: torch.Tensor, x2: torch.Tensor)
+   .. py:method:: forward(x1: Tensor, x2: Tensor)
 
       Compute the degree-wise dot product between two input tensors.
 
@@ -643,7 +643,7 @@ Package Contents
    :type channel_wise: bool, optional
 
 
-   .. py:method:: forward(x: torch.Tensor, weight: Optional[torch.Tensor] = None)
+   .. py:method:: forward(x: Tensor, weight: Optional[torch.Tensor] = None)
 
       Applies the SO(2) linear operation to the input tensor.
 
@@ -725,16 +725,16 @@ Package Contents
    :param num_heads: The number of heads, Default is 1.
    :type num_heads: int, optional
    :param weight_k_producer: The module to produce weights of the key projector from
-                             additional key features. Default is None.
+                             additional key features. Default is :obj:`None`.
                              If not provided, the key projector will not use :obj:`external_weight`.
    :type weight_k_producer: Callable, optional
    :param weight_q_producer: The module to produce weights of the query projector from
-                             additional query features. Default is None.
+                             additional query features. Default is :obj:`None`.
                              If not provided, the key projector will not use :obj:`external_weight`.
    :type weight_q_producer: Callable, optional
 
 
-   .. py:method:: forward(x_q: torch.Tensor, x_k: torch.Tensor, q_feat: Optional[torch.Tensor] = None, k_feat: Optional[torch.Tensor] = None, index: Optional[torch.Tensor] = None, ptr: Optional[torch.Tensor] = None, num_nodes: Optional[int] = None)
+   .. py:method:: forward(x_q: Tensor, x_k: Tensor, q_feat: Optional[torch.Tensor] = None, k_feat: Optional[torch.Tensor] = None, index: Optional[torch.Tensor] = None, ptr: Optional[torch.Tensor] = None, num_nodes: Optional[int] = None)
 
       forward
 
@@ -744,15 +744,15 @@ Package Contents
       :param x_k: The key tensor with shape :math:`[K, \text{num_orders}, C]`, where
                   :math:`K` is the number of key-query pairs and :math:`C` is the number of channels.
       :type x_k: Tensor
-      :param q_feat: Additional feature to produce weights for query projector. Default is None
+      :param q_feat: Additional feature to produce weights for query projector. Default is :obj:`None`
       :type q_feat: Tensor, optional
-      :param k_feat: Additional feature to produce weights for key projector. Default is None
+      :param k_feat: Additional feature to produce weights for key projector. Default is :obj:`None`
       :type k_feat: Tensor, optional
-      :param index: The indices of elements for applying the softmax. Default is None
+      :param index: The indices of elements for applying the softmax. Default is :obj:`None`
       :type index: Tensor, optional
-      :param ptr: If given, computes the softmax based on sorted inputs in CSR representation. Default is None
+      :param ptr: If given, computes the softmax based on sorted inputs in CSR representation. Default is :obj:`None`
       :type ptr: Tensor, optional
-      :param num_nodes: The number of nodes. Default is None.
+      :param num_nodes: The number of nodes. Default is :obj:`None`.
       :type num_nodes: int, optional
 
       :returns: The attention weights with shape :math:`[K, \text{num_heads}]`
@@ -793,12 +793,12 @@ Package Contents
    :type out_channels: int
    :param num_heads: The number of heads, Default is 1.
    :type num_heads: int, optional
-   :param attention_score_producer: The module to produce attention scores, Default is None.
+   :param attention_score_producer: The module to produce attention scores, Default is :obj:`None`.
                                     It should take two tensors representing the (q,k) pairs
                                     and return the attention score between them.
                                     If not provided, the :obj:`ScaledDotAttention` will be used,
    :type attention_score_producer: Callable, optional
-   :param v_producer: The module to produce values. Default is None.
+   :param v_producer: The module to produce values. Default is :obj:`None`.
                       If not provided, the :obj:`SO2Linear` will be used and the
                       :obj:`external_weight` will be True only when `weight_v_producer`
                       is provided.
@@ -806,40 +806,40 @@ Package Contents
    :param weight_q_producer: The module to produce weight from edge embeddings for :obj:`attention_score_producer`.
                              This will not be used when the :obj:`attention_score_producer`
                              is explicitly passed.
-                             Default is None.
+                             Default is :obj:`None`.
    :type weight_q_producer: Callable, optional
    :param weight_k_producer: The module to produce weights from edge embeddings for :obj:`attention_score_producer`.
                              This will not be used when the :obj:`attention_score_producer`
                              is explicitly passed.
-                             Default is None.
+                             Default is :obj:`None`.
    :type weight_k_producer: Callable, optional
    :param weight_v_producer: The module to produce weights from edge embeddings for :obj:`v_producer`.
                              This will not be used when the :obj:`v_producer`
                              is explicitly passed.
-                             Default is None.
+                             Default is :obj:`None`.
    :type weight_v_producer: Callable, optional
 
 
-   .. py:method:: forward(x: torch.Tensor, edge_index: torch.Tensor, edge_emb: Optional[torch.Tensor] = None, D_in: Optional[torch.Tensor] = None, DT_out: Optional[torch.Tensor] = None, edge_weight: Optional[torch.Tensor] = None)
+   .. py:method:: forward(x: Tensor, edge_index: Tensor, edge_emb: Optional[torch.Tensor] = None, D_in: Optional[torch.Tensor] = None, DT_out: Optional[torch.Tensor] = None, edge_weight: Optional[torch.Tensor] = None)
 
       Runs the forward pass of the module
 
       :param x:
-      :type x: torch.Tensor
+      :type x: Tensor
       :param edge_index:
-      :type edge_index: torch.Tensor
+      :type edge_index: Tensor
       :param edge_emb: The edge features that will be used to produce
-                       weights for Q/K/V projectors, Default is None.
+                       weights for Q/K/V projectors, Default is :obj:`None`.
       :type edge_emb: Tensor, optional
       :param D_in: The Wigner-D matrix on input space corresponding to the
                    rotation that aligns the edge vector to z axis.
                    If provided, the input feature will first be rotated by :obj:`D_in`
-                   Default is None.
+                   Default is :obj:`None`.
       :type D_in: Tensor, optional
       :param DT_out: The transpose of Wigner-D matrix on output space corresponding to the
                      rotation that aligns the edge vector to z axis.
                      If provided, the value vector of each edge will be rotated by :obj:`D_out` before aggregated.
-                     Default is None.
+                     Default is :obj:`None`.
       :type DT_out: Tensor, optional
       :param edge_weight: The weight of each edge, used to scale the message along the edges.
       :type edge_weight: Tensor, optional
@@ -848,13 +848,13 @@ Package Contents
 
 
 
-   .. py:method:: message(x_j: torch.Tensor, x_i: torch.Tensor, edge_index: torch.Tensor, edge_emb: Optional[torch.Tensor], DT_out: Optional[torch.Tensor], edge_weight: Optional[torch.Tensor])
+   .. py:method:: message(x_j: Tensor, x_i: Tensor, edge_index: Tensor, edge_emb: Optional[torch.Tensor], DT_out: Optional[torch.Tensor], edge_weight: Optional[torch.Tensor])
 
       
 
 
 
-.. py:class:: GaussianBasisExpansion(gamma: Union[torch.Tensor, float], num_basis: float = None, start: float = None, end: float = None, mu: torch.Tensor = None, trainable: bool = False)
+.. py:class:: GaussianBasisExpansion(gamma: Union[torch.Tensor, float], num_basis: float = None, start: float = None, end: float = None, mu: Tensor = None, trainable: bool = False)
 
    Bases: :py:obj:`torch.nn.Module`
 
@@ -877,7 +877,7 @@ Package Contents
    :type end: float, optional
    :param mu: The mu values for the Gaussian basis functions. Required if num_basis is None.
    :type mu: Tensor, optional
-   :param trainable: Whether the mu and gamma parameters should be trainable. Default is False.
+   :param trainable: Whether the mu and gamma parameters should be trainable. Default is :obj:`False`.
    :type trainable: bool, optional
 
    .. rubric:: Notes
@@ -887,7 +887,7 @@ Package Contents
    If :obj:`trainable` is :obj:`True`, :obj:`mu` and :obj:`gamma` become :obj:`nn.Parameter` objects.
 
 
-   .. py:method:: forward(x: torch.Tensor)
+   .. py:method:: forward(x: Tensor)
 
       
 
@@ -914,7 +914,7 @@ Package Contents
    :type num_basis: int
    :param cutoff: The cutoff value for the distance. Default is 1.
    :type cutoff: float, optional
-   :param trainable: Whether the frequency parameters should be trainable. Default is False.
+   :param trainable: Whether the frequency parameters should be trainable. Default is :obj:`False`.
    :type trainable: bool, optional
    :param eps: A small value for stability near zero. Default is 1e-6.
    :type eps: float, optional
@@ -924,7 +924,7 @@ Package Contents
    If :obj:`trainable` is :obj:`True`, the frequency parameters become :obj:`nn.Parameter` objects.
 
 
-   .. py:method:: forward(x: torch.Tensor) -> torch.Tensor
+   .. py:method:: forward(x: Tensor) -> torch.Tensor
 
       
 
@@ -947,7 +947,7 @@ Package Contents
    :type max_freq: int
 
 
-   .. py:method:: forward(x: torch.Tensor)
+   .. py:method:: forward(x: Tensor)
 
       
 
@@ -970,7 +970,7 @@ Package Contents
    :type max_freq: int
 
 
-   .. py:method:: forward(x: torch.Tensor)
+   .. py:method:: forward(x: Tensor)
 
       
 
@@ -992,7 +992,7 @@ Package Contents
    :param max_freq: The maximum frequency to use.
    :type max_freq: int
    :param include_freq_0: Whether to include a constant term (frequency 0) in the expansion.
-                          Default is False.
+                          Default is :obj:`False`.
    :type include_freq_0: bool, optional
 
    .. rubric:: Notes
@@ -1011,7 +1011,7 @@ Package Contents
    the following linear operation.
 
 
-   .. py:method:: forward(x: torch.Tensor)
+   .. py:method:: forward(x: Tensor)
 
       
 
@@ -1042,7 +1042,7 @@ Package Contents
    :type start: float, optional
 
 
-   .. py:method:: forward(x: torch.Tensor)
+   .. py:method:: forward(x: Tensor)
 
       
 
@@ -1075,7 +1075,7 @@ Package Contents
    :type eps: float, optional
 
 
-   .. py:method:: forward(x: torch.Tensor)
+   .. py:method:: forward(x: Tensor)
 
       
 
@@ -1109,7 +1109,7 @@ Package Contents
    :type p: int, optional
 
 
-   .. py:method:: forward(x: torch.Tensor)
+   .. py:method:: forward(x: Tensor)
 
       
 

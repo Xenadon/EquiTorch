@@ -125,9 +125,9 @@ def Network() -> None:
     )
 
 def main() -> None:
-    torch.random.manual_seed(319)
+    torch.random.manual_seed(193)
     x, y = tetris()
-    train_x, train_y = make_batch(x), y  # dont train on both chiral shapes
+    train_x, train_y = make_batch(x), y  
 
     x, y = tetris()
     test_x, test_y = make_batch(x), y

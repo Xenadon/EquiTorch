@@ -7,9 +7,8 @@ from torch import Tensor
 import torch.nn as nn
 import torch_geometric
 from ..utils._indices import check_degree_range, expand_degree_to_order
-from ..math import norm
+from ..math import norm, isht, sht
 
-import e3nn.o3 as o3
 
 class NormAct(nn.Module):
     r"""Apply an activation function to the norm of spherical tensor features.
@@ -29,10 +28,8 @@ class NormAct(nn.Module):
         If False, apply it to the overall norm. Default is False.
     bias : bool, optional
         If True, add a learnable bias before the activation. Default is False.
-    in_channels : int, optional
+    num_channels : int, optional
         Number of input channels. Required if bias is True.
-    eps : float, optional
-        A small value added to the norm for numerical stability. Default is 1e-9.
 
     Attributes
     ----------
@@ -46,7 +43,7 @@ class NormAct(nn.Module):
         The number of degrees in the range L.
     need_bias : bool
         Whether bias is used.
-    in_channels: Optional[int]
+    num_channels: Optional[int]
         The number of channels, when need_bias is True.
 
     Notes
@@ -60,7 +57,7 @@ class NormAct(nn.Module):
     --------
     >>> activation = torch.nn.SiLU()
     >>> L = (0, 2)  # degrees 0, 1, 2
-    >>> norm_act = NormAct(activation, L, degree_wise=True, bias=True, in_channels=16)
+    >>> norm_act = NormAct(activation, L, degree_wise=True, bias=True, num_channels=16)
     >>> x = torch.randn(32, 9, 16)  # batch_size=32, num_orders=9 (for l=0,1,2), channels=16
     >>> output = norm_act(x)
     >>> print(output.shape)
@@ -72,7 +69,7 @@ class NormAct(nn.Module):
                  L: DegreeRange, 
                  degree_wise:bool=False, 
                  need_bias:bool=False, 
-                 in_channels: Optional[int] = None):
+                 num_channels: Optional[int] = None):
         super().__init__()
         self.activation = activation
         self.degree_wise = degree_wise
@@ -80,7 +77,7 @@ class NormAct(nn.Module):
         self.num_degrees = self.L[1] - self.L[0] + 1
         self.need_bias = need_bias
         if self.need_bias:
-            self.num_channels = in_channels
+            self.num_channels = num_channels
             if self.degree_wise:
                 self.bias = nn.Parameter(
                     torch.randn(self.num_degrees, self.num_channels))
@@ -94,125 +91,34 @@ class NormAct(nn.Module):
             if self.need_bias:
                 n = n + self.bias
             n = self.activation(n)
-            x = x * expand_degree_to_order(n, self.L, dim=-1)
+            x = x * expand_degree_to_order(n, self.L, dim=-2)
         else:
-            n = torch.norm(x, dim=(-2))
+            n = torch.norm(x, dim=-2, keepdim=True)
             if self.need_bias:
                 n = n + self.bias
             n = self.activation(n)
-            x = x * n.unsqueeze(-2)
+            x = x * n
         return x
-
-class GatedAct(nn.Module):
-    r"""Applies gated activation to a set of variables.
-
-    This module applies an element-wise gating mechanism, where one set of variables
-    (gate variables) controls the activation of another set of variables (acted variables).
-
-    Parameters
-    ----------
-    num_gate_vars : int
-        Number of gate variables.
-    num_acted_vars : int
-        Number of variables to be acted upon.
-    activation : Callable[[Tensor], Tensor]
-        Act function to be applied to the gate variables.
-    project : bool, optional
-        If True, applies a linear projection to gate variables. Default is False.
-
-    Attributes
-    ----------
-    num_gate_vars : int
-        Number of gate variables.
-    num_acted_vars : int
-        Number of variables to be acted upon.
-    activation : Callable[[Tensor], Tensor]
-        Act function for gate variables.
-    project : bool
-        Whether to project input scalars to gating scalars.
-
-    Notes
-    -----
-    If `project` is False, `num_gate_vars` must be equal to `num_acted_vars`.
-    """
-    def __init__(self, 
-                 num_gate_vars: int, 
-                 num_acted_vars: int, 
-                 activation: Callable[[Tensor], Tensor], 
-                 project: bool = False):
-        super().__init__()
-        if project:
-            self.project = nn.Linear(num_gate_vars, num_acted_vars, bias=False)
-        else:
-            assert num_gate_vars == num_acted_vars
-            self.project = None
-        self.num_gate_vars = num_gate_vars
-        self.num_acted_vars = num_acted_vars
-        self.activation = activation
-
-    def forward(self, gate_vars, acted_vars, dim=-1):
-        r"""Apply gated activation to the input tensors.
-
-        Parameters
-        ----------
-        gate_vars : Tensor
-            Gate variables tensor of shape (..., num_gate_vars).
-        acted_vars : Tensor
-            Variables to be acted upon, tensor of shape (..., m, num_acted_vars),
-            where m is an arbitrary number of dimensions.
-        dim : int, optional
-            The dimension along which to apply the gating mechanism. Default is -1.
-
-        Returns
-        -------
-        Tensor
-            Output tensor after applying gated activation, with the same shape as `acted_vars`.
-        """
-        if self.project:
-            gate_vars = self.project(gate_vars)
-        self.activation(gate_vars.unsqueeze(dim)) * acted_vars
 
 class S2Act(nn.Module):
 
-    def __init__(self, num_resolution:Union[Tuple[int,int],int], 
+    def __init__(self, resolution:Union[Tuple[int,int],int], 
                  activation: Callable[[Tensor], Tensor],
                  L: DegreeRange):
-        self.L_max = check_degree_range(L)[1]
-        if isinstance(num_resolution, int):
-            self.num_resolution = (num_resolution, num_resolution)
-        else:
-            self.num_resolution = num_resolution
+        super().__init__()
 
-        self.L = L
+        self.L = check_degree_range(L)
+        if isinstance(resolution, int):
+            self.resolution = (resolution, resolution)
+        else:
+            self.resolution = resolution
 
         self.activation = activation
-        self.to_grid = o3.ToS2Grid(self.L_max, *self.num_resolution)
-        self.from_grid = o3.FromS2Grid(self.L_max, *self.num_resolution)
 
     def forward(self, x: Tensor):
-        return self.from_grid(self.activation(self.to_grid(x)))
-        
-
-class SepS2Act(nn.Module):
-    
-    def __init__(self, num_resolution:Union[Tuple[int,int],int], 
-                 activation: Callable[[Tensor], Tensor],
-                 L: DegreeRange):
-        self.L_max = check_degree_range(L)[1]
-        if isinstance(num_resolution, int):
-            self.num_resolution = (num_resolution, num_resolution)
-        else:
-            self.num_resolution = num_resolution
-
-        self.L = L
-
-        self.activation = activation
-        self.to_grid = o3.ToS2Grid(self.L_max, *self.num_resolution)
-        self.from_grid = o3.FromS2Grid(self.L_max, *self.num_resolution)
-
-    def forward(self, x: Tensor):
-        return self.from_grid(self.activation(self.to_grid(x)))
-
+        sph = isht(x, self.L, *(self.resolution))
+        sph = self.activation(sph)
+        return sht(sph, self.L, *(self.resolution))
 
 def shifted_softplus(x: Tensor, alpha: float = 0.5, threshold: float = 20.):
     r"""Compute the shifted softplus activation function.

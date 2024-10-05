@@ -354,7 +354,7 @@ class WeightedTensorProduct(nn.Module):
         weight : Optional[Tensor], optional
             The weight of shape :math:`(N,\text{num_weights},...)`, where ":math:`...`" 
             depends on the tensor product type as listed above. 
-            Default is None.
+            Default is :obj:`None`.
 
             It will be used if :obj:`external_weight` is True
             or if provided even when :obj:`external_weight` is False.
@@ -536,7 +536,7 @@ class TensorDot(nn.Module):
     L : DegreeRange
         The degree range of inputs.
     channel_wise : bool, optional
-        If True, compute channel-wise dot product. Default is True.
+        If True, compute channel-wise dot product. Default is :obj:`True`.
 
     Examples
     --------
