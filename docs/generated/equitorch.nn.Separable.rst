@@ -1,9 +1,9 @@
-﻿equitorch.nn.SE3TrAttention
-================================
+﻿equitorch.nn.Separable
+======================
 
 .. currentmodule:: equitorch.nn
 
-.. autoclass:: SE3TrAttention
+.. autoclass:: Separable
    :show-inheritance:
    :members:
    :exclude-members: __init__

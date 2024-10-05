@@ -10,6 +10,7 @@ from ._angular_basis import *
 from ._spherical_basis import *
 from ._cutoff import *
 from ._normalization import *
+from ._other import *
 
 linears = [
     'SO3Linear',
@@ -24,6 +25,10 @@ cutoffs = [
     'PolynomialCutoff',    
 ]
 
+activations = [
+    'S2Act',
+    'NormAct'
+]
 
 radial_basis = [
     'GaussianBasisExpansion',
@@ -56,6 +61,13 @@ normalizations = [
     'EquivariantLayerNorm'
 ]
 
+others = [
+    'Separable',
+    'BranchedModuleDict',
+    'BranchedModuleList',
+]
+
+
 __all__ = (
     linears + 
     cutoffs + 
@@ -63,5 +75,7 @@ __all__ = (
     angular_basis +
     tensor_products +
     attentions + 
-    normalizations
+    normalizations +
+    others +
+    activations
 )

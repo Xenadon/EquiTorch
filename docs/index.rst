@@ -34,6 +34,7 @@ This is **Equitorch**, a modularized package for flexibily constructing equivari
    /modules/nn.rst
    /modules/math.rst
    /modules/utils.rst
+   /modules/transforms.rst
 
 
 

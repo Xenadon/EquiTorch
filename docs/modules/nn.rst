@@ -18,6 +18,18 @@ Equivariant Linear Layers
         DegreeWiseLinear
         ElementWiseLinear
 
+Equivariant Activations
+-----------------------
+
+.. currentmodule:: equitorch.nn
+
+.. autosummary::
+    :nosignatures:
+    :toctree: ../generated
+
+        S2Act
+        NormAct
+
 Tensor Products
 ---------------
 
@@ -109,3 +121,22 @@ Cutoffs
         CosineCutoff
         MollifierCutoff
         PolynomialCutoff
+
+Other Modules
+-------------
+
+Equivariant Normalizations
+--------------------------
+
+.. currentmodule:: equitorch.nn
+
+.. autosummary::
+    :nosignatures:
+    :toctree: ../generated
+
+        Separable
+        BranchedModuleList
+        BranchedModuleDict
+
+
+
