@@ -1,24 +1,77 @@
 import sys
+from typing import Optional, Callable
+
 sys.path.append('..')
 
 import time
 
 import torch
+from torch import Tensor
 import torch.nn as nn
 import torch_geometric
-from torch_geometric.nn import SumAggregation
+from torch_geometric.nn import SumAggregation, MessagePassing
 from torch_geometric.data import Data, DataLoader
 import torch_geometric.transforms
-from equitorch.nn._tfn import TFNBlock, SO2TFNBlock
-from equitorch.nn._radial_basis import GaussianBasisExpansion
-from equitorch.nn._cutoff import PolynomialCutoff
-from equitorch.nn._activation import NormAct, ShiftedSoftPlus
+from equitorch.nn import (
+    GaussianBasisExpansion, 
+    PolynomialCutoff, 
+    NormAct,
+    ShiftedSoftPlus,
+    SO3Linear,
+    SO2Linear,
+    DegreeWiseLinear
+)
+from equitorch.utils import check_degree_range, rot_on
 from equitorch.transforms import RadiusGraph, AddEdgeSphericalHarmonics, AddEdgeAlignWignerD
+from equitorch.typing import DegreeRange
 
 from e3nn import o3
 from e3nn.nn.models.v2106.gate_points_networks import SimpleNetwork
 
-# Code borrowed and modified from https://github.com/e3nn/e3nn/blob/main/examples/tetris.py
+# Code borrowed and modified from https://github.com/e3nn/e3nn/blob/main/Example/tetris.py
+
+class TFNBlock(MessagePassing):
+    '''
+    The block of Tensor Field Networks in *Tensor field networks: Rotation- and translation-equivariant neural networks for 3D point clouds* 
+    [https://arxiv.org/abs/1802.08219]
+    '''
+    def __init__(self,
+                 in_channels: int,
+                 out_channels: int,
+                 L_in: DegreeRange, 
+                 L_edge: DegreeRange, 
+                 L_out: DegreeRange,
+                 channel_wise: bool = True,
+                 weight_producer: Optional[Callable] = None,
+                 act: Optional[Callable] = None,
+                ):
+        super().__init__(node_dim=0)
+        self.L_in = check_degree_range(L_in)
+        self.L_out = check_degree_range(L_out)
+        self.L_edge = check_degree_range(L_edge)
+
+        self.lin = SO3Linear(L_in, L_edge, L_out, 
+                             in_channels, out_channels, 
+                             external_weight=True, channel_wise=channel_wise)
+        self.lin_weight_shape = (-1, self.lin.num_weights, in_channels) if channel_wise \
+            else (-1, self.lin.num_weights, in_channels, out_channels)
+        self.self_int = DegreeWiseLinear(self.L_out, self.L_out, out_channels, out_channels)
+        self.act = act
+        self.weight_producer = weight_producer
+
+    def forward(self, x: Tensor, edge_index,
+                edge_feat: Tensor, edge_emb: Optional[Tensor], edge_weight: Optional[Tensor]=None):
+        lin_weight = edge_emb if self.weight_producer is None else self.weight_producer(edge_emb)
+        lin_weight = lin_weight.view(*(self.lin_weight_shape))
+        out = self.propagate(edge_index, x=x, edge_feat=edge_feat,
+                             lin_weight=lin_weight, edge_weight=edge_weight)
+        out = self.self_int(out)
+        return self.act(out) if self.act is not None else out
+    
+    def message(self, x_j:Tensor, edge_feat:Tensor, lin_weight:Tensor, edge_weight:Optional[Tensor]):
+        x_j = self.lin(x_j, edge_feat, lin_weight)
+
+        return edge_weight.view(-1,1,1) * x_j
 
 class TFN(nn.Module):
 
@@ -51,6 +104,56 @@ class TFN(nn.Module):
         h = self.pool(h[:,0,:], batch, dim=0)
         h = self.output(h)
         return h
+
+class SO2TFNBlock(MessagePassing):
+    '''
+    The block of Tensor Field Networks in *Tensor field networks: Rotation- and translation-equivariant neural networks for 3D point clouds*,
+    [https://arxiv.org/abs/1802.08219]
+    but replace the SO(3) convolutions to the SO(2) ones in *Reducing SO(3) Convolutions to SO(2) for Efficient Equivariant GNNs*
+    [https://arxiv.org/abs/2302.03655]
+    '''
+    def __init__(self,
+                 in_channels: int,
+                 out_channels: int,
+                 L_in: DegreeRange, 
+                 L_out: DegreeRange,
+                 channel_wise: bool = True,
+                 weight_producer: Callable = None,
+                 act: Callable = None,
+                ):
+        super().__init__(node_dim=0)
+        self.L_in = check_degree_range(L_in)
+        self.L_out = check_degree_range(L_out)
+
+        self.lin = SO2Linear(L_in, L_out, 
+                             in_channels, out_channels, 
+                             external_weight=True, channel_wise=channel_wise)
+        self.lin_weight_shape = (-1, self.lin.num_weights, in_channels) if channel_wise \
+            else (-1, self.lin.num_weights, in_channels, out_channels)
+        self.self_int = DegreeWiseLinear(self.L_out, self.L_out, out_channels, out_channels)
+        self.act = act
+        self.weight_producer = weight_producer
+
+    def forward(self, x: Tensor, edge_index,
+                D_in: Tensor, DT_out: Tensor, edge_emb: Tensor, edge_weight: Tensor = None):
+        lin_weight = edge_emb if self.weight_producer is None else self.weight_producer(edge_emb)
+        lin_weight = lin_weight.view(*(self.lin_weight_shape))
+        out = self.propagate(edge_index, x=x, D_in=D_in, DT_out=DT_out,
+                             lin_weight=lin_weight, edge_weight=edge_weight)
+        out = self.self_int(out)
+        return self.act(out) if self.act is not None else out
+    
+    def message(self, x_j:Tensor, 
+                lin_weight:Tensor, edge_weight:Tensor,
+                D_in:Tensor, DT_out: Tensor):
+        x_j = rot_on(D_in, x_j)
+        x_j = self.lin(x_j, lin_weight)
+        x_j = rot_on(DT_out, x_j)
+        # return edge_weight.view(-1,1,1) * x_j
+        if edge_weight is not None:
+            return edge_weight.view(-1,1,1) * x_j
+        else:
+            return x_j
 
 class SO2TFN(nn.Module):
 
@@ -179,4 +282,5 @@ def main() -> None:
 
 
 
-main()
+if __name__ == '__main__':
+    main()

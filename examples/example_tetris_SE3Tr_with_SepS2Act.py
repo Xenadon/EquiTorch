@@ -4,7 +4,6 @@ import sys
 sys.path.append('..')
 
 import time
-from typing import Callable
 
 import torch
 import torch.nn as nn
@@ -12,23 +11,28 @@ import torch_geometric
 from torch_geometric.nn import SumAggregation, MessagePassing, Sequential
 from torch_geometric.data import Data, DataLoader
 import torch_geometric.transforms
-from equitorch.nn import SO2Linear
-from equitorch.nn._tfn import TFNBlock, SO2TFNBlock
-from equitorch.nn._radial_basis import GaussianBasisExpansion
-from equitorch.nn._cutoff import PolynomialCutoff
-from equitorch.nn._activation import NormAct, S2Act, ShiftedSoftPlus
-from equitorch.nn._attention import MultiheadAttentionBlock, SE3TrAttention
-from equitorch.nn._linear import DegreeWiseLinear
-from equitorch.nn._normalization import EquivariantLayerNorm
-from equitorch.nn._other import Separable
-from equitorch.utils._geometries import rot_on
 
-from equitorch.utils._indices import num_degree_triplets, range_eq
+from equitorch.nn import (
+    SO2Linear,
+    GaussianBasisExpansion,
+    PolynomialCutoff,
+    S2Act,
+    MultiheadAttentionBlock,
+    SE3TrAttention,
+    DegreeWiseLinear,
+    EquivariantLayerNorm,
+    Separable
+
+)
+from equitorch.utils.geometries import rot_on
+
+from equitorch.utils import num_degree_triplets, range_eq
 from equitorch.typing import DegreeRange
-from equitorch.transforms import RadiusGraph, AddEdgeSphericalHarmonics, AddEdgeAlignWignerD
+from equitorch.transforms import RadiusGraph, AddEdgeAlignWignerD
 
 from e3nn import o3
-from e3nn.nn.models.v2106.gate_points_networks import SimpleNetwork
+
+# Code borrowed and modified from https://github.com/e3nn/e3nn/blob/main/Example/tetris.py
 
 class SE3TransformerBlock(MessagePassing):
 
@@ -106,11 +110,8 @@ class SE3Transformer(nn.Module):
         self.edge_embedding = GaussianBasisExpansion(0.1, 20, 0.7, 1.7)
         self.cutoff = PolynomialCutoff(1.5)
 
-        self.layer1 = SO2TFNBlock(in_channels=1, out_channels=hidden,
-                                  L_in=0, L_out=L, channel_wise=False, 
-                                  weight_producer=nn.LazyLinear(
-                                      num_degree_triplets(0, L)*1*hidden),
-                                  act=NormAct(ShiftedSoftPlus(), L))
+        self.layer1 = SE3TransformerBlock(in_channels=1, out_channels=hidden, k_channels=hidden//2,
+                                          num_heads=1, L_in=0, L_out=L)
         self.layer2 = SE3TransformerBlock(in_channels=hidden, out_channels=hidden, k_channels=hidden//2,
                                           num_heads=num_heads, L_in=L, L_out=L)
         self.layer3 = SE3TransformerBlock(in_channels=hidden, out_channels=hidden, k_channels=hidden//2,
@@ -177,13 +178,12 @@ def main() -> None:
     test_x, test_y = make_batch(x), y
 
     f = SE3Transformer(hidden, L=L, num_heads=4)
-    # print("Built a model:")
     print(f)
 
     optim = torch.optim.Adam(f.parameters(), lr=1e-3)
 
     # == Training ==
-    steps = 100
+    steps = 50
     start_time = time.time()
     for step in range(1,steps+1):
         pred = f(train_x.x, train_x.edge_index, train_x.D, train_x.edge_vec.norm(dim=-1), train_x.batch)
@@ -194,7 +194,6 @@ def main() -> None:
 
         if step % 10 == 0:
             pred = f(test_x.x, test_x.edge_index, test_x.D, test_x.edge_vec.norm(dim=-1), test_x.batch)
-            # print(pred)
             accuracy = pred.argmax(dim=-1).eq(test_y).double().mean(dim=0).item()
             print(f"epoch {step:5d} | loss {loss:<10.1f} | {100 * accuracy:5.1f}% accuracy")
     end_time = time.time()
