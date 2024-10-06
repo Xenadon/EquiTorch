@@ -1,8 +1,8 @@
 from torch import Tensor, nn
 
-from ..math._o3 import spherical_harmonics
+from ..math.o3 import spherical_harmonics
 from ..typing import DegreeRange
-from ..utils._indices import check_degree_range
+from ..utils.indices import check_degree_range
 
 class SphericalHarmonicBasisExpansion(nn.Module):
     r"""

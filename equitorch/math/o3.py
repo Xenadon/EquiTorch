@@ -11,7 +11,7 @@ import e3nn
 from e3nn import o3
 from e3nn.util.jit import compile_mode
 
-from ..utils._indices import check_degree_range, num_orders_between, degrees_in_range
+from ..utils.indices import check_degree_range, num_orders_between, degrees_in_range
 
 from ..typing import DegreeRange
 
@@ -202,7 +202,7 @@ def spherical_harmonics(X: Tensor,
 
     The returned harmonics are ordered as :math:`m = -l, -l+1, ..., l-1, l` for each degree :math:`l`. 
 
-    Here we listed the examples of first several spherical harmonics,
+    Here we listed the Example of first several spherical harmonics,
     for :math:`\mathbf{r}=(x,y,z)` lying on the unit sphere :math:`S^2`: 
         
         .. math::

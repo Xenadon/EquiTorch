@@ -47,6 +47,19 @@ class EquivariantLayerNorm(nn.Module):
         Whether the RMS is computed degree-wisely. Default is :obj:`True`
     eps : int, optional
         A value added to the denominator for numerical stability. Default is :obj:`1e-5`
+
+    Example
+    -------
+    >>> N, C, L = 3, 4, (1,3)   
+    >>> x = torch.randn(N,num_orders_in(L),C)
+    >>> print(rms(x, L, degree_scale=True, degree_wise=True, keepdim=False))
+    tensor([[0.9188, 1.2324, 1.1481],
+            [0.8945, 1.0318, 1.0453]])
+    >>> norm = EquivariantLayerNorm(L, 4, degree_scale=True, degree_wise=True)
+    >>> x1 = norm(x)
+    >>> print(rms(x1, L, degree_scale=True, degree_wise=True, keepdim=False))
+    tensor([[1.0000, 1.0000, 1.0000],
+            [1.0000, 1.0000, 1.0000]], grad_fn=<SqrtBackward0>)
     """
     def __init__(self, 
                  L: DegreeRange, 

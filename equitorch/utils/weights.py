@@ -1,7 +1,7 @@
 import torch
 from torch import Tensor
 from ..typing import DegreeRange
-from ._clebsch_gordan import blocked_CG
+from .clebsch_gordan import blocked_CG
 
 def so3_weights_to_so2(weight_so3: Tensor, L_in:DegreeRange, L_out:DegreeRange, channel_wise=True):
     """

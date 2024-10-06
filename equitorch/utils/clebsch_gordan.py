@@ -4,7 +4,7 @@ from torch_geometric.utils import scatter
 import e3nn
 import torch
 
-from ..utils._indices import check_degree_range, degree_order_to_index, degrees_in_range
+from .indices import check_degree_range, degree_order_to_index, degrees_in_range
 
 from ..typing import DegreeRange
 
@@ -31,7 +31,7 @@ def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optiona
 
     Returns
     -------
-    torch.Tensor
+    Tensor
         A dense tensor of Clebsch-Gordan coefficients. The shape of the tensor is
         :math:`(l_{max}^2 - l_{min}^2,l_{1,max}^2 - l_{1,min}^2, l_{2,max}^2 - l_{2,min}^2)`.
     """
@@ -88,7 +88,7 @@ def blocked_CG(L: DegreeRange, L1: DegreeRange, L2:DegreeRange, condition:Option
 
     Returns
     -------
-    Dict[Tuple[int, int, int], torch.Tensor]
+    Dict[Tuple[int, int, int], Tensor]
         A dictionary where each key is a tuple :math:`(l, l_1, l_2)`, and each value
         is a tensor of Clebsch-Gordan coefficients for that combination.
     """

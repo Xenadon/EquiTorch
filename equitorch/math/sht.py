@@ -7,10 +7,10 @@ from torch_geometric.utils import scatter
 
 import e3nn
 from e3nn import o3
-from e3nn.o3._s2grid import ToS2Grid, FromS2Grid, _quadrature_weights
+from e3nn.o3._s2grid import _quadrature_weights
 
 
-from ..utils._indices import check_degree_range, degrees_in_range, order_in_degree_range
+from ..utils.indices import check_degree_range, degrees_in_range, orders_in_degree_range
 from ..typing import DegreeRange
 
 def s2_grid(num_thetas: int, num_phis: int, device = None, dtype = None):
@@ -55,7 +55,7 @@ def _isht_prepare(L: DegreeRange, num_thetas: int, num_phis: int, dtype=None, de
         list(degrees_in_range(L)))(thetas.cos(), thetas.sin().abs()).unsqueeze(-1)
     # [num_thetas, M, 1]
     fourier = o3.spherical_harmonics_alpha(L[1], phis).unsqueeze(0)  # [1, num_phis, m]
-    m_in_range = order_in_degree_range(L, device=device)
+    m_in_range = orders_in_degree_range(L, device=device)
     def _isht(X: Tensor):
         '''
         X must be of shape [...,M,C]
@@ -75,7 +75,7 @@ def _sht_prepare(L: DegreeRange, num_thetas: int, num_phis: int, dtype=None, dev
     weighted_legendre = o3.Legendre(
         list(degrees_in_range(L)))(thetas.cos(), thetas.sin().abs()) * weight.unsqueeze(-1)# [num_thetas, M]
     fourier = o3.spherical_harmonics_alpha(L[1], phis).transpose(-1,-2) # [1, m, num_phis]
-    m_in_range = order_in_degree_range(L, device=device)
+    m_in_range = orders_in_degree_range(L, device=device)
     def _sht(x: Tensor):
         '''
         x must be of shape [...,theta,phi,C]
@@ -87,20 +87,12 @@ def _sht_prepare(L: DegreeRange, num_thetas: int, num_phis: int, dtype=None, dev
     return _sht
 
 
-# @lru_cache(None)
-# def _get_ToS2Grid(lmax, res, dtype=None, device=None):
-#     return ToS2Grid(lmax, res, dtype, device)
-
-# @lru_cache(None)
-# def _get_FromS2Grid(lmax, res, dtype=None, device=None):
-#     return FromS2Grid(res, lmax, dtype, device)
-
 def isht(X: Tensor, L: DegreeRange, num_thetas: int, num_phis: int):
     r'''
     Inverse spherical harmonics transform.
 
     .. math::
-        F(\theta_{i},\phi_j)=\sum_{l=0}^L\sum_{m=-l}^l X_{m}^{(l)}Y_{m}^{(l)}(\theta_i,\phi_j),\\
+        F(\theta_{i},\phi_j)=\sum_{l\in L}\sum_{m=-l}^l X_{m}^{(l)}Y_{m}^{(l)}(\theta_i,\phi_j),\\
     
     where :math:`\theta_i=\frac{\pi i+\frac{\pi}{2}}{\text{num_thetas}}`, :math:`\phi_j=\frac{2\pi j}{\text{num_phis}}`.
 
@@ -119,6 +111,25 @@ def isht(X: Tensor, L: DegreeRange, num_thetas: int, num_phis: int):
     -------
     Tensor
         Output tensor of shape :math:`(..., \text{num_thetas}, \text{num_phis}, C)`.
+    
+    Example
+    -------
+    >>> L = (1,3)
+    >>> C = 3
+    >>> num_thetas = 34
+    >>> num_phis = 18
+    >>> N = 6
+    >>> X = Tensor(torch.randn(N,num_orders_in(L),C)).to(device)
+    >>> print(X.shape)
+    torch.Size([6, 15, 3])
+    >>> x = isht(X, L, num_thetas, num_phis)
+    >>> print(x.shape)
+    torch.Size([6, 34, 18, 3])
+    >>> X_ = sht(x, L, num_thetas, num_phis)
+    >>> print(X_.shape)
+    torch.Size([6, 15, 3])
+    >>> print((X-X).abs().max())
+    tensor(0.)
     '''
 
     _isht = _isht_prepare(L, num_thetas, num_phis, device=X.device, dtype=X.dtype)

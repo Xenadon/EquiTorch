@@ -16,7 +16,6 @@ Equivariant Linear Layers
         SO3Linear
         SO2Linear
         DegreeWiseLinear
-        ElementWiseLinear
 
 Equivariant Activations
 -----------------------

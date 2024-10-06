@@ -7,11 +7,11 @@ from torch_geometric.data import Data
 from torch_geometric.data.datapipes import functional_transform
 from torch_geometric.transforms import BaseTransform
 
-from ..utils._indices import check_degree_range
+from ..utils.indices import check_degree_range
 
-from ..utils._geometries import align_to_z_mat, align_to_z_wigner, edge_align_to_z_mat
+from ..utils.geometries import align_to_z_mat, align_to_z_wigner, edge_align_to_z_mat
 
-from ..math._o3 import spherical_harmonics
+from ..math.o3 import spherical_harmonics
 
 from ..typing import DegreeRange
 
@@ -44,7 +44,7 @@ class RadiusGraph(BaseTransform):
         Number of workers to use for computation. Has no effect in case batch is
         not None, or the input lies on the GPU. Default is 1.
 
-    Examples
+    Example
     --------
     >>> N = 50
     >>> pos = torch.randn(N,3)
@@ -117,7 +117,7 @@ class AddEdgeSphericalHarmonics(BaseTransform):
     edge_sh_attr : str, optional
         The attribute name for creating edge spherical harmonics in the data. Default is "edge_sh".
     
-    Examples
+    Example
     --------
     >>> print(data)
     Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])
@@ -156,7 +156,7 @@ class AddEdgeAlignMatrix(BaseTransform):
     align_mat_attr : str, optional
         The attribute name for creating edge alignment matrices in the data. Default is "R".
 
-    Examples
+    Example
     --------
     >>> print(data)
     Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])
@@ -194,7 +194,7 @@ class AddEdgeAlignWignerD(BaseTransform):
     align_wigner_attr : str, optional
         The attribute name for creating edge alignment matrices in the data. Default is "D".
     
-    Examples
+    Example
     --------
     >>> print(data)
     Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])
@@ -222,3 +222,10 @@ class AddEdgeAlignWignerD(BaseTransform):
         data.__setattr__(self.align_wigner_attr, align_to_z_wigner(edge_vec, self.L))
 
         return data
+    
+__all__ = [
+    'RadiusGraph',
+    'AddEdgeAlignMatrix',
+    'AddEdgeSphericalHarmonics',
+    'AddEdgeAlignWignerD',
+]

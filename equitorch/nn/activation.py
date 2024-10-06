@@ -6,12 +6,12 @@ import torch
 from torch import Tensor
 import torch.nn as nn
 import torch_geometric
-from ..utils._indices import check_degree_range, expand_degree_to_order
+from ..utils.indices import check_degree_range, expand_degree_to_order
 from ..math import norm, isht, sht
 
 
 class NormAct(nn.Module):
-    r"""Apply an activation function to the norm of spherical tensor features.
+    r"""Apply an activation function to the norm of spherical tensors.
 
     This module computes the norm of the input tensor along specific dimensions,
     applies an activation function to the norm, and then scales the original input
@@ -31,21 +31,6 @@ class NormAct(nn.Module):
     num_channels : int, optional
         Number of input channels. Required if bias is True.
 
-    Attributes
-    ----------
-    activation : Callable[[Tensor], Tensor]
-        The scalar activation function.
-    degree_wise : bool
-        Whether the activation is applied degree-wise.
-    L : DegreeRange
-        The range of degrees.
-    num_degrees : int
-        The number of degrees in the range L.
-    need_bias : bool
-        Whether bias is used.
-    num_channels: Optional[int]
-        The number of channels, when need_bias is True.
-
     Notes
     -----
     - If degree_wise is True, the norm is computed for each degree separately.
@@ -53,12 +38,12 @@ class NormAct(nn.Module):
     - The bias, if used, is added before the activation function is applied.
     - After activation, the input is scaled by the activated norm.
 
-    Examples
+    Example
     --------
     >>> activation = torch.nn.SiLU()
-    >>> L = (0, 2)  # degrees 0, 1, 2
+    >>> L = (0, 2)
     >>> norm_act = NormAct(activation, L, degree_wise=True, bias=True, num_channels=16)
-    >>> x = torch.randn(32, 9, 16)  # batch_size=32, num_orders=9 (for l=0,1,2), channels=16
+    >>> x = torch.randn(32, 9, 16)  # batch_size=32, num_orders=9, channels=16
     >>> output = norm_act(x)
     >>> print(output.shape)
     torch.Size([32, 9, 16])
@@ -101,7 +86,67 @@ class NormAct(nn.Module):
         return x
 
 class S2Act(nn.Module):
+    r"""The S2 pointwise activation.
+     
+    The activation used in 
+    `Reducing SO(3) Convolutions to SO(2) for Efficient Equivariant 
+    GNNs <https://arxiv.org/abs/2302.03655>`_.
 
+    For a spherical tensor :math:`\mathbf{x}`, the activation transforms it by
+
+    .. math::
+        \mathbf{x}'=\mathrm{SHT}_{L}[\sigma(\mathrm{ISHT}[\mathbf{x}])]
+
+    with a scalar activation :math:`\sigma`. 
+    
+    The :math:`\mathrm{SHT}` and :math:`\mathrm{ISHT}` are spherical harmonic 
+    transformation and inverse spherical harmonic transformation, respectively. 
+    (See :obj:`sht`, :obj:`isht`.)
+
+    Warning
+    -------
+    This operation is ``not`` exactly equivariant since we use grid summation
+    instead of integral when performing ISHT. 
+
+    Parameters
+    ----------
+    resolution : Union[Tuple[int,int],int]
+        The grid points of thetas and phis when performing ISHT.
+    activation : Callable[[Tensor], Tensor]
+        The scalar activation
+    L : DegreeRange
+        The degree range of inputs and outputs.
+
+    Example
+    -------
+    .. code-block:: python
+
+        >>> N, C, L = 20, 2, 3
+        >>> x = torch.randn(N,num_orders_in(L),C)
+        >>> D = ... # A random Wigner-D matrix of degree-range L
+        >>> print(x.shape)
+        torch.Size([20, 16, 2])
+        >>> print(D.shape)
+        torch.Size([20, 16, 16])
+
+        >>> act = S2Act((16, 16), torch.nn.SiLU(), L)
+        >>> z = act(x)
+        >>> Dz = act(D@x)
+        >>> print((D@z - Dz).abs().max())
+        tensor(0.0072)
+
+        >>> act = S2Act((16, 32), torch.nn.SiLU(), L)
+        >>> z = act(x)
+        >>> Dz = act(D@x)
+        >>> print((D@z - Dz).abs().max())
+        tensor(3.7670e-05)
+    
+        >>> act = S2Act((32, 32), torch.nn.SiLU(), L)
+        >>> z = act(x)
+        >>> Dz = act(D@x)
+        >>> print((D@z - Dz).abs().max())
+        tensor(6.4373e-06)
+    """
     def __init__(self, resolution:Union[Tuple[int,int],int], 
                  activation: Callable[[Tensor], Tensor],
                  L: DegreeRange):
@@ -116,6 +161,8 @@ class S2Act(nn.Module):
         self.activation = activation
 
     def forward(self, x: Tensor):
+        """
+        """
         sph = isht(x, self.L, *(self.resolution))
         sph = self.activation(sph)
         return sht(sph, self.L, *(self.resolution))

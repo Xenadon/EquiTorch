@@ -5,9 +5,9 @@ import torch.nn as nn
 from torch import Tensor
 from torch_geometric.utils import segment
 
-from ..utils._indices import extract_batch_ptr, check_degree_range
+from ..utils.indices import extract_batch_ptr, check_degree_range
 
-from ..utils._clebsch_gordan import coo_CG
+from ..utils.clebsch_gordan import coo_CG
 
 from ..math import dot
 from ..typing import DegreeRange
@@ -538,7 +538,7 @@ class TensorDot(nn.Module):
     channel_wise : bool, optional
         If True, compute channel-wise dot product. Default is :obj:`True`.
 
-    Examples
+    Example
     --------
     >>> L = DegreeRange(0, 3)
     >>> tensor_dot = TensorDot(L, channel_wise=True)

@@ -14,12 +14,12 @@ from e3nn import o3
 
 import functools
 
-from ..utils._indices import check_degree_range, reduce_order_to_degree
+from ..utils.indices import check_degree_range, reduce_order_to_degree
 from ..typing import DegreeRange
 from ..typing import Union, Tuple
 
-from ._o3 import *
-from ._sht import *
+from .o3 import *
+from .sht import *
 
 
 def dot(x1: Tensor, x2: Tensor, L: DegreeRange, channel_wise=True):
@@ -61,11 +61,11 @@ def dot(x1: Tensor, x2: Tensor, L: DegreeRange, channel_wise=True):
     and :math:`C_1,C_2,C` are corresponding number of channels.
     If :obj:`channel_wise` is :obj:`True`, :math:`C_1=C_2=C` should be satisfied.  
 
-    Examples
+    Example
     --------
     >>> x1 = torch.randn(32, 16, 64)  # (N, num_orders, C1)
     >>> x2 = torch.randn(32, 16, 64)  # (N, num_orders, C2)
-    >>> L = DegreeRange(0, 3)
+    >>> L = 3
     >>> result = dot(x1, x2, L)
     >>> print(result.shape)
     torch.Size([32, 4, 64])  # (N, num_degrees, C)
@@ -152,7 +152,7 @@ def rms(x: Tensor, L: DegreeRange, additional_dims: int | Tuple[int,...] = -1,
         Along other axis, the shape of norm will be same as the input.
         The norm will not scaled even if :obj:`degree_scale` is :obj:`True`.
 
-    Examples
+    Example
     --------
 
     .. code-block:: python
@@ -249,6 +249,14 @@ def norm(x: Tensor, L: DegreeRange, ):
 
     
     Where :math:`N` is the batch-size and :math:`C` is the number of channels. 
+    
+    Example
+    --------
+    >>> x = torch.randn(32, 16, 64)  # (N, num_orders, C1)
+    >>> L = 3
+    >>> result = norm(x, L)
+    >>> print(result.shape)
+    torch.Size([32, 4, 64])  # (N, num_degrees, C)
     """
 
     return reduce_order_to_degree(x**2, L, dim=-2).sqrt()
@@ -274,19 +282,28 @@ def norm2(x: Tensor, L: DegreeRange):
 
     
     Where :math:`N` is the batch-size and :math:`C` is the number of channels. 
+    
+    Example
+    --------
+    >>> x = torch.randn(32, 16, 64)  # (N, num_orders, C1)
+    >>> L = 3
+    >>> result = norm2(x, L)
+    >>> print(result.shape)
+    torch.Size([32, 4, 64])  # (N, num_degrees, C)
     """
     return reduce_order_to_degree(x**2, L, dim=-2)
 
 __all__ = [
+    'dot',
+    'norm',
+    'norm2',
+    'rms'
     'sht',
     'isht',
+    's2_grid'
     'angles_to_xyz',
     'xyz_to_angles',
     'angles_to_matrix',
     'wigner_D',
     'spherical_harmonics',
-    'norm',
-    'norm2',
-    'dot',
-    'rms'
 ]

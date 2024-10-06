@@ -56,11 +56,11 @@ class GaussianBasisExpansion(nn.Module):
             self.register_buffer('mu', mu)
             self.register_buffer('gamma', gamma)
     def forward(self, x: Tensor):
-
         r"""
         """
         return torch.exp(-self.gamma * (x.unsqueeze(-1)-self.mu).pow(2))
-    
+
+
 # Modified from https://pytorch-geometric.readthedocs.io/en/latest/_modules/torch_geometric/nn/models/dimenet.html#DimeNet
 class BesselBasisExpansion(torch.nn.Module):
     r"""

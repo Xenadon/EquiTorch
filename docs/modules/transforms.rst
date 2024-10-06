@@ -1,4 +1,4 @@
-equitorch.math
+equitorch.transforms
 ==============
 
 .. currentmodule:: equitorch.transforms

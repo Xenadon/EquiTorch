@@ -14,6 +14,11 @@ def expand_left(ptr: Tensor, dim: int, dims: int) -> Tensor:
         ptr = ptr.unsqueeze(0)
     return ptr
 
+def expand_right(ptr: Tensor, dim: int, dims: int) -> Tensor:
+    for _ in range(dims + dim if dim < 0 else dim):
+        ptr = ptr.unsqueeze(-1)
+    return ptr
+
 @functools.lru_cache(maxsize=None)
 def check_degree_range(L: DegreeRange) -> Tuple[int,int]:
     """
@@ -65,7 +70,7 @@ def order_batch(L: DegreeRange, device=None):
 
     Returns
     -------
-    torch.Tensor
+    Tensor
         A tensor where each element is the degree index for the corresponding order.
 
     Example
@@ -119,7 +124,7 @@ def order_ptr(L: DegreeRange, dim:int=0, device=None):
 
     Returns
     -------
-    torch.Tensor
+    Tensor
         A tensor of pointers to the start of each degree's orders.
 
     Example
@@ -136,7 +141,7 @@ def order_ptr(L: DegreeRange, dim:int=0, device=None):
     L = check_degree_range(L)
     return torch.tensor([i**2-L[0]**2 for i in range(L[0], L[1]+2)]).reshape([1]*dim+[-1]).to(device)
 
-def order_in_degree_range(L: DegreeRange, zero_based:bool=True, device=None):
+def orders_in_degree_range(L: DegreeRange, zero_based:bool=True, device=None):
     r"""
     Generate a tensor that specifying the order :math:`m` in a feature of 
     degree range :math:`L`.
@@ -159,10 +164,10 @@ def order_in_degree_range(L: DegreeRange, zero_based:bool=True, device=None):
     Example
     -------
     >>> L = (1, 2)
-    >>> result = order_in_degree_range(L, True)
+    >>> result = orders_in_degree_range(L, True)
     >>> print(result)
     tensor([1, 2, 3, 0, 1, 2, 3, 4])
-    >>> result = order_in_degree_range(L, False)
+    >>> result = orders_in_degree_range(L, False)
     >>> print(result)
     tensor([-1, 0, 1, -2, -1, 0, 1, 2])
     """
@@ -256,15 +261,6 @@ def num_degree_triplets(L: DegreeRange,
         check_degree_range(L1),
         check_degree_range(L2), cond))
 
-@functools.lru_cache(maxsize=None)
-def range_interact_with(L1: DegreeRange, L2:DegreeRange):
-    L1 = check_degree_range(L1)
-    L2 = check_degree_range(L2)
-    l_min = min(*(abs(l1-l2) for l1 in degrees_in_range(L1) 
-                  for l2 in degrees_in_range(L1)))
-    l_max = L1[1] + L2[1]
-    return (l_min, l_max)
-
 def num_orders_in(L: DegreeRange):
     """
     Calculate the number of spherical orders in a degree range.
@@ -291,7 +287,7 @@ def num_orders_between(lmin: int, lmax: int):
     """
     return (lmax+1) ** 2 - lmin ** 2
 
-def num_order_of_degree(l: int):
+def num_orders_of_degree(l: int):
     """
     Calculate the number of orders for a given degree.
 
@@ -374,7 +370,7 @@ def expand_degree_to_order(src: Tensor, L: DegreeRange, dim: int):
 
     Returns
     -------
-    torch.Tensor
+    Tensor
         The expanded tensor in order representation.
     """
     ind = order_batch(L, device=src.device)
@@ -395,7 +391,7 @@ def reduce_order_to_degree(src: Tensor, L: DegreeRange, dim: int):
 
     Returns
     -------
-    torch.Tensor
+    Tensor
         The reduced tensor in degree representation.
     """
     if dim < 0:
@@ -403,26 +399,71 @@ def reduce_order_to_degree(src: Tensor, L: DegreeRange, dim: int):
     ind = order_ptr(L, dim=dim, device=src.device)
     return torch_geometric.utils.segment(src, ind)
 
-@functools.lru_cache(maxsize=None)
-def order_0_in(L: DegreeRange):
-    L = check_degree_range(L)
-    ls = torch.arange(L[0],L[1]+1)
-    return ls+ls**2 - L[0]**2
 
 def extract_in_degree(x: Tensor, L_x:DegreeRange, L:DegreeRange, dim=-2):
     """
-    L should be contained in L_x! otherwise will produce a wrong result!
+    Extracts a subset of degrees from the input tensor `x` along the specified dimension.
+
+    Parameters:
+    ----------
+    x : Tensor
+        The input tensor containing data across degrees.
+    L_x : DegreeRange
+        The degree range of the input tensor `x`.
+    L : DegreeRange
+        The degree range to extract from `x`. 
+        This must be within `L_x` (i.e., `L_x[0] <= L[0] <= L[1] <= L_x[1]`).
+    dim : int, optional
+        The dimension along which the degrees are stored in `x`. Default is -2.
+
+    Returns:
+    -------
+    Tensor
+        A tensor containing only the degrees specified by `L`.
+
+    Example:
+    --------
+    >>> x = torch.randn(3, 25, 2)
+    >>> result = extract_in_degree(x, (0, 4), (2, 3))
+    >>> print(result.shape)
+    torch.Size([3, 12, 2])
+    ```
     """
     L = check_degree_range(L)
-    L_x = check_degree_range(L)
+    L_x = check_degree_range(L_x)
     return x.narrow(dim, L[0]**2-L_x[0]**2, num_orders_between(*L))
 
 def pad_to_degree(x: Tensor, L_x:DegreeRange, L:DegreeRange, dim=-2):
     """
-    L_x should be contained in L!!! otherwise will produce a wrong result!
+    Pads the input tensor `x` to match the target degree range `L` by adding zeros.
+
+    Parameters:
+    ----------
+    x : Tensor
+        The input tensor containing data across degrees.
+    L_x : Tuple[int, int]
+        The degree range `(min_degree, max_degree)` of the input tensor `x`.
+    L : Tuple[int, int]
+        The target degree range `(min_degree, max_degree)` to pad `x` to. 
+        `L_x` must be within `L` (i.e., `L[0] <= L_x[0] <= L_x[1] <= L[1]`).
+        
+    dim : int, optional
+        The dimension along which the degrees are stored in `x`. Default is -2
+
+    Returns:
+    -------
+    Tensor
+        A tensor padded with zeros to match the degree range `L`.
+
+    Example:
+    --------
+    >>> x = torch.randn(3, 12, 2)
+    >>> result = pad_to_degree(x, (2, 3), (0, 4))
+    >>> print(result.shape)
+    torch.Size([3, 25, 2])
     """
     L = check_degree_range(L)
-    L_x = check_degree_range(L)
+    L_x = check_degree_range(L_x)
     pad_head = L_x[0]**2-L_x[0]**2
     pad_tail = (L[1]+1)**2 - (L_x[1]+1)**2
     if dim >= 0:
@@ -432,13 +473,79 @@ def pad_to_degree(x: Tensor, L_x:DegreeRange, L:DegreeRange, dim=-2):
     return pad(x, p)
 
 def range_eq(L: DegreeRange):
+    """
+    Adjusts the input degree range `L` to ensure that it only includes 
+    degrees greater than or equal to 1 for 
+    strictly equivariant components.
+
+    Parameters:
+    ----------
+    L : DegreeRange
+        The input degree range.
+
+    Returns:
+    -------
+    DegreeRange
+
+    Examples
+    --------
+    >>> print(range_eq(4))
+    (1, 4)
+    >>> print(range_eq((2, 5)))
+    (2, 5)
+    """
     return (1, L) if isinstance(L, int) else (max(1,L[0]), L[1])
 
 def separate_invariant_equivariant(x:Tensor, dim=-2):
+    """Separate the invariant and equivariant components of the input.
+
+    Warning
+    -------
+    It will produce wrong results if the passed tensor
+    do not have invariant components.
+
+    Parameters
+    ----------
+    x : Tensor
+        The input tensor.
+    dim : int, optional
+        The spherical dimension. Default is -2
+
+    Returns
+    -------
+    (Tensor, Tensor)
+        The invariant component and strictly equivariant component
+        of the input tensor. (The equivariant component may be length-0
+        in dim if the input is length-1 in dim)
+    """
     return x.narrow(dim=dim, start=0, length=1), \
            x.narrow(dim=dim, start=1, length=x.shape[dim]-1)
 
 def concate_invariant_equivariant(invariant: Tensor, equivariant: Tensor, dim=-2):
+    """Concatenate invariant and strictly equivariant components.
+
+    Warning
+    -------
+    It will produce wrong results if the passed tensor
+    is not with degrees 0 and (1,l_max).
+
+
+    Parameters
+    ----------
+    invariant : Tensor
+        The invariant components. 
+        It may not contains the spherical dimension and thus 
+        have one less dimension than the equivariant part. 
+    equivariant : Tensor
+        The equivariant components.
+    dim: int, optional
+        The spherical dimension. Default is -2
+
+    Returns
+    -------
+    Tensor
+        The concatenated tensor.
+    """
     if invariant.ndim == equivariant.ndim -1:
         invariant = invariant.unsqueeze(dim)
     return torch.cat((invariant, equivariant), dim=dim)

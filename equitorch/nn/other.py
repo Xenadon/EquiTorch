@@ -3,8 +3,8 @@ from torch import Tensor
 import torch.nn as nn
 from typing import Callable, Iterable, Dict, Any
 
-from ..utils._hooks import get_kwargs_filter_hook
-from ..utils._indices import concate_invariant_equivariant, separate_invariant_equivariant
+from ..utils.hooks import get_kwargs_filter_hook
+from ..utils.indices import concate_invariant_equivariant, separate_invariant_equivariant
 
 from ..typing import DegreeRange
 
@@ -89,6 +89,13 @@ class Separable(nn.Module):
     cat_after: bool, optional
         Whether to concatenate the invariant and equivariant outputs.
         Default is :obj:`True`.
+
+    Example
+    -------
+    >>> act = Separable(
+    >>>     torch.nn.SiLU(),
+    >>>     S2Act(8, nn.SiLU(), range_eq(L_out)）
+    >>> )
     """
     def __init__(self, op_inv: Callable, op_eqv: Callable,
                  cat_after: bool = True):
@@ -111,10 +118,11 @@ class Separable(nn.Module):
         Parameters
         ----------
         x: Tensor
-            The input tensor.
+            The input tensor. Must have invariant (:math:`l=0`) components but 
+            can have no equivariant (:math:`l>0`) components.
         dim: int, optional
             The dimension of spherical orders. Default is :obj:`-2`.
-        kwargs:
+        **kwargs:
             Any keyword arguments that will be passed to
             :obj:`op_inv` and :obj:`op_eqv` 
         """

@@ -1,22 +1,21 @@
 """
 Some neural network layers.
 """
-from ._linear import *
-from ._tensor_product import *
-from ._activation import *
-from ._attention import *
-from ._radial_basis import *
-from ._angular_basis import *
-from ._spherical_basis import *
-from ._cutoff import *
-from ._normalization import *
-from ._other import *
+from .linear import *
+from .tensor_product import *
+from .activation import *
+from .attention import *
+from .radial_basis import *
+from .angular_basis import *
+from .spherical_basis import *
+from .cutoff import *
+from .normalization import *
+from .other import *
 
 linears = [
     'SO3Linear',
     'SO2Linear',
     'DegreeWiseLinear',
-    'ElementWiseLinear',
 ]
 
 cutoffs = [

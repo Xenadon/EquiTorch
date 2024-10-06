@@ -6,10 +6,10 @@ import torch.nn as nn
 from torch_geometric.utils import softmax
 from torch_geometric.nn import MessagePassing
 
-from ._linear import SO2Linear
-from ..utils._indices import degrees_in_range, reduce
-from ..utils._geometries import rot_on
-from ..utils._hooks import get_kwargs_filter_hook
+from .linear import SO2Linear
+from ..utils.indices import degrees_in_range, reduce
+from ..utils.geometries import rot_on
+from ..utils.hooks import get_kwargs_filter_hook
 
 from ..typing import DegreeRange
 
@@ -284,11 +284,3 @@ class MultiheadAttentionBlock(nn.Module):
         out = self.head_aggr_fn(att * value)
 
         return out, att
-
-        # if DT_out is not None:
-        #     out = rot_on(DT_out, out)
-        # if edge_weight is not None:
-        #     out = edge_weight.view(-1,1,1) * out
-
-        # return reduce(out, index, ptr, num_nodes, 0)
-

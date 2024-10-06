@@ -24,13 +24,20 @@ This is **Equitorch**, a modularized package for flexibily constructing equivari
 ..    :caption: Tutorials
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   :caption: Examples
+
+   /examples/teris_TFN.rst 
+   /examples/teris_SE3Tr.rst 
+
+.. toctree::
+   :maxdepth: 1
    :caption: API 
 
 
    .. equivariance_introduction.rst
 
-
+   /modules/typing.rst
    /modules/nn.rst
    /modules/math.rst
    /modules/utils.rst
