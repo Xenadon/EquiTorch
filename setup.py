@@ -14,5 +14,5 @@ setup(
     python_requires='>=3.12',
     author='Tong Wang',
     author_email='TongWang_2000@outlook.com',
-    url='https://github.com/Xenadon/EquiTorch',
+    url='https://github.com/GTML-LAB/Equitorch/',
 )
