@@ -8,6 +8,7 @@ Equitorch documentation
 
 This is **Equitorch**, a modularized package for flexibily constructing equivariant (and invariant) GNNs built-upon pyg_.
 
+Github pages: `<https://github.com/GTML-LAB/Equitorch>`_
 
 .. .. toctree:
 ..    :maxdepth: 2
