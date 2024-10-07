@@ -1,8 +1,8 @@
 """
 Utility functions.
 """
-from .geometries import *
 from .indices import *
+from .geometries import *
 from .clebsch_gordan import *
 from .weights import *
 

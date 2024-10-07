@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: equitorch
+Version: 0.1
+Summary: A package for constructing equivariant GNNs building upon pyg.
+Home-page: https://github.com/GTML-LAB/Equitorch/
+Author: Tong Wang
+Author-email: TongWang_2000@outlook.com
+Requires-Python: >=3.12
+Requires-Dist: torch>=2.2
+Requires-Dist: torch-geometric>=2.4
+Requires-Dist: e3nn>=0.5.1
+Requires-Dist: torch-cluster

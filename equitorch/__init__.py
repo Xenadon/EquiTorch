@@ -1,10 +1,20 @@
 """
 Equitorch.
 """
+__version__ = "0.1"
 
-import equitorch.nn
-import equitorch.math
-import equitorch.transforms
-import equitorch.typing
-import equitorch.utils
+from . import typing
+from . import utils
+from . import math
+
+from . import transforms
+from . import nn
+
+# __all__ = [
+#     'nn',
+#     'math',
+#     'transforms',
+#     'typing',
+#     'utils',
+# ]
 
