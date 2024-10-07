@@ -6,8 +6,8 @@ setup(
     description='A package for constructing equivariant GNNs building upon pyg.',
     packages=['equitorch'],
     install_requires=[
-        'pytorch>=2.3',
-        'torch-geometric>=2.6',
+        'pytorch>=2.2',
+        'torch-geometric>=2.4',
         'e3nn>=0.5.1',
         'torch-scatter>=2.1.2'
     ],
