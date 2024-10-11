@@ -10,13 +10,12 @@ This is **Equitorch**, a modularized package for flexibily constructing equivari
 
 Github pages: `<https://github.com/GTML-LAB/Equitorch>`_
 
-.. .. toctree:
-..    :maxdepth: 2
-..    :caption: Get-started
+.. toctree::
+   :maxdepth: 1
+   :caption: Get-started
 
-   .. get_started/symmetries_equivariances
-   .. get_started/representations_spherical_harmonics
-   .. get_started/tensor_products
+   get_started/installation.rst
+   get_started/spherical_tensors.rst
 
 
 
@@ -28,15 +27,12 @@ Github pages: `<https://github.com/GTML-LAB/Equitorch>`_
    :maxdepth: 1
    :caption: Examples
 
-   /examples/teris_TFN.rst 
-   /examples/teris_SE3Tr.rst 
+   examples/tetris_TFN.rst 
+   examples/tetris_SE3Tr.rst 
 
 .. toctree::
    :maxdepth: 1
    :caption: API 
-
-
-   .. equivariance_introduction.rst
 
    /modules/typing.rst
    /modules/nn.rst

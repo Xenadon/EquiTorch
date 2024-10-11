@@ -1,5 +1,5 @@
 equitorch.transforms
-==============
+====================
 
 .. currentmodule:: equitorch.transforms
 

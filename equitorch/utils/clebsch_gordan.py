@@ -7,6 +7,7 @@ import torch
 from .indices import check_degree_range, degree_order_to_index, degrees_in_range
 
 from ..typing import DegreeRange
+from ..math.so3 import _so3_clebsch_gordan
 
 def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optional[Callable]=None, dtype=torch.float):
     r"""Generate dense Clebsch-Gordan (CG) matrices for given angular momentum ranges.
@@ -42,7 +43,7 @@ def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optiona
         CGs = [
             [
                 [
-                    e3nn.o3._wigner._so3_clebsch_gordan(l,l1,l2)
+                    _so3_clebsch_gordan(l,l1,l2)
                         .nan_to_num(0).type(dtype) * condition(l,l1,l2)
                 for l2 in range(l2_min, l2_max+1)]
             for l1 in range(l1_min,l1_max+1)]
@@ -51,7 +52,7 @@ def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optiona
         CGs = [
             [
                 [
-                    e3nn.o3._wigner._so3_clebsch_gordan(l,l1,l2)
+                    _so3_clebsch_gordan(l,l1,l2)
                         .nan_to_num(0).type(dtype) 
                 for l2 in range(l2_min, l2_max+1)]
             for l1 in range(l1_min,l1_max+1)]
@@ -97,7 +98,7 @@ def blocked_CG(L: DegreeRange, L1: DegreeRange, L2:DegreeRange, condition:Option
     L2 = check_degree_range(L2)
     if condition is None:
         return {
-            (l, l1, l2):e3nn.o3._wigner._so3_clebsch_gordan(l,l1,l2).type(dtype)
+            (l, l1, l2):_so3_clebsch_gordan(l,l1,l2).type(dtype)
                 for l in degrees_in_range(L)
                 for l1 in degrees_in_range(L1)
                 for l2 in degrees_in_range(L2)
@@ -105,7 +106,7 @@ def blocked_CG(L: DegreeRange, L1: DegreeRange, L2:DegreeRange, condition:Option
         }
     else:
         return {
-            (l, l1, l2):e3nn.o3._wigner._so3_clebsch_gordan(l,l1,l2).type(dtype)
+            (l, l1, l2):_so3_clebsch_gordan(l,l1,l2).type(dtype)
                 for l in degrees_in_range(L)
                 for l1 in degrees_in_range(L1)
                 for l2 in degrees_in_range(L2)

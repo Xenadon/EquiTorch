@@ -20,7 +20,7 @@ In this package, we implemented many basic operators that may need in equivarian
     - Basis expansion (radial, angular and spherical)
     - Cutoff operations
 - Mathematical functions:
-    - Operations related to spherical tensors, spherical harmonics and Wigner-D matrices
+    - Operations related to spherical tensors, spherical harmonics and Wigner D matrices
     - Spherical harmonic transform and inverse spherical harmonic transform
 - Transforms
 - Utility functions

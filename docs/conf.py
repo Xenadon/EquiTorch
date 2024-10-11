@@ -62,6 +62,10 @@ napoleon_preprocess_types = False
 napoleon_type_aliases = {"DegreeRange": "DegreeRange"}
 napoleon_attr_annotations = True
 
+autodoc_default_options = {
+    'member-order': 'bysource',
+ }
+
 # templates borrowed from https://github.com/pyg-team/pytorch_geometric/blob/master/docs/source/_templates/
 templates_path = ['_templates']
 exclude_patterns = []

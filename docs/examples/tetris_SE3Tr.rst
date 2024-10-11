@@ -1,11 +1,11 @@
-The teris classification using SE(3)-Transformer with separable layernorm and S2 activation.
+The tetris classification using SE(3)-Transformer with separable layernorm and S2 activation.
 ============================================================================================
 
 .. note::
     For some backgrounds about the task and equivariant operation,
-    you can first read `The teris classification using TFN and SO2TFN`.
+    you can first read `The tetris classification using TFN and SO2TFN`.
 
-Here, we give an example of the teris classification
+Here, we give an example of the tetris classification
 using `SE(3)-Transformer <https://arxiv.org/abs/2006.10503>`_,
 but replace the normalization and activation to the 
 separable layer normalization and separable S2 activation

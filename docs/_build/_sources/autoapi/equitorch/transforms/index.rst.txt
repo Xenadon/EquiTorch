@@ -80,16 +80,16 @@ Package Contents
 
 .. py:function:: align_to_z_wigner(r: Tensor, L: equitorch.typing.DegreeRange, need_normalize: bool = True)
 
-   Returns the Wigner-D matrix corresponding to the return of align_to_z_mat.
+   Returns the Wigner D matrix corresponding to the return of align_to_z_mat.
 
    :param r: Input vector to be aligned.
    :type r: Tensor
-   :param L: Range of degrees for the Wigner-D matrix.
+   :param L: Range of degrees for the Wigner D matrix.
    :type L: DegreeRange
    :param need_normalize: Whether to normalize the input vector. Default is :obj:`True`.
    :type need_normalize: bool, optional
 
-   :returns: Wigner-D matrix corresponding to the rotation returned by align_to_z_mat.
+   :returns: Wigner D matrix corresponding to the rotation returned by align_to_z_mat.
    :rtype: Tensor
 
 
@@ -263,7 +263,7 @@ Package Contents
    Bases: :py:obj:`torch_geometric.transforms.BaseTransform`
 
 
-   Creates Wigner-D matrices for the roation matrices that
+   Creates Wigner D matrices for the roation matrices that
    can align each edge to z based on edge direction vectors
    :obj:`edge_vector_attr`. (functional name: :obj:`add_edge_align_matrix`).
 

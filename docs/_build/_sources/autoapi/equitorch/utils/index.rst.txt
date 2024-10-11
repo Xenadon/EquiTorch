@@ -162,31 +162,31 @@ Package Contents
 
 .. py:function:: align_to_z_wigner(r: Tensor, L: equitorch.typing.DegreeRange, need_normalize: bool = True)
 
-   Returns the Wigner-D matrix corresponding to the return of align_to_z_mat.
+   Returns the Wigner D matrix corresponding to the return of align_to_z_mat.
 
    :param r: Input vector to be aligned.
    :type r: Tensor
-   :param L: Range of degrees for the Wigner-D matrix.
+   :param L: Range of degrees for the Wigner D matrix.
    :type L: DegreeRange
    :param need_normalize: Whether to normalize the input vector. Default is :obj:`True`.
    :type need_normalize: bool, optional
 
-   :returns: Wigner-D matrix corresponding to the rotation returned by align_to_z_mat.
+   :returns: Wigner D matrix corresponding to the rotation returned by align_to_z_mat.
    :rtype: Tensor
 
 
 .. py:function:: edge_align_to_z_wigner(pos: Tensor, edge_index: Tensor, L: equitorch.typing.DegreeRange)
 
-   Calculate the Wigner-D matrix corresponding to the rotation that aligns an edge vector with the z-axis.
+   Calculate the Wigner D matrix corresponding to the rotation that aligns an edge vector with the z-axis.
 
    :param pos: Tensor of node positions.
    :type pos: Tensor
    :param edge_index: Tensor of edge indices.
    :type edge_index: Tensor
-   :param L: Range of degrees for the Wigner-D matrix.
+   :param L: Range of degrees for the Wigner D matrix.
    :type L: DegreeRange
 
-   :returns: Wigner-D matrix corresponding to the rotation that aligns the edge vector with the z-axis.
+   :returns: Wigner D matrix corresponding to the rotation that aligns the edge vector with the z-axis.
    :rtype: Tensor
 
 
@@ -377,16 +377,16 @@ Package Contents
    Calculate the number of spherical orders in a degree range.
 
 
-.. py:function:: num_orders_between(lmin: int, lmax: int)
+.. py:function:: num_orders_between(l_min: int, l_max: int)
 
    Calculate the number of orders between two degrees.
 
-   :param lmin: The minimum degree.
-   :type lmin: int
-   :param lmax: The maximum degree.
-   :type lmax: int
+   :param l_min: The minimum degree.
+   :type l_min: int
+   :param l_max: The maximum degree.
+   :type l_max: int
 
-   :returns: The total number of orders between lmin and lmax (inclusive).
+   :returns: The total number of orders between l_min and l_max (inclusive).
    :rtype: int
 
 

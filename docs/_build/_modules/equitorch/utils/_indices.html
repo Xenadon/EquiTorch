@@ -292,23 +292,23 @@
     <span class="k">return</span> <span class="n">num_orders_between</span><span class="p">(</span><span class="o">*</span><span class="n">L</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">num_orders_between</span><span class="p">(</span><span class="n">lmin</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">lmax</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">num_orders_between</span><span class="p">(</span><span class="n">l_min</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">l_max</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the number of orders between two degrees.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    lmin : int</span>
+<span class="sd">    l_min : int</span>
 <span class="sd">        The minimum degree.</span>
-<span class="sd">    lmax : int</span>
+<span class="sd">    l_max : int</span>
 <span class="sd">        The maximum degree.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    int</span>
-<span class="sd">        The total number of orders between lmin and lmax (inclusive).</span>
+<span class="sd">        The total number of orders between l_min and l_max (inclusive).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">lmax</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">lmin</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">l_max</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">l_min</span> <span class="o">**</span> <span class="mi">2</span>
 
 <span class="k">def</span> <span class="nf">num_order_of_degree</span><span class="p">(</span><span class="n">l</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>

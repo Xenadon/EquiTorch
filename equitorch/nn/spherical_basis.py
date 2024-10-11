@@ -1,6 +1,6 @@
 from torch import Tensor, nn
 
-from ..math.o3 import spherical_harmonics
+from ..math.so3 import spherical_harmonics
 from ..typing import DegreeRange
 from ..utils.indices import check_degree_range
 

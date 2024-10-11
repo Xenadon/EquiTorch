@@ -18,7 +18,7 @@ from ..utils.indices import check_degree_range, reduce_order_to_degree
 from ..typing import DegreeRange
 from ..typing import Union, Tuple
 
-from .o3 import *
+from .so3 import *
 from .sht import *
 
 

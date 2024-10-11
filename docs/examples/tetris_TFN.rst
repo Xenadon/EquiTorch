@@ -1,7 +1,7 @@
-The teris classification using TFN and SO2TFN
+The tetris classification using TFN and SO2TFN
 =============================================
 
-Here, we give an example of the teris classification
+Here, we give an example of the tetris classification
 using TFN and SO2TFN. 
 
 TFN (Tensor Field Network) proposed in 
@@ -9,7 +9,7 @@ TFN (Tensor Field Network) proposed in
 is a pioneering work of
 SO(3) equivariant neural networks that uses spherical 
 (or irreps) features and transformations between them.
-(The task of teris classification also comes from that work.)
+(The task of tetris classification also comes from that work.)
 
 To achieve the equivariances, it uses a "Tensor Product"
 operation with the edge spherical harmonics to transform

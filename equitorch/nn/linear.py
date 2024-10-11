@@ -182,7 +182,7 @@ class SO3Linear(nn.Module):
     This looks more like a linear operation where the weight can depend on :math:`\mathbf{r}`.
 
     The SO(3) equivariance means that for any rotation matrix :math:`\mathbf{R}\in\mathrm{SO(3)}`
-    and corresponding Wigner-D matrices :math:`\mathbf{D}_{\text{in}}`, 
+    and corresponding Wigner D matrices :math:`\mathbf{D}_{\text{in}}`, 
     :math:`\mathbf{D}_{\text{out}}` in input/output feature spaces, it satisfies that
 
     .. math::
@@ -387,7 +387,7 @@ class SO2Linear(nn.Module):
 
     The SO(2) equivariance means that, for any rotation 
     :math:`\mathbf{R}=\begin{bmatrix}\cos\phi&-\sin\phi&0\\\sin\phi&\cos\phi&0\\0&0&1\end{bmatrix}`
-    around z-axis and corresponding Wigner-D matrices :math:`\mathbf{D}_{\text{in}}`, 
+    around z-axis and corresponding Wigner D matrices :math:`\mathbf{D}_{\text{in}}`, 
     :math:`\mathbf{D}_{\text{out}}` in input/output feature spaces,
     it satisfise that
 
@@ -404,7 +404,7 @@ class SO2Linear(nn.Module):
     .. math::
         \mathbf{D}_{\mathbf{r},\text{out}}^\top\tilde{\mathbf{W}}'_{\phi}(\|\mathbf{r}\|)(\mathbf{D}_{\mathbf{r},\text{in}}\mathbf{x})=\tilde{\mathbf{W}}(\mathbf {r})\mathbf{x}
 
-    and vice versa, where :math:`\mathbf{D}_{\mathbf{r},\text{in}}` and :math:`\mathbf{D}_{\mathbf{r},\text{out}}` are the Wigner-D
+    and vice versa, where :math:`\mathbf{D}_{\mathbf{r},\text{in}}` and :math:`\mathbf{D}_{\mathbf{r},\text{out}}` are the Wigner D
     matrices on the input/output spaces corresponding to the rotation matrix that can align :math:`\mathbf{r}`
     to the z axis. (See Appendix 2 of the paper above for the proof of the bijection.)
 
@@ -412,7 +412,7 @@ class SO2Linear(nn.Module):
     :obj:`~equitorch.utils.so3_weights_to_so2` and :obj:`~equitorch.utils.so2_weights_to_so3`.
     
     .. note::
-        If dense Wigner-D matrix is used before the SO(2) linear operation, the 
+        If dense Wigner D matrix is used before the SO(2) linear operation, the 
         :math:`O(L^4)` complexity of :math:`\mathbf{Dx}` can be the bottleneck.
         When channels :math:`C` explicitly considered, the linear operation will 
         be of complexity :math:`O(L^3C)` if channel wise or :math:`O(L^3CC')` if

@@ -124,7 +124,7 @@ Package Contents
    This looks more like a linear operation where the weight can depend on :math:`\mathbf{r}`.
 
    The SO(3) equivariance means that for any rotation matrix :math:`\mathbf{R}\in\mathrm{SO(3)}`
-   and corresponding Wigner-D matrices :math:`\mathbf{D}_{\text{in}}`,
+   and corresponding Wigner D matrices :math:`\mathbf{D}_{\text{in}}`,
    :math:`\mathbf{D}_{\text{out}}` in input/output feature spaces, it satisfies that
 
    .. math::
@@ -218,7 +218,7 @@ Package Contents
    .. math::
        \mathbf{D}_{\mathbf{r},\text{out}}^\top\tilde{\mathbf{W}}'(\|\mathbf{r}\|)(\mathbf{D}_{\mathbf{r},\text{in}}\mathbf{x})=\tilde{\mathbf{W}}(\mathbf {r})\mathbf{x}
 
-   and vice versa, where :math:`\mathbf{D}_{\mathbf{r},\text{in}}` and :math:`\mathbf{D}_{\mathbf{r},\text{out}}` are the Wigner-D
+   and vice versa, where :math:`\mathbf{D}_{\mathbf{r},\text{in}}` and :math:`\mathbf{D}_{\mathbf{r},\text{out}}` are the Wigner D
    matrices on the input/output spaces corresponding to the rotation matrix that can align :math:`\mathbf{r}`
    to the z axis. (See Appendix 2 of the paper above for the proof of the bijection.)
 
@@ -226,7 +226,7 @@ Package Contents
    :obj:`so3_weights_to_so2` and :obj:`so2_weights_to_so3` in :obj:`utils`.
 
    .. note::
-       If dense Wigner-D matrix is used before the SO(2) linear operation, the
+       If dense Wigner D matrix is used before the SO(2) linear operation, the
        :math:`O(L^4)` complexity of :math:`\mathbf{Dx}` can be the bottleneck.
        When channels :math:`C` explicitly considered, the linear operation will
        be of complexity :math:`O(L^3C)` if channel wise or :math:`O(L^3CC')` if
@@ -609,7 +609,7 @@ Package Contents
    .. math::
        \mathbf{D}_{\mathbf{r},\text{out}}^\top\tilde{\mathbf{W}}'(\|\mathbf{r}\|)(\mathbf{D}_{\mathbf{r},\text{in}}\mathbf{x})=\tilde{\mathbf{W}}(\mathbf {r})\mathbf{x}
 
-   and vice versa, where :math:`\mathbf{D}_{\mathbf{r},\text{in}}` and :math:`\mathbf{D}_{\mathbf{r},\text{out}}` are the Wigner-D
+   and vice versa, where :math:`\mathbf{D}_{\mathbf{r},\text{in}}` and :math:`\mathbf{D}_{\mathbf{r},\text{out}}` are the Wigner D
    matrices on the input/output spaces corresponding to the rotation matrix that can align :math:`\mathbf{r}`
    to the z axis. (See Appendix 2 of the paper above for the proof of the bijection.)
 
@@ -617,7 +617,7 @@ Package Contents
    :obj:`so3_weights_to_so2` and :obj:`so2_weights_to_so3` in :obj:`utils`.
 
    .. note::
-       If dense Wigner-D matrix is used before the SO(2) linear operation, the
+       If dense Wigner D matrix is used before the SO(2) linear operation, the
        :math:`O(L^4)` complexity of :math:`\mathbf{Dx}` can be the bottleneck.
        When channels :math:`C` explicitly considered, the linear operation will
        be of complexity :math:`O(L^3C)` if channel wise or :math:`O(L^3CC')` if
@@ -831,12 +831,12 @@ Package Contents
       :param edge_emb: The edge features that will be used to produce
                        weights for Q/K/V projectors, Default is :obj:`None`.
       :type edge_emb: Tensor, optional
-      :param D_in: The Wigner-D matrix on input space corresponding to the
+      :param D_in: The Wigner D matrix on input space corresponding to the
                    rotation that aligns the edge vector to z axis.
                    If provided, the input feature will first be rotated by :obj:`D_in`
                    Default is :obj:`None`.
       :type D_in: Tensor, optional
-      :param DT_out: The transpose of Wigner-D matrix on output space corresponding to the
+      :param DT_out: The transpose of Wigner D matrix on output space corresponding to the
                      rotation that aligns the edge vector to z axis.
                      If provided, the value vector of each edge will be rotated by :obj:`D_out` before aggregated.
                      Default is :obj:`None`.

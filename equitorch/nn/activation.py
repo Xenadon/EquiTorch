@@ -123,7 +123,7 @@ class S2Act(nn.Module):
 
         >>> N, C, L = 20, 2, 3
         >>> x = torch.randn(N,num_orders_in(L),C)
-        >>> D = ... # A random Wigner-D matrix of degree-range L
+        >>> D = ... # A random Wigner D matrix of degree-range L
         >>> print(x.shape)
         torch.Size([20, 16, 2])
         >>> print(D.shape)

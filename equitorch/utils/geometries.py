@@ -6,7 +6,7 @@ from torch_geometric.utils import segment
 import e3nn
 import e3nn.o3 as o3
 
-from ..math.o3 import wigner_D, xyz_to_angles
+from ..math.so3 import wigner_D, xyz_to_angles
 
 
 from .indices import check_degree_range, degrees_in_range
@@ -135,21 +135,21 @@ def edge_spherical_angles(pos: Tensor, edge_index: Tensor):
     return xyz_to_angles(from_pos - to_pos, need_normalize=True)
 
 def align_to_z_wigner(r: Tensor, L: DegreeRange, need_normalize:bool=True):
-    r"""Returns the Wigner-D matrix corresponding to the return of :obj:`align_to_z_mat`.
+    r"""Returns the Wigner D matrix corresponding to the return of :obj:`align_to_z_mat`.
 
     Parameters
     ----------
     r : Tensor
         Input vector to be aligned.
     L : DegreeRange
-        The degree range for the Wigner-D matrix.
+        The degree range for the Wigner D matrix.
     need_normalize : bool, optional
         Whether to normalize the input vector. Default is :obj:`True`.
 
     Returns
     -------
     Tensor
-        Wigner-D matrix corresponding to the rotation returned by :obj:`align_to_z_mat`.
+        Wigner D matrix corresponding to the rotation returned by :obj:`align_to_z_mat`.
     """
 
     L = check_degree_range(L)
@@ -157,7 +157,7 @@ def align_to_z_wigner(r: Tensor, L: DegreeRange, need_normalize:bool=True):
     return wigner_D(L, torch.zeros_like(phi), -theta, -phi).to(r.device)
 
 def edge_align_to_z_wigner(pos: Tensor, edge_index: Tensor, L: DegreeRange):
-    r"""Calculate the Wigner-D matrix corresponding to the rotation that aligns 
+    r"""Calculate the Wigner D matrix corresponding to the rotation that aligns 
     an edge vector with the z-axis as :obj:`edge_align_to_z_mat`.
 
     Parameters
@@ -167,12 +167,12 @@ def edge_align_to_z_wigner(pos: Tensor, edge_index: Tensor, L: DegreeRange):
     edge_index : Tensor
         Tensor of edge indices.
     L : DegreeRange
-        The degree range of the Wigner-D matrix.
+        The degree range of the Wigner D matrix.
 
     Returns
     -------
     Tensor
-        Wigner-D matrix corresponding to the rotation 
+        Wigner D matrix corresponding to the rotation 
         that aligns the edge vector with the z-axis 
         as :obj:`edge_align_to_z_mat`.
     """

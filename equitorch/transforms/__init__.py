@@ -1,7 +1,8 @@
 """
 Some data transforms.
 """
-from typing import Any
+from typing import Callable
+from torch import Tensor
 import torch_geometric
 from torch_geometric.data import Data
 from torch_geometric.data.datapipes import functional_transform
@@ -11,7 +12,7 @@ from ..utils.indices import check_degree_range
 
 from ..utils.geometries import align_to_z_mat, align_to_z_wigner, edge_align_to_z_mat
 
-from ..math.o3 import spherical_harmonics
+from ..math.so3 import spherical_harmonics
 
 from ..typing import DegreeRange
 
@@ -181,7 +182,7 @@ class AddEdgeAlignMatrix(BaseTransform):
 
 @functional_transform('add_edge_align_wigner_d')   
 class AddEdgeAlignWignerD(BaseTransform):
-    r"""Creates Wigner-D matrices for the roation matrices that
+    r"""Creates Wigner D matrices for the roation matrices that
     can align each edge to z based on edge direction vectors 
     :obj:`edge_vector_attr`. (functional name: :obj:`add_edge_align_matrix`).
 
@@ -222,6 +223,44 @@ class AddEdgeAlignWignerD(BaseTransform):
         data.__setattr__(self.align_wigner_attr, align_to_z_wigner(edge_vec, self.L))
 
         return data
+    
+
+@functional_transform('add_edge_length_embedding')   
+class AddEdgeLengthEmbedding(BaseTransform):
+    r"""Add the edge length embedding for edges.
+
+    Parameters
+    ----------
+    emb: Callable[[Tensor,], Tensor]
+        The length embedding operation.
+    
+    Example
+    --------
+    >>> print(data)
+    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3])
+    >>> data = AddEdgeLengthEmbedding(GaussianBasisExpansion(10, 300, 0, 30))
+    >>> print(data)
+    Data(pos=[50, 3], edge_index=[2, 36], edge_vec=[36, 3], edge_emb=[36, 300])
+    """
+    def __init__(
+        self,
+        emb: Callable[[Tensor], Tensor],
+        edge_vector_attr: str = 'edge_vec',
+        edge_embedding_attr: str = 'edge_emb'
+    ) -> None:
+
+        self.emb = emb
+        self.edge_vector_attr = edge_vector_attr
+        self.edge_embedding_attr = edge_embedding_attr
+
+    def forward(self, data: Data) -> Data:
+        
+        edge_vec = data.__getattr__(self.edge_vector_attr)
+        
+        data.__setattr__(self.edge_embedding_attr, self.emb(edge_vec.norm(dim=-1)))
+
+        return data
+    
     
 __all__ = [
     'RadiusGraph',

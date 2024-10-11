@@ -48,7 +48,6 @@ def check_degree_range(L: DegreeRange) -> Tuple[int,int]:
 
     return (0, L) if isinstance(L, int) else L
 
-@functools.lru_cache(maxsize=None)
 def degrees_in_range(L: DegreeRange):
     """
     Returns :obj:`range(L[0], L[1]+1)`.
@@ -269,23 +268,23 @@ def num_orders_in(L: DegreeRange):
     return num_orders_between(*L)
 
 
-def num_orders_between(lmin: int, lmax: int):
+def num_orders_between(l_min: int, l_max: int):
     """
     Calculate the number of orders between two degrees.
 
     Parameters
     ----------
-    lmin : int
+    l_min : int
         The minimum degree.
-    lmax : int
+    l_max : int
         The maximum degree.
 
     Returns
     -------
     int
-        The total number of orders between lmin and lmax (inclusive).
+        The total number of orders between l_min and l_max (inclusive).
     """
-    return (lmax+1) ** 2 - lmin ** 2
+    return (l_max+1) ** 2 - l_min ** 2
 
 def num_orders_of_degree(l: int):
     """

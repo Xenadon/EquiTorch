@@ -252,7 +252,7 @@ class MultiheadAttentionBlock(nn.Module):
         v: Tensor
             The tensor to produce values for each edges.
         DT_out: Tensor, optional
-            The Wigner-D matrix corresponding the rotation that can align the edge vector 
+            The Wigner D matrix corresponding the rotation that can align the edge vector 
             to the z-axis on the output spaces. If provided, the produced value 
             will be transformed by these matrices before aggregated.
             Default is :obj:`None`.

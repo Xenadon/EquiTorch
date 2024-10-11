@@ -205,21 +205,21 @@
 <div class="viewcode-block" id="align_to_z_wigner">
 <a class="viewcode-back" href="../../../autoapi/equitorch/transforms/index.html#equitorch.transforms.align_to_z_wigner">[docs]</a>
 <span class="k">def</span> <span class="nf">align_to_z_wigner</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">,</span> <span class="n">need_normalize</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the Wigner-D matrix corresponding to the return of align_to_z_mat.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns the Wigner D matrix corresponding to the return of align_to_z_mat.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    r : Tensor</span>
 <span class="sd">        Input vector to be aligned.</span>
 <span class="sd">    L : DegreeRange</span>
-<span class="sd">        Range of degrees for the Wigner-D matrix.</span>
+<span class="sd">        Range of degrees for the Wigner D matrix.</span>
 <span class="sd">    need_normalize : bool, optional</span>
 <span class="sd">        Whether to normalize the input vector. Default is :obj:`True`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    torch.Tensor</span>
-<span class="sd">        Wigner-D matrix corresponding to the rotation returned by align_to_z_mat.</span>
+<span class="sd">        Wigner D matrix corresponding to the rotation returned by align_to_z_mat.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">L</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
@@ -228,7 +228,7 @@
 
 
 <span class="k">def</span> <span class="nf">edge_align_to_z_wigner</span><span class="p">(</span><span class="n">pos</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">L</span><span class="p">:</span> <span class="n">DegreeRange</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate the Wigner-D matrix corresponding to the rotation that aligns an edge vector with the z-axis.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate the Wigner D matrix corresponding to the rotation that aligns an edge vector with the z-axis.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -237,12 +237,12 @@
 <span class="sd">    edge_index : Tensor</span>
 <span class="sd">        Tensor of edge indices.</span>
 <span class="sd">    L : DegreeRange</span>
-<span class="sd">        Range of degrees for the Wigner-D matrix.</span>
+<span class="sd">        Range of degrees for the Wigner D matrix.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    torch.Tensor</span>
-<span class="sd">        Wigner-D matrix corresponding to the rotation that aligns the edge vector with the z-axis.</span>
+<span class="sd">        Wigner D matrix corresponding to the rotation that aligns the edge vector with the z-axis.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">L</span> <span class="o">=</span> <span class="n">check_degree_range</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
     <span class="n">phi</span><span class="p">,</span> <span class="n">theta</span> <span class="o">=</span> <span class="n">edge_align_to_z_angles</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">edge_index</span><span class="p">)</span>
