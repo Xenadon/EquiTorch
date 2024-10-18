@@ -57,7 +57,7 @@ class SimpleDotAttention(nn.Module):
 
         Returns
         -------
-        Tensor
+        :obj:`~torch.Tensor`
             Attention weights.
 
         """
@@ -93,9 +93,9 @@ class SE3TrAttention(nn.Module):  # only computes the attention weights
 
     Parameters
     ----------
-    L_in : DegreeRange
+    L_in : :obj:`~equitorch.typing.DegreeRange`
         The degree range of the input.
-    L_k : DegreeRange
+    L_k : :obj:`~equitorch.typing.DegreeRange`
         The degree range of the keys and values.
     in_channels : int
         The number of input channels.

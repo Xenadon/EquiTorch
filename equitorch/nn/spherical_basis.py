@@ -16,7 +16,7 @@ class SphericalHarmonicBasisExpansion(nn.Module):
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range of the spherical harmonics.
     """
     def __init__(self, 
@@ -29,12 +29,12 @@ class SphericalHarmonicBasisExpansion(nn.Module):
         """
         Parameters
         ----------
-        x : Tensor
+        x : :obj:`~torch.Tensor`
             The Cartesian vectors on a sphere.
 
         Returns
         -------
-        Tensor
+        :obj:`~torch.Tensor`
             The spherical harmonic encoding.        
         """
         return spherical_harmonics(x, self.L)

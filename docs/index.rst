@@ -16,6 +16,8 @@ Github pages: `<https://github.com/GTML-LAB/Equitorch>`_
 
    get_started/installation.rst
    get_started/spherical_tensors.rst
+   get_started/tensor_products.rst
+   get_started/linears.rst
 
 
 

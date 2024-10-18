@@ -85,7 +85,7 @@ which benefits from the modularized design of our package.
 
             self.lin = SO3Linear(L_in, L_edge, L_out, 
                                 in_channels, out_channels, 
-                                external_weight=True, channel_wise=channel_wise)
+                                external_weights=True, channel_wise=channel_wise)
             self.lin_weight_shape = (-1, self.lin.num_weights, in_channels) if channel_wise \
                 else (-1, self.lin.num_weights, in_channels, out_channels)
             self.self_int = DegreeWiseLinear(self.L_out, self.L_out, out_channels, out_channels)
@@ -160,7 +160,7 @@ which benefits from the modularized design of our package.
 
             self.lin = SO2Linear(L_in, L_out, 
                                 in_channels, out_channels, 
-                                external_weight=True, channel_wise=channel_wise)
+                                external_weights=True, channel_wise=channel_wise)
             self.lin_weight_shape = (-1, self.lin.num_weights, in_channels) if channel_wise \
                 else (-1, self.lin.num_weights, in_channels, out_channels)
             self.self_int = DegreeWiseLinear(self.L_out, self.L_out, out_channels, out_channels)

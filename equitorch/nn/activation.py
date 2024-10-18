@@ -21,7 +21,7 @@ class NormAct(nn.Module):
     ----------
     activation : Callable[[Tensor], Tensor]
         The activation function to apply to the norm.
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The range of degrees (l_min, l_max) to consider for spherical harmonics.
     degree_wise : bool, optional
         If True, apply the activation separately for each degree. 
@@ -114,7 +114,7 @@ class S2Act(nn.Module):
         The grid points of thetas and phis when performing ISHT.
     activation : Callable[[Tensor], Tensor]
         The scalar activation
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range of inputs and outputs.
 
     Example
@@ -181,7 +181,7 @@ def shifted_softplus(x: Tensor, alpha: float = 0.5, threshold: float = 20.):
 
     Parameters
     ----------
-    x : Tensor
+    x : :obj:`~torch.Tensor`
         Input tensor.
     alpha : float, optional
         Scaling factor in the exponential term. Default is 0.5.
@@ -190,7 +190,7 @@ def shifted_softplus(x: Tensor, alpha: float = 0.5, threshold: float = 20.):
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         Output tensor after applying the shifted softplus activation.
 
     Notes

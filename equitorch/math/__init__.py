@@ -40,18 +40,18 @@ def dot(x1: Tensor, x2: Tensor, L: DegreeRange, channel_wise=True):
 
     Parameters
     ----------
-    x1 : Tensor
+    x1 : :obj:`~torch.Tensor`
         First input tensor of shape :math:`(N, \text{num_orders_1}, C_1)`.
-    x2 : Tensor
+    x2 : :obj:`~torch.Tensor`
         Second input tensor of shape :math:`(N, \text{num_orders_1}, C_2)`.
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range of inputs.
     channel_wise : bool, optional
         If True, compute channel-wise dot product. Default is :obj:`True`.
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         The result of the dot product of shape 
         :math:`(N, \text{num_degrees}, C)` if :obj:`channel_wise` is :obj:`True`
         or :math:`(N, \text{num_degrees}, C_1, C_2)` if :obj:`channel_wise` is :obj:`False`.
@@ -115,9 +115,9 @@ def rms(x: Tensor, L: DegreeRange, additional_dims: int | Tuple[int,...] = -1,
 
     Parameters
     ----------
-    x : Tensor
+    x : :obj:`~torch.Tensor`
         The input tensor.
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range.
     additional_dims : int | Tuple[int,...], optional
         The additional dimensions to mean over. Default is -1.
@@ -237,14 +237,14 @@ def norm(x: Tensor, L: DegreeRange, ):
 
     Parameters
     ----------
-    x : Tensor
+    x : :obj:`~torch.Tensor`
         Spherical feature tensor of shape :math:`(N, \text{num_orders}, C)`
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range of input
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         Norm tensor of shape :math:`(N, \text{num_degrees}, C)`
 
     
@@ -270,14 +270,14 @@ def norm2(x: Tensor, L: DegreeRange):
 
     Parameters
     ----------
-    x : Tensor
+    x : :obj:`~torch.Tensor`
         Spherical feature tensor of shape :math:`(N, \text{num_orders}, C)`
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range of input
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         Square of norm tensor of shape :math:`(N, \text{num_degrees}, C)`
 
     

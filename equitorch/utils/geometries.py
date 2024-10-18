@@ -6,7 +6,7 @@ from torch_geometric.utils import segment
 import e3nn
 import e3nn.o3 as o3
 
-from ..math.so3 import wigner_D, xyz_to_angles
+from ..math.so3 import wigner_D, xyz_to_angles, angles_to_matrix
 
 
 from .indices import check_degree_range, degrees_in_range
@@ -18,17 +18,17 @@ def get_center_of_mass(pos: Tensor, ptr: Tensor, atom_mass: Optional[Tensor] = N
 
     Parameters
     ----------
-    pos : Tensor
+    pos : :obj:`~torch.Tensor`
         Tensor of shape :math:`(N, 3)` containing the positions of all atoms.
-    ptr : Tensor
+    ptr : :obj:`~torch.Tensor`
         Tensor containing the cumulative sum of atoms for each molecule in the batch.
-    atom_mass : Tensor, optional
+    atom_mass : :obj:`~torch.Tensor`, optional
         Tensor of shape :math:`(N,)` containing the mass of each atom. 
         If None, all atoms are assumed to have equal mass.
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         Tensor of shape :math:`(B, 3)` containing the center of mass for each molecule in the batch,
         where :math:`B` is the number of molecules.
     """
@@ -43,17 +43,17 @@ def zero_center_of_mass(pos: Tensor, batch: Tensor, center_of_mass: Tensor):
 
     Parameters
     ----------
-    pos : Tensor
+    pos : :obj:`~torch.Tensor`
         Tensor of shape :math:`(N, 3): containing the positions of all atoms.
-    batch : Tensor
+    batch : :obj:`~torch.Tensor`
         Tensor of shape :math:`(N,)` indicating which molecule each atom belongs to.
-    center_of_mass : Tensor
+    center_of_mass : :obj:`~torch.Tensor`
         Tensor of shape :math:`(B, 3)` containing the center of mass for each molecule,
         where B is the number of molecules.
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         Tensor of shape :math:`(N, 3)` containing the shifted positions of all atoms.
 
     Notes
@@ -62,6 +62,68 @@ def zero_center_of_mass(pos: Tensor, batch: Tensor, center_of_mass: Tensor):
     effectively centering each molecule at the origin.
     """
     return pos - center_of_mass.index_select(dim=0, index=batch)
+
+def rand_spherical_angles(*shape, dtype=None, device=None):
+    r"""Returns the uniformly sampled points on the unit sphere in spherical coordinates.  
+
+    Parameters
+    ----------
+    *shape: int
+
+    Returns
+    -------
+    Tuple[Tensor, Tensor]
+        - theta : Polar angle, tensor of shape :math:`(\text{shape})`
+        - phi : Azimuthal angle, tensor of shape :math:`(\text{shape})`
+    """
+    phi = 2 * torch.pi * torch.rand(*shape, dtype=dtype, device=device)
+    theta = torch.rand(shape, dtype=dtype, device=device).mul(2).sub(1).acos()
+    return theta, phi
+
+def rand_spherical_xyz(*shape, dtype=None, device=None):
+    r"""Returns the uniformly sampled points on the unit sphere in euclidean coordinates.  
+
+    Parameters
+    ----------
+    *shape: int
+
+    Returns
+    -------
+    :obj:`~torch.Tensor`
+        The euclidean coordinates of sampled points, tensor of shape :math:`(\text{shape}, 3)`
+    """
+    xyz = torch.randn(*shape, 3, dtype=dtype, device=device)
+    return xyz / xyz.norm(dim=-1, keepdim=True)
+
+def rand_rotation_angles(*shape, dtype=None, device=None):
+    r"""Returns the uniformly sampled rotations in Z-Y-Z Euler angles.  
+
+    Parameters
+    ----------
+    *shape: int
+
+    Returns
+    -------
+    Tuple[Tensor, Tensor, Tensor]
+        - alpha : Third rotation angle around Z-axis, tensor of shape :math:`(\text{shape})`
+        - beta : Second rotation angle around Y-axis, tensor of shape :math:`(\text{shape})`
+        - gamma : First rotation angle around Z-axis, tensor of shape :math:`(\text{shape})`
+    """
+    return o3.rand_angles(*shape, dtype=dtype, device=device)
+
+def rand_rotation_matrix(*shape, dtype=None, device=None):
+    r"""Returns the uniformly sampled rotations in rotation matrices.
+
+    Parameters
+    ----------
+    *shape: int
+
+    Returns
+    -------
+    :obj:`~torch.Tensor`
+        The rotation matrices of shape :math:`(\text{shape}, 3, 3)`
+    """
+    return angles_to_matrix(*rand_rotation_angles(shape, dtype=dtype, device=device))
 
 def align_to_z_mat(r: Tensor, need_normalize:bool=True):
     r"""Calculate the rotation matrix :math:`\mathbf{R}` that 
@@ -72,18 +134,18 @@ def align_to_z_mat(r: Tensor, need_normalize:bool=True):
 
     Parameters
     ----------
-    r : Tensor
+    r : :obj:`~torch.Tensor`
         Input vector to be aligned.
     need_normalize : bool, optional
         Whether to normalize the input vector. Default is :obj:`True`.
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         The rotation matrix.
     """
 
-    phi, theta = xyz_to_angles(r, need_normalize)
+    theta, phi = xyz_to_angles(r, need_normalize)
     return o3.matrix_y(-theta) @ o3.matrix_z(-phi)
 
 def edge_align_to_z_mat(pos: Tensor, edge_index: Tensor):
@@ -95,14 +157,14 @@ def edge_align_to_z_mat(pos: Tensor, edge_index: Tensor):
 
     Parameters
     ----------
-    pos : Tensor
+    pos : :obj:`~torch.Tensor`
         Tensor of node positions.
-    edge_index : Tensor
+    edge_index : :obj:`~torch.Tensor`
         Tensor of edge indices.
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         The rotation matrix.
     """
     to_pos = pos.index_select(dim=-1, index=edge_index[1])
@@ -115,19 +177,19 @@ def edge_spherical_angles(pos: Tensor, edge_index: Tensor):
 
     Parameters
     ----------
-    pos : Tensor
+    pos : :obj:`~torch.Tensor`
         Tensor of node positions.
-    edge_index : Tensor
+    edge_index : :obj:`~torch.Tensor`
         Tensor of edge indices.
 
     Returns
     -------
     Tuple[Tensor, Tensor]
         A tuple :math:`(\phi, \theta)` where:
-        - :math:`\hat{\mathbf{r}}` can be generated by rotating :math:`\hat{\mathbf{z}}` 
-        around y by :math:`\theta`, and then rotating around z by :math:`\phi`.
-        - :math:`\hat{\mathbf{r}}` can be aligned to z by rotating around 
-        z by :math:`-\phi`, and then around y by :math:`-\theta`.
+
+        - :math:`\hat{\mathbf{r}}` can be generated by rotating :math:`\hat{\mathbf{z}}` around y by :math:`\theta`, and then rotating around z by :math:`\phi`.
+
+        - :math:`\hat{\mathbf{r}}` can be aligned to z by rotating around z by :math:`-\phi`, and then around y by :math:`-\theta`.
     """
 
     to_pos = pos.index_select(dim=-1, index=edge_index[1])
@@ -139,21 +201,21 @@ def align_to_z_wigner(r: Tensor, L: DegreeRange, need_normalize:bool=True):
 
     Parameters
     ----------
-    r : Tensor
+    r : :obj:`~torch.Tensor`
         Input vector to be aligned.
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range for the Wigner D matrix.
     need_normalize : bool, optional
         Whether to normalize the input vector. Default is :obj:`True`.
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         Wigner D matrix corresponding to the rotation returned by :obj:`align_to_z_mat`.
     """
 
     L = check_degree_range(L)
-    phi, theta = xyz_to_angles(r, need_normalize)
+    theta, phi = xyz_to_angles(r, need_normalize)
     return wigner_D(L, torch.zeros_like(phi), -theta, -phi).to(r.device)
 
 def edge_align_to_z_wigner(pos: Tensor, edge_index: Tensor, L: DegreeRange):
@@ -162,22 +224,22 @@ def edge_align_to_z_wigner(pos: Tensor, edge_index: Tensor, L: DegreeRange):
 
     Parameters
     ----------
-    pos : Tensor
+    pos : :obj:`~torch.Tensor`
         Tensor of node positions.
-    edge_index : Tensor
+    edge_index : :obj:`~torch.Tensor`
         Tensor of edge indices.
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range of the Wigner D matrix.
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         Wigner D matrix corresponding to the rotation 
         that aligns the edge vector with the z-axis 
         as :obj:`edge_align_to_z_mat`.
     """
     L = check_degree_range(L)
-    phi, theta = edge_spherical_angles(pos, edge_index)
+    theta, phi = edge_spherical_angles(pos, edge_index)
     return wigner_D(L, torch.zeros_like(phi), -theta, -phi).to(pos.device)
 
 
@@ -189,19 +251,19 @@ def rot_on(mat: Tensor, x: Tensor):
 
     Parameters
     ----------
-    mat : Tensor
+    mat : :obj:`~torch.Tensor`
         The rotation matrix or matrices. Can be 2D, 3D, or 4D.
         - If 2D: A single rotation matrix applied to all samples in x.
         - If 3D: Batched rotation matrices applied sample-wise to x.
         - If 4D: Batched rotation matrices applied both sample-wise and channel-wise to x.
-    x : Tensor
+    x : :obj:`~torch.Tensor`
         The tensor to be rotated. Can be 2D or 3D.
         - If 2D: Interpreted as a batch of vectors.
         - If 3D: Interpreted as a batch of matrices or multi-channel vectors.
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         The rotated tensor. The shape will match the input 'x'.
 
     """

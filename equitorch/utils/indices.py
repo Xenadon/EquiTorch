@@ -26,7 +26,7 @@ def check_degree_range(L: DegreeRange) -> Tuple[int,int]:
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The input degree range. Can be an int or a tuple of two ints.
 
     Returns
@@ -62,14 +62,14 @@ def order_batch(L: DegreeRange, device=None):
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range.
     device : torch.device, optional
         The device to place the resulting tensor on.
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         A tensor where each element is the degree index for the corresponding order.
 
     Example
@@ -114,7 +114,7 @@ def order_ptr(L: DegreeRange, dim:int=0, device=None):
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range.
     dim : int, optional
         The dimension along which to expand the result. Default is 0.
@@ -123,7 +123,7 @@ def order_ptr(L: DegreeRange, dim:int=0, device=None):
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         A tensor of pointers to the start of each degree's orders.
 
     Example
@@ -147,7 +147,7 @@ def orders_in_degree_range(L: DegreeRange, zero_based:bool=True, device=None):
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range.
     zero_based : bool, optional
         Whether the :math:`m` is in :math:`0,\dots,2l_\text{max}+1` or 
@@ -157,7 +157,7 @@ def orders_in_degree_range(L: DegreeRange, zero_based:bool=True, device=None):
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         A tensor denoting the degrees.
 
     Example
@@ -187,11 +187,11 @@ def list_degrees(L: DegreeRange, L1: DegreeRange, L2: DegreeRange = None, cond: 
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The range for the total angular momentum l.
-    L1 : DegreeRange
+    L1 : :obj:`~equitorch.typing.DegreeRange`
         The range for the first angular momentum l1.
-    L2 : DegreeRange
+    L2 : :obj:`~equitorch.typing.DegreeRange`
         The range for the second angular momentum l2. default: None, represents the range of all possible l2's
     cond : Callable[[int, int, int], bool], optional
         An optional condition function to further filter the triplets.
@@ -234,11 +234,11 @@ def num_degree_triplets(L: DegreeRange,
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The range for the total angular momentum l.
-    L1 : DegreeRange
+    L1 : :obj:`~equitorch.typing.DegreeRange`
         The range for the first angular momentum l1.
-    L2 : DegreeRange, optional
+    L2 : :obj:`~equitorch.typing.DegreeRange`, optional
         The range for the second angular momentum l2
         Default is :obj:`None`. 
         If not provided, it will be :math:`[0,\max(L1)+\max(L2)]`
@@ -360,16 +360,16 @@ def expand_degree_to_order(src: Tensor, L: DegreeRange, dim: int):
 
     Parameters
     ----------
-    src : Tensor
+    src : :obj:`~torch.Tensor`
         The input tensor in degree representation.
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range.
     dim : int
         The dimension along which to expand the tensor.
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         The expanded tensor in order representation.
     """
     ind = order_batch(L, device=src.device)
@@ -381,16 +381,16 @@ def reduce_order_to_degree(src: Tensor, L: DegreeRange, dim: int):
 
     Parameters
     ----------
-    src : Tensor
+    src : :obj:`~torch.Tensor`
         The input tensor in order representation.
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range.
     dim : int
         The dimension along which to reduce the tensor.
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         The reduced tensor in degree representation.
     """
     if dim < 0:
@@ -403,25 +403,25 @@ def extract_in_degree(x: Tensor, L_x:DegreeRange, L:DegreeRange, dim=-2):
     """
     Extracts a subset of degrees from the input tensor `x` along the specified dimension.
 
-    Parameters:
+    Parameters
     ----------
-    x : Tensor
+    x : :obj:`~torch.Tensor`
         The input tensor containing data across degrees.
-    L_x : DegreeRange
+    L_x : :obj:`~equitorch.typing.DegreeRange`
         The degree range of the input tensor `x`.
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range to extract from `x`. 
         This must be within `L_x` (i.e., `L_x[0] <= L[0] <= L[1] <= L_x[1]`).
     dim : int, optional
         The dimension along which the degrees are stored in `x`. Default is -2.
 
-    Returns:
+    Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         A tensor containing only the degrees specified by `L`.
 
-    Example:
-    --------
+    Example
+    -------
     >>> x = torch.randn(3, 25, 2)
     >>> result = extract_in_degree(x, (0, 4), (2, 3))
     >>> print(result.shape)
@@ -436,26 +436,25 @@ def pad_to_degree(x: Tensor, L_x:DegreeRange, L:DegreeRange, dim=-2):
     """
     Pads the input tensor `x` to match the target degree range `L` by adding zeros.
 
-    Parameters:
+    Parameters
     ----------
-    x : Tensor
+    x : :obj:`~torch.Tensor`
         The input tensor containing data across degrees.
     L_x : Tuple[int, int]
         The degree range `(min_degree, max_degree)` of the input tensor `x`.
     L : Tuple[int, int]
         The target degree range `(min_degree, max_degree)` to pad `x` to. 
-        `L_x` must be within `L` (i.e., `L[0] <= L_x[0] <= L_x[1] <= L[1]`).
-        
+        `L_x` must be within `L` (i.e., :obj:`L[0] <= L_x[0] <= L_x[1] <= L[1]`).
     dim : int, optional
         The dimension along which the degrees are stored in `x`. Default is -2
 
-    Returns:
+    Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         A tensor padded with zeros to match the degree range `L`.
 
-    Example:
-    --------
+    Example
+    -------
     >>> x = torch.randn(3, 12, 2)
     >>> result = pad_to_degree(x, (2, 3), (0, 4))
     >>> print(result.shape)
@@ -477,14 +476,14 @@ def range_eq(L: DegreeRange):
     degrees greater than or equal to 1 for 
     strictly equivariant components.
 
-    Parameters:
+    Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The input degree range.
 
-    Returns:
+    Returns
     -------
-    DegreeRange
+    :obj:`~equitorch.typing.DegreeRange`
 
     Examples
     --------
@@ -500,19 +499,19 @@ def separate_invariant_equivariant(x:Tensor, dim=-2):
 
     Warning
     -------
-    It will produce wrong results if the passed tensor
+    It will produce meaningless results if the passed tensor
     do not have invariant components.
 
     Parameters
     ----------
-    x : Tensor
+    x : :obj:`~torch.Tensor`
         The input tensor.
     dim : int, optional
         The spherical dimension. Default is -2
 
     Returns
     -------
-    (Tensor, Tensor)
+    (:obj:`~torch.Tensor`, :obj:`~torch.Tensor`)
         The invariant component and strictly equivariant component
         of the input tensor. (The equivariant component may be length-0
         in dim if the input is length-1 in dim)
@@ -525,24 +524,24 @@ def concate_invariant_equivariant(invariant: Tensor, equivariant: Tensor, dim=-2
 
     Warning
     -------
-    It will produce wrong results if the passed tensor
+    It will produce meaningless results if the passed tensor
     is not with degrees 0 and (1,l_max).
 
 
     Parameters
     ----------
-    invariant : Tensor
+    invariant : :obj:`~torch.Tensor`
         The invariant components. 
         It may not contains the spherical dimension and thus 
         have one less dimension than the equivariant part. 
-    equivariant : Tensor
+    equivariant : :obj:`~torch.Tensor`
         The equivariant components.
     dim: int, optional
         The spherical dimension. Default is -2
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         The concatenated tensor.
     """
     if invariant.ndim == equivariant.ndim -1:

@@ -111,7 +111,7 @@ class AddEdgeSphericalHarmonics(BaseTransform):
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range of spherical harmonics.
     edge_vector_attr : str, optional
         The attribute name for edge direction vectors. Default is "edge_vec".
@@ -188,7 +188,7 @@ class AddEdgeAlignWignerD(BaseTransform):
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range for the Wigner D matrices.
     edge_vector_attr : str, optional
         The attribute name for edge direction vectors. Default is "edge_vec".

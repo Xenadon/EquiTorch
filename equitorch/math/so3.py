@@ -28,16 +28,16 @@ def angles_to_xyz(theta, phi, dim=-1):
 
     Parameters
     ----------
-    theta : Tensor
+    theta : :obj:`~torch.Tensor`
         The polar angles, tensor of shape :math:`(...)`
-    phi : Tensor
+    phi : :obj:`~torch.Tensor`
         The azimuthal angles, tensor of shape :math:`(...)`
     dim : int, optional
         The dimension along which to stack the result. Default is -1.
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         Cartesian coordinates, tensor of :math:`\text{shape}[\text{dim}]=3`.
     """
     theta, phi = torch.broadcast_tensors(theta, phi)
@@ -61,7 +61,7 @@ def xyz_to_angles(xyz, need_normalize, dim=-1):
 
     Parameters
     ----------
-    xyz : Tensor
+    xyz : :obj:`~torch.Tensor`
         Cartesian coordinates, tensor of :math:`\text{shape}[\text{dim}]=3`.
     need_normalize : bool
         Whether to normalize the input coordinates
@@ -71,8 +71,8 @@ def xyz_to_angles(xyz, need_normalize, dim=-1):
     Returns
     -------
     Tuple[Tensor, Tensor]
-        - phi : Azimuthal angle, tensor of shape :math:`(...)`
         - theta : Polar angle, tensor of shape :math:`(...)`
+        - phi : Azimuthal angle, tensor of shape :math:`(...)`
     """
     if need_normalize:
         xyz = torch.nn.functional.normalize(xyz, p=2, dim=dim)  # forward 0's instead of nan for zero-radius
@@ -80,7 +80,7 @@ def xyz_to_angles(xyz, need_normalize, dim=-1):
 
     theta = torch.acos(xyz.select(dim, 2))
     phi = torch.atan2(xyz.select(dim,1), xyz.select(dim,0))
-    return phi, theta
+    return theta, phi
 
 
 # borrowed and modified form e3nn
@@ -89,16 +89,16 @@ def angles_to_matrix(alpha, beta, gamma):
 
     Parameters
     ----------
-    alpha : Tensor
-        First rotation angle around Z-axis, tensor of shape :math:`(...)`
-    beta : Tensor
-        Second rotation angle around Y-axis, tensor of shape :math:`(...)`
-    gamma : Tensor
+    alpha : :obj:`~torch.Tensor`
         Third rotation angle around Z-axis, tensor of shape :math:`(...)`
+    beta : :obj:`~torch.Tensor`
+        Second rotation angle around Y-axis, tensor of shape :math:`(...)`
+    gamma : :obj:`~torch.Tensor`
+        First rotation angle around Z-axis, tensor of shape :math:`(...)`
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         Rotation matrices of shape :math:`(..., 3, 3)`
     """
     alpha, beta, gamma = torch.broadcast_tensors(alpha, beta, gamma)
@@ -134,7 +134,7 @@ def wigner_D(L: DegreeRange, alpha: Tensor, beta: Tensor, gamma: Tensor):
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range.
 
     alpha : `Tensor`
@@ -239,9 +239,9 @@ def spherical_harmonics(X: Tensor,
 
     Parameters
     ----------
-    X : Tensor
+    X : :obj:`~torch.Tensor`
         The coordinate tensor.
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range of spherical harmonics that we need.
         The maximum degree in L should not execeed 17.
     need_normalize : bool, optional
@@ -251,7 +251,7 @@ def spherical_harmonics(X: Tensor,
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         Tensor of spherical harmonics.
 
     Notes

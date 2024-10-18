@@ -136,68 +136,80 @@ def _weighted_tensor_product_cw(x1: Tensor,
 
 class WeightedTensorProduct(nn.Module):
     r'''
-    Weighted Tensor Product
+    The weighted tensor product
 
     .. math::
-        \mathbf{z}^{(l)} = \sum_{l_1,l_2}\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)},
-        l \in L_{out},
+        (\mathbf{x}\otimes_{\mathbf{W}}\mathbf{y}) = \bigoplus_{l\in L_{\text{out}}}\sum_{l_1,l_2}{\mathbf{W}_{l_1,l_2}^{l}}(\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)})^{(l)}
 
-    or 
-
-    .. math::
-        \mathbf{z}^{(l)}_m = \sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}
-        \mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2},
-        l \in L_{out}, m=-l,\dots,l,
-    
     where the summation of :math:`(l_1,l_2)` is over all the values such that 
-    :math:`l_1\in L_1, l_2\in L_2` and :math:`|l_1-l_2|\le l\le l_1+l_2` and 
-    :math:`C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}` are the Clebsch-Gordan coefficients.
+    :math:`l_1\in L_1, l_2\in L_2` and :math:`|l_1-l_2|\le l\le l_1+l_2`.
 
-    When considering multiple channel inputs, the effect of weights :math:`\mathbf{W}_{l_1,l_2}^{l}`
-    on input pairs :math:`(\mathbf{x}^{(l_1)}, \mathbf{y}^{(l_2)})` will depend on :obj:`tp_type`:
+    The definition of :math:`{\mathbf{W}_{l_1,l_2}^{l}}(\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)})^{(l)}`
+    depends on :obj:`tp_type`:
 
-    * Channel wise:
+    - Channel wise:
 
         When :obj:`tp_type=\'cw\'` or :obj:`connected = False and channel_wise = True`,
-        :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C,)` shaped tensor. 
-        :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}` means that
-        
-        .. math::
-            [\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_c=
-            [\mathbf{W}_{l_1,l_2}^{l}]_c [\mathbf{x}^{(l_1)}_{m_1}]_c[\mathbf{y}^{(l_2)}_{m_2}]_c
+        :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C,)` shaped tensor.
+        :math:`{\mathbf{W}_{l_1,l_2}^{l}}(\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)})^{(l)}`
+        will have :math:`C` channels with each channel defined as
 
-    * Pair wise:
+        .. math::
+            {\mathbf{W}_{l_1,l_2}^{l}}(\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)})^{(l)}_c
+            =\mathbf{W}_{l_1,l_2;c}^{(l)}(\mathbf{x}^{(l_1)}_c\otimes \mathbf{y}^{(l_2)}_c)^{(l)}.
+
+    - Pair wise:
 
         When :obj:`tp_type=\'pw\'` or :obj:`connected = False and channel_wise = False`,
         :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C_1,C_2)` shaped tensor. 
-        :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}` means that
-        
-        .. math::
-            [\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_{c_1,c_2}=
-            [\mathbf{W}_{l_1,l_2}^{l}]_{c_1,c_2} [\mathbf{x}^{(l_1)}_{m_1}]_{c_1}[\mathbf{y}^{(l_2)}_{m_2}]_{c_2}
+        :math:`{\mathbf{W}_{l_1,l_2}^{l}}(\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)})^{(l)}`
+        will have :math:`C_1\cdot C_2` channels with each channel defined as
 
-    * Channel-wise connected:
+        .. math::
+            {\mathbf{W}_{l_1,l_2}^{l}}(\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)})^{(l)}_{c_1c_2}
+            =\mathbf{W}_{l_1,l_2;c_1c_2}^{(l)}(\mathbf{x}^{(l_1)}_{c_1}\otimes \mathbf{y}^{(l_2)}_{c_2})^{(l)}.
+            
+    - Channel-wise connected:
 
         When :obj:`tp_type=\'cwc\'` or :obj:`connected = True and channel_wise = True`,
-        :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C_{\text{in}},C_{\text{out}})` shaped tensor. 
-        :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}` means that
-        
-        .. math::
-            [\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_{c'}=
-            \sum_c[\mathbf{W}_{l_1,l_2}^{l}]_{c,c'} [\mathbf{x}^{(l_1)}_{m_1}]_c[\mathbf{y}^{(l_2)}_{m_2}]_c
+        :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C,C_{\text{out}})` shaped tensor. 
+        :math:`{\mathbf{W}_{l_1,l_2}^{l}}(\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)})^{(l)}`
+        will have :math:`C_{\text{out}}` channels with each channel defined as
 
-    * Fully connected:
+        .. math::
+            {\mathbf{W}_{l_1,l_2}^{l}}(\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)})^{(l)}_{c_{\text{out}}}
+            =\sum_{c=1}^{C}\mathbf{W}_{l_1,l_2;cc_{\text{out}}}^{(l)}(\mathbf{x}^{(l_1)}_{c}\otimes \mathbf{y}^{(l_2)}_{c})^{(l)}.
+                   
+    - Fully connected:
 
         When :obj:`tp_type=\'fc\'` or :obj:`connected = False and channel_wise = False`,
-        :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C_{\text{in1}},C_{\text{in2}},C_{\text{out}})` shaped tensor. 
-        :math:`\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}` means that
-        
-        .. math::
-            [\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_{c'}=
-            \sum_{c_1,c_2}[\mathbf{W}_{l_1,l_2}^{l}]_{c_1,c_2,c'} [\mathbf{x}^{(l_1)}_{m_1}]_{c_1}[\mathbf{y}^{(l_2)}_{m_2}]_{c_2}
+        :math:`\mathbf{W}_{l_1,l_2}^{l}` will be a :math:`(C_1,C_2,C_{\text{out}})` shaped tensor. 
+        :math:`{\mathbf{W}_{l_1,l_2}^{l}}(\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)})^{(l)}`
+        will have :math:`C_{\text{out}}` channels with each channel defined as
 
-    Also, we allow different weights for different input pairs when :obj:`external_weight` is :obj:`True`.
+        .. math::
+            {\mathbf{W}_{l_1,l_2}^{l}}(\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)})^{(l)}_{c_{\text{out}}}
+            =\sum_{c_1=1}^{C_1}\sum_{c_2=1}^{C_2}\mathbf{W}_{l_1,l_2;c_1c_2c_{\text{out}}}^{(l)}(\mathbf{x}^{(l_1)}_{c_1}\otimes \mathbf{y}^{(l_2)}_{c_2})^{(l)}.
+
+    And in all the cases above, the tensor product of single-degree, single-channel inputs is defined as
+
+    .. math::
+        (\mathbf{x}^{(l_1)}_{c}\otimes \mathbf{y}^{(l_2)}_{c'})^{(l)}_m=\sum_{m_1=-l_1}^{l_1}\sum_{m_2=-l_2}^{l_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}
+        \mathbf{x}^{(l_1)}_{m_1,c}\mathbf{y}^{(l_2)}_{m_2,c'}, m=-l,\dots,l,
+
+    where :math:`C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}` are the Clebsch-Gordan coefficients.
+
+    Also, we allow different weights for different input pairs when :obj:`external_weights` is :obj:`True`.
     
+    The equivariance of weighted tensor product means that for any rotation 
+    :math:`\mathbf{R}\in\text{SO(3)}` and corresponding Wigner D matrices
+    :math:`\mathbf{D}_1`, :math:`\mathbf{D}_2` and :math:`\mathbf{D}` on 
+    the two input spaces and the output space, correspondingly, it holds
+
+    .. math::
+        [(\mathbf{D}_1\mathbf{x})\otimes_{\mathbf{W}}(\mathbf{D}_2\mathbf{y})]=\mathbf{D}(\mathbf{x}\otimes_{\mathbf{W}}\mathbf{y}).
+
+
     Note
     ----
     - When :obj:`channel_wise` is :obj:`True`, :obj:`in1_channels` must be equal to :obj:`in2_channels`.
@@ -206,11 +218,11 @@ class WeightedTensorProduct(nn.Module):
 
     Parameters
     ----------
-    L_in1 : DegreeRange
+    L_in1 : :obj:`~equitorch.typing.DegreeRange`
         The degree range of the first input.
-    L_in2 : DegreeRange
+    L_in2 : :obj:`~equitorch.typing.DegreeRange`
         The degree range of the second input.
-    L_out : DegreeRange
+    L_out : :obj:`~equitorch.typing.DegreeRange`
         The degree range of the output.
     in1_channels : int
         The number of channels in the first input.
@@ -231,7 +243,7 @@ class WeightedTensorProduct(nn.Module):
             - :obj:`'fully_connected'` or :obj:`'fc'`: Fully connected tensor product with :obj:`connected=True` and :obj:`channel_wise=False`.
         
         If not provided, :obj:`connected` and :obj:`channel_wise` will be used to determine the type of tensor product.
-    external_weight : bool, optional
+    external_weights : bool, optional
         Whether to use external weights or not. Default is :obj:`False`.
     '''
 
@@ -245,7 +257,7 @@ class WeightedTensorProduct(nn.Module):
                  connected: bool = False,
                  channel_wise: bool = True,
                  tp_type: Optional[str] = None,
-                 external_weight: bool = False, 
+                 external_weights: bool = False, 
                 ):
         super().__init__()
         if tp_type == 'cw' or tp_type == 'channel_wise':
@@ -273,7 +285,7 @@ class WeightedTensorProduct(nn.Module):
         self.L_in1 = check_degree_range(L_in1)
         self.L_in2 = check_degree_range(L_in2)
         self.L_out = check_degree_range(L_out)
-        self.external_weight = external_weight
+        self.external_weights = external_weights
         self.channel_wise = channel_wise
         self.connected = connected
         self.in1_channels = in1_channels
@@ -304,9 +316,9 @@ class WeightedTensorProduct(nn.Module):
             self.register_buffer('CG_vals', CG_vals)
 
             self.num_weights = l_ind.unique().numel()
-            if not self.external_weight:
-                self.weight = nn.Parameter(
-                    torch.randn(1, self.num_weights,self.in_channels))
+            self.weight_shape = (self.num_weights, self.in1_channels)
+            if not self.external_weights:
+                self.weight = nn.Parameter(torch.randn(1, *self.weight_shape))
         else:
             Ml1l2_batch, Ml1l2_ptr, Ml1l2 = extract_batch_ptr([Ms[0], ls_cg[1], ls_cg[2]])
             
@@ -321,50 +333,46 @@ class WeightedTensorProduct(nn.Module):
             self.register_buffer('CG_vals', CG_vals)
 
             self.num_weights = l_ind.unique().numel()
+            if self.channel_wise: # cwc
+                self.weight_shape = (self.num_weights, self.in1_channels, self.out_channels)
+            elif self.connected: # fc
+                self.weight_shape = (self.num_weights, self.in1_channels, self.in2_channels, self.out_channels)
+            else: # pw
+                self.weight_shape = (self.num_weights, self.in1_channels, self.in2_channels)
 
-            if not self.external_weight:
+            if not self.external_weights:
+                self.weight = torch.randn(1, *(self.weight_shape))
                 if self.channel_wise: # cwc
-                    self.weight = nn.Parameter(
-                        torch.randn(1, self.num_weights,
-                                    self.in1_channels, self.out_channels) \
-                                    * sqrt(2/(self.in1_channels + self.out_channels)))
+                    self.weight = self.weight.mul_(sqrt(2/(self.in1_channels + self.out_channels)))
                 elif self.connected: # fc
-                    self.weight = nn.Parameter(
-                        torch.randn(
-                            1, self.num_weights,
-                            self.in1_channels, self.in2_channels, self.out_channels) \
-                                    * sqrt(2/((self.in1_channels * self.in2_channels) + self.out_channels)))
+                    self.weight = self.weight.mul_(sqrt(2/((self.in1_channels * self.in2_channels) + self.out_channels)))
                 else: # pw
-                    self.weight = nn.Parameter(
-                        torch.randn(
-                            1, self.num_weights,
-                            self.in1_channels, self.in2_channels) \
-                            * sqrt(2/(self.in1_channels * self.in2_channels)))
-                    
+                    self.weight = self.weight.mul_(sqrt(2/(self.in1_channels * self.in2_channels)))
+                self.weight = nn.Parameter(self.weight)
     def forward(self, x1: Tensor, x2: Tensor, weight: Optional[Tensor] = None):
         r"""
         Performs the weighted tensor product operation.
 
         Parameters
         ----------
-        x1 : Tensor
+        x1 : :obj:`~torch.Tensor`
             The first input tensor of shape :math:`(N,\text{num_orders_1},C_1)`.
-        x2 : Tensor
+        x2 : :obj:`~torch.Tensor`
             The second input tensor of shape :math:`(N,\text{num_orders_2},C_2)`. 
         weight : Optional[Tensor], optional
             The weight of shape :math:`(N,\text{num_weights},...)`, where ":math:`...`" 
             depends on the tensor product type as listed above. 
             Default is :obj:`None`.
 
-            It will be used if :obj:`external_weight` is True
-            or if provided even when :obj:`external_weight` is False.
+            It will be used if :obj:`external_weights` is True
+            or if provided even when :obj:`external_weights` is False.
         
             
         Returns
         -------
-        Tensor
-            The tensor product of shape :math:`(N,\text{num_orders_out},C_{out})`,
-            where :math:`C_{out}` will be :math:`C=C_1=C_2` if :obj:`tp_type='cw'`,
+        :obj:`~torch.Tensor`
+            The tensor product of shape :math:`(N,\text{num_orders_out},C_{\text{out}})`,
+            where :math:`C_{\text{out}}` will be :math:`C=C_1=C_2` if :obj:`tp_type='cw'`,
             :math:`(C_1,C_2)` if :obj:`tp_type='pw'` or the specified value otherwise.
         
             
@@ -373,7 +381,7 @@ class WeightedTensorProduct(nn.Module):
 
         
         """
-        if weight is None and not self.external_weight:
+        if weight is None and not self.external_weights:
             weight = self.weight
         if self.channel_wise and self.connected:
             return _weighted_tensor_product_cwc(x1, x2, weight,self.CG_vals, self.Ml1l2_ptr, self.l_ind, self.M1, self.M2, self.M_ptr)
@@ -395,7 +403,7 @@ class WeightedTensorProduct(nn.Module):
             type_repr += f'in1_channels={self.in1_channels}, in2_channels={self.in2_channels}, out_channels={self.out_channels}'
         else:
             type_repr += f'in1_channels={self.in1_channels}, in2_channels={self.in2_channels}'
-        return f'{self.__class__.__name__}(\n  L_in1={self.L_in1}, L_in2={self.L_in2}, L_out={self.L_out}, \n  {type_repr}, external_weight={self.external_weight}\n)'
+        return f'{self.__class__.__name__}(\n  L_in1={self.L_in1}, L_in2={self.L_in2}, L_out={self.L_out}, \n  {type_repr}, external_weights={self.external_weights}\n)'
 
 def _tensor_product_cw(x1: Tensor, 
               x2: Tensor,
@@ -432,37 +440,41 @@ def _tensor_product_pw(x1: Tensor,
 class TensorProduct(nn.Module):
     r""" The traditional tensor product with no weights
 
-    .. math::
-        \mathbf{z}^{(l)} = \sum_{l_1,l_2}\mathbf{x}^{(l_1)}\otimes \mathbf{y}^{(l_2)},
-        l \in L_{out},
-
-    or 
-
     - if :obj:`channel_wise`:
 
-        .. math::
-            [\mathbf{z}^{(l)}_m]_c = \sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}
-            [\mathbf{x}^{(l_1)}_{m_1}]_c[\mathbf{y}^{(l_2)}_{m_2}]_c,
-            l \in L_{out}, m=-l,\dots,l,
+    .. math:: 
+        (\mathbf{x}\otimes\mathbf{y})_c = \bigoplus_{l\in L_{\text{out}}}\sum_{l_1,l_2}(\mathbf{x}^{(l_1)}_c\otimes \mathbf{y}^{(l_2)}_c)^{(l)}
 
-    - otherwise:
+    - otherwise (pair-wise):
 
-        .. math::
-            [\mathbf{z}^{(l)}_m]_{c_1,c_2} = \sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}
-            [\mathbf{x}^{(l_1)}_{m_1}]_{c_1}[\mathbf{y}^{(l_2)}_{m_2}]_{c_2},
-            l \in L_{out}, m=-l,\dots,l,
-            
+    .. math:: 
+        (\mathbf{x}\otimes\mathbf{y})_{c_1,c_2} = \bigoplus_{l\in L_{\text{out}}}\sum_{l_1,l_2}(\mathbf{x}^{(l_1)}_{c_1}\otimes \mathbf{y}^{(l_2)}_{c_2})^{(l)}
+
+    and
+
+    .. math::
+        (\mathbf{x}^{(l_1)}_{c}\otimes \mathbf{y}^{(l_2)}_{c'})^{(l)}_m=\sum_{m_1=-l_1}^{l_1}\sum_{m_2=-l_2}^{l_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}
+        \mathbf{x}^{(l_1)}_{m_1,c}\mathbf{y}^{(l_2)}_{m_2,c'}, m=-l,\dots,l,
+
     where the summation of :math:`(l_1,l_2)` is over all the values such that 
     :math:`l_1\in L_1, l_2\in L_2` and :math:`|l_1-l_2|\le l\le l_1+l_2` and 
     :math:`C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}` are the Clebsch-Gordan coefficients.
 
+    The equivariance of tensor product means that for any rotation 
+    :math:`\mathbf{R}\in\text{SO(3)}` and corresponding Wigner D matrices
+    :math:`\mathbf{D}_1`, :math:`\mathbf{D}_2` and :math:`\mathbf{D}` on 
+    the two input spaces and the output space, correspondingly, it holds
+
+    .. math::
+        [(\mathbf{D}_1\mathbf{x})\otimes(\mathbf{D}_2\mathbf{y})]=\mathbf{D}(\mathbf{x}\otimes\mathbf{y}).
+
     Parameters
     ----------
-    L_in1 : DegreeRange
+    L_in1 : :obj:`~equitorch.typing.DegreeRange`
         The degree range of the first input.
-    L_in2 : DegreeRange
+    L_in2 : :obj:`~equitorch.typing.DegreeRange`
         The degree range of the second input.
-    L_out : DegreeRange
+    L_out : :obj:`~equitorch.typing.DegreeRange`
         The degree range of the output.
     channel_wise : bool
         Whether the product is performed channel-wise.
@@ -490,14 +502,14 @@ class TensorProduct(nn.Module):
 
         Parameters
         ----------
-        x1 : Tensor
+        x1 : :obj:`~torch.Tensor`
             The first input tensor of shape :math:`(N,\text{num_orders_1},C_1)`
-        x2 : Tensor
+        x2 : :obj:`~torch.Tensor`
             The second input tensor of shape :math:`(N,\text{num_orders_2},C_2)`
 
         Returns
         -------
-        Tensor
+        :obj:`~torch.Tensor`
             The tensor product of two input tensors 
             of shape :math:`(N,\text{num_orders_out},C)` if :obj:`channel_wise` is :obj:`True`
             or :math:`(N,\text{num_orders_out},C_1, C_2)` otherwise.
@@ -533,7 +545,7 @@ class TensorDot(nn.Module):
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range of inputs.
     channel_wise : bool, optional
         If True, compute channel-wise dot product. Default is :obj:`True`.
@@ -563,14 +575,14 @@ class TensorDot(nn.Module):
 
         Parameters
         ----------
-        x1 : Tensor
+        x1 : :obj:`~torch.Tensor`
             First input tensor of shape :math:`(N, \text{num_orders_1}, C_1)`.
-        x2 : Tensor
+        x2 : :obj:`~torch.Tensor`
             Second input tensor of shape :math:`(N, \text{num_orders_1}, C_2)`.
 
         Returns
         -------
-        Tensor
+        :obj:`~torch.Tensor`
             The result of the dot product of shape 
             :math:`(N, \text{num_degrees}, C)` if :obj:`channel_wise` is :obj:`True`
             or :math:`(N, \text{num_degrees}, C_1, C_2)` if :obj:`channel_wise` is :obj:`False`.

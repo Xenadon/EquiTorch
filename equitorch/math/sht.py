@@ -98,9 +98,9 @@ def isht(X: Tensor, L: DegreeRange, num_thetas: int, num_phis: int):
 
     Parameters
     ----------
-    x : Tensor
+    x : :obj:`~torch.Tensor`
         Input tensor of shape :math:`(..., \text{num_orders}, C)`.
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range of spherical harmonics.
     num_thetas : int
         The number of grid points of :math:`\theta`.
@@ -109,7 +109,7 @@ def isht(X: Tensor, L: DegreeRange, num_thetas: int, num_phis: int):
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         Output tensor of shape :math:`(..., \text{num_thetas}, \text{num_phis}, C)`.
     
     Example
@@ -156,9 +156,9 @@ def sht(x: Tensor, L: DegreeRange, num_thetas: int, num_phis: int):
 
     Parameters
     ----------
-    x : Tensor
+    x : :obj:`~torch.Tensor`
         Input tensor of shape :math:`(..., \text{num_thetas}, \text{num_phis}, C)`.
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The degree range of spherical harmonics.
     num_thetas : int
         The number of grid points of :math:`\theta`.
@@ -167,7 +167,7 @@ def sht(x: Tensor, L: DegreeRange, num_thetas: int, num_phis: int):
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         Output tensor of shape :math:`(..., \text{num_orders}, C)`.
     '''
 

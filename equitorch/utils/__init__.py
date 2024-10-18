@@ -9,6 +9,10 @@ from .weights import *
 __all__ = [
     "get_center_of_mass",
     "zero_center_of_mass",
+    "rand_spherical_angles",
+    "rand_spherical_xyz",
+    "rand_rotation_angles",
+    "rand_rotation_matrix",
     "align_to_z_mat",
     "edge_align_to_z_mat",
     "edge_spherical_angles",

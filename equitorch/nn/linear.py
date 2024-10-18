@@ -16,7 +16,7 @@ from ..utils.indices import (
     check_degree_range,
     extract_batch_ptr,
     extract_in_degree,
-    num_orders_between,
+    num_orders_in,
     degrees_in_range,
     pad_to_degree
 )
@@ -24,28 +24,31 @@ from ..utils.clebsch_gordan import coo_CG
 
 class DegreeWiseLinear(nn.Module):
     r"""
-    Perform degree-wise linear operation (channel mixing) as the self-interaction 
-    of Tensor field networks.
+    The degree-wise linear (channel mixing) operation.  
 
-    This class implements the operation described in `Tensor field 
+    This class implements the self-interaction operation described in `Tensor field 
     networks: Rotation- and translation-equivariant neural networks for 3D
     point clouds <https://arxiv.org/abs/1802.08219>`_.
 
-    The operation is defined as:
-
     .. math::
-        \mathbf{x'}^{(l)}_c = \sum_{c'} \mathbf{W}^{(l)}_{cc'} \mathbf{x}_{c'}^{(l)}
+        \begin{aligned}
+        \mathbf{x'}_c &= \bigoplus_{l\in L_{\text{out}}}\mathbf{x'}^{(l)}_c,\\
+        \mathbf{x'}^{(l)}_c &=\begin{cases}
+            \sum_{c'} \mathbf{W}^{(l)}_{cc'} \mathbf{x}_{c'}^{(l)}, & l \in L_{\text{in}},\\
+            \mathbf{0}, & l \notin L_{\text{in}}.
+            \end{cases}
+        \end{aligned}
 
-    Notes
-    -----
-    The :obj:`L_out` range must be contained within the :obj:`L_in` range, and the degrees in
+    Note
+    ----
+    The degrees in :obj:`L_out` but not in :obj:`L_in` will be padded with zeros, and the degrees in
     :obj:`L_in` but not in :obj:`L_out` will be ignored.
 
     Parameters
     ----------
-    L_in : DegreeRange
+    L_in : :obj:`~equitorch.typing.DegreeRange`
         Input degree range.
-    L_out : DegreeRange
+    L_out : :obj:`~equitorch.typing.DegreeRange`
         Output degree range.
     in_channels : int
         Number of input channels.
@@ -72,29 +75,27 @@ class DegreeWiseLinear(nn.Module):
         self.L_in
     def forward(self, x: Tensor):
         r"""
-        Applies the degree wise linear operation to the input tensor.
-
         Parameters
         ----------
-        x : Tensor
+        x : :obj:`~torch.Tensor`
             The input tensor of shape :math:`(N, \text{num_orders_in}, C_{\text{in}})`, 
             where :math:`N` is the batch size and :math:`C_{\text{in}}` is the number of channels.
 
         Returns
         -------
-        Tensor
+        :obj:`~torch.Tensor`
             The output tensor of shape :math:`(N, \text{num_orders_out}, C_{\text{out}})`.
         """
         x = extract_in_degree(x, self.L_in, self.L_eff)
         out = (x.unsqueeze(-2) @ 
                 expand_degree_to_order(self.weight.unsqueeze(0), self.L_eff, dim=-3)).squeeze(-2)
-        out = pad_to_degree(x, self.L_eff, self.L_out)
+        out = pad_to_degree(out, self.L_eff, self.L_out)
         return out
     def __repr__(self) -> str:
         return f'{self.__class__.__name__}(L_in={self.L_in}, L_out={self.L_out}, in_channels={self.in_channels}, out_channels={self.out_channels})'
 
 def _so3_conv(feature: Tensor, 
-              edge_feat: Tensor,
+              sh: Tensor,
               weight: Tensor,
               CG_vals: Tensor,
               Ml1l2_ptr: Tensor, 
@@ -108,9 +109,9 @@ def _so3_conv(feature: Tensor,
         weight: B * ll1l2 * C_i * C_o
     '''
     feature = feature.index_select(-2, M1) # B * MM1M2 * C
-    edge_feat = edge_feat.index_select(-1, M2) # B * MM1M2
+    sh = sh.index_select(-1, M2) # B * MM1M2
     # C_val: MM1M2
-    inter = (CG_vals.unsqueeze(0) * edge_feat).unsqueeze(-1) * feature # B * MM1M2 * C
+    inter = (CG_vals.unsqueeze(0) * sh).unsqueeze(-1) * feature # B * MM1M2 * C
     inter = segment(inter, Ml1l2_ptr.unsqueeze(0))  # B * Ml1l2 * C
     weight = weight.index_select(dim=1,index=l_ind) # B * Ml1l2 * C (* C')
 
@@ -120,7 +121,7 @@ def _so3_conv(feature: Tensor,
     return ret
 
 def _so3_cw_conv(feature: Tensor, 
-              edge_feat: Tensor,
+              sh: Tensor,
               weight: Tensor,
               CG_vals: Tensor,
               M_ptr: Tensor, 
@@ -133,9 +134,9 @@ def _so3_cw_conv(feature: Tensor,
         weight: B * ll1l2 * C
     '''
     feature = feature.index_select(-2, M1) # B * MM1M2 * C
-    edge_feat = edge_feat.index_select(-1, M2) # B * MM1M2
+    sh = sh.index_select(-1, M2) # B * MM1M2
     # C_val: MM1M2
-    inter = (CG_vals.unsqueeze(0) * edge_feat).unsqueeze(-1) * feature # B * MM1M2 * C
+    inter = (CG_vals.unsqueeze(0) * sh).unsqueeze(-1) * feature # B * MM1M2 * C
     weight = weight.index_select(dim=1,index=l_ind) # B * MM1M2 * C
     ret = inter * weight # B * MM1M2 * C'
     ret = segment(ret, M_ptr.unsqueeze(0)) # B * M * C
@@ -197,18 +198,18 @@ class SO3Linear(nn.Module):
 
     Parameters
     ----------
-    L_in : DegreeRange
+    L_in : :obj:`~equitorch.typing.DegreeRange`
         The degree range of the input.
-    L_edge : DegreeRange
+    L_edge : :obj:`~equitorch.typing.DegreeRange`
         The degree range of the edge.
-    L_out : DegreeRange
+    L_out : :obj:`~equitorch.typing.DegreeRange`
         The degree range of the output.
     in_channels : int
         The number of input channels.
     out_channels : int
         The number of output channels.
-    external_weight : bool, optional
-        Whether to use an external weight. Defaults to False.
+    external_weights : bool, optional
+        Whether to use an external weights. Defaults to False.
     channel_wise : bool, optional
         Whether to perform the operation channel-wise. Defaults to False.
     """
@@ -219,7 +220,7 @@ class SO3Linear(nn.Module):
             L_out: DegreeRange,
             in_channels: int,
             out_channels: int,
-            external_weight: bool = False,
+            external_weights: bool = False,
             channel_wise: bool = False,
     ):
         super().__init__()
@@ -231,7 +232,7 @@ class SO3Linear(nn.Module):
         self.L_in = check_degree_range(L_in)
         self.L_out = check_degree_range(L_out)
         self.L_edge = check_degree_range(L_edge)
-        self.external_weight = external_weight
+        self.external_weights = external_weights
         
         self.channel_wise = channel_wise
 
@@ -251,9 +252,9 @@ class SO3Linear(nn.Module):
 
             self.num_weights = l_ind.unique().numel()
 
-            self.weight_shape = (-1, self.num_weights, self.in_channels)
+            self.weight_shape = (self.num_weights, self.in_channels)
 
-            if not self.external_weight:
+            if not self.external_weights:
                 self.weight = nn.Parameter(
                     torch.randn(1, self.num_weights,
                                 self.in_channels))
@@ -272,9 +273,9 @@ class SO3Linear(nn.Module):
 
             self.num_weights = l_ind.unique().numel()
 
-            self.weight_shape = (-1, self.num_weights, self.in_channels, self.out_channels)
+            self.weight_shape = (self.num_weights, self.in_channels, self.out_channels)
 
-            if not self.external_weight:
+            if not self.external_weights:
                 self.weight = nn.Parameter(
                     torch.randn(1, self.num_weights,
                                 in_channels, out_channels) \
@@ -282,7 +283,7 @@ class SO3Linear(nn.Module):
             
     def forward(self, 
                 x: Tensor, 
-                edge_feat: Tensor,
+                sh: Tensor,
                 weight: Optional[Tensor] = None,
         ):
         r"""
@@ -290,12 +291,12 @@ class SO3Linear(nn.Module):
 
         Parameters
         ----------
-        x : Tensor
+        x : :obj:`~torch.Tensor`
             The input tensor of shape :math:`(N, \text{num_orders_in}, C_{\text{in}})`, 
             where :math:`N` is the batch size and :math:`C_{\text{in}}` is the number of channels.
-        edge_feat : Tensor
+        sh : :obj:`~torch.Tensor`
             The edge spherical harmonics tensor of shape :math:`(N, \text{num_orders_edge})`.
-        weight : Tensor, optional
+        weight : :obj:`~torch.Tensor`, optional
             The external weights to use for the linear operation. If :obj:`None`, the 
             internal weights will be used.
             The shape of the weights depends on the value of :obj:`channel_wise`. 
@@ -304,30 +305,30 @@ class SO3Linear(nn.Module):
 
         Returns
         -------
-        Tensor
+        :obj:`~torch.Tensor`
             The output tensor of shape :math:`(N, \text{num_orders_out}, C_{\text{out}})`.
 
         Notes
         -----
-        If :obj:`external_weight` is :obj:`True`, the :obj:`weight` parameter must be provided. 
-        If :obj:`external_weight` is :obj:`False`, the :obj:`weight` will still be used if provided.
+        If :obj:`external_weights` is :obj:`True`, the :obj:`weight` parameter must be provided. 
+        If :obj:`external_weights` is :obj:`False`, the :obj:`weight` will still be used if provided.
         """
-        if weight is None and not self.external_weight:
+        if weight is None and not self.external_weights:
             weight = self.weight
         else:
-            weight = weight.view(self.weight_shape)
+            weight = weight.view(-1, *(self.weight_shape))
 
         if self.channel_wise:
-            return _so3_cw_conv(x, edge_feat, weight,
+            return _so3_cw_conv(x, sh, weight,
                          self.CG_vals, self.M_ptr, self.l_ind, 
                          self.M1, self.M2)
         else:
-            return _so3_conv(x, edge_feat, weight,
+            return _so3_conv(x, sh, weight,
                             self.CG_vals, self.Ml1l2_ptr, self.l_ind, 
                             self.M1, self.M2, self.M_ptr)
         
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(\n  L_in={self.L_in}, L_edge={self.L_edge}, L_out={self.L_out},\n  in_channels={self.in_channels}, out_channels={self.out_channels}, channel_wise={self.channel_wise}, external_weight={self.external_weight}\n)'
+        return f'{self.__class__.__name__}(\n  L_in={self.L_in}, L_edge={self.L_edge}, L_out={self.L_out},\n  in_channels={self.in_channels}, out_channels={self.out_channels}, channel_wise={self.channel_wise}, external_weights={self.external_weights}\n)'
 
 
 def _so2_indices(L_in: DegreeRange, L_out: DegreeRange):
@@ -424,19 +425,19 @@ class SO2Linear(nn.Module):
 
     Parameters
     ----------
-    L_in : DegreeRange
+    L_in : :obj:`~equitorch.typing.DegreeRange`
         The input degree range.
-    L_out : DegreeRange
+    L_out : :obj:`~equitorch.typing.DegreeRange`
         The output degree range.
     in_channels : int
         The number of input channels.
     out_channels : int
         The number of output channels.
-    external_weight : bool, optional
-        Whether to use an external weight. Defaults to False.
+    external_weights : bool, optional
+        Whether to use an external weights. Defaults to False.
         Default to False.
     channel_wise : bool, optional
-        Whether to use an external weight. 
+        Whether to use an external weights. 
         Defaults to False.
     '''
     def __init__(self, 
@@ -444,7 +445,7 @@ class SO2Linear(nn.Module):
                  L_out: DegreeRange, 
                  in_channels: int,
                  out_channels: int,
-                 external_weight: bool = False,
+                 external_weights: bool = False,
                  channel_wise: bool = False
                  ):
         assert in_channels == out_channels or not channel_wise
@@ -452,7 +453,7 @@ class SO2Linear(nn.Module):
         self.L_in = check_degree_range(L_in)
         self.L_out = check_degree_range(L_out)
         self.in_channels = in_channels
-        self.out_ms = num_orders_between(*self.L_out)
+        self.out_ms = num_orders_in(self.L_out)
         self.out_channels = out_channels 
         self.channel_wise = channel_wise
 
@@ -465,17 +466,17 @@ class SO2Linear(nn.Module):
 
         self.num_weights = weight_index.max().item()+1
 
-        self.external_weight = external_weight
+        self.external_weights = external_weights
         
         if self.channel_wise:
-            self.weight_shape = (-1, self.num_weights, self.in_channels)
-            if not self.external_weight:
+            self.weight_shape = (self.num_weights, self.in_channels)
+            if not self.external_weights:
                 self.weight = nn.Parameter(
                     torch.randn(1, self.num_weights,
                                 self.in_channels))
         else:
-            self.weight_shape = (-1, self.num_weights, self.in_channels, self.out_channels)
-            if not self.external_weight:
+            self.weight_shape = (self.num_weights, self.in_channels, self.out_channels)
+            if not self.external_weights:
                 self.weight = nn.Parameter(
                     torch.randn(1, self.num_weights,
                                 self.in_channels, 
@@ -488,13 +489,13 @@ class SO2Linear(nn.Module):
 
         Parameters
         ----------
-        x : Tensor
+        x : :obj:`~torch.Tensor`
             The input tensor of shape :math:`(N, \text{num_orders_in}, C_{\text{in}})`, 
             where :math:`N` is the batch size, :math:`\text{num_orders_in}` 
             is the number of input orders, and :math:`C_{\text{in}}` is the number of channels.
             before passed into this function, :math:`x` must have been transformed by 
             :math:`\mathbf{D}_{\text{in}}`.
-        weight : Tensor, optional
+        weight : :obj:`~torch.Tensor`, optional
             The external weights to use for the linear operation. If `None`, the 
             internal weights will be used.
             The shape of the weights depends on the value of `channel_wise`. 
@@ -503,19 +504,19 @@ class SO2Linear(nn.Module):
 
         Returns
         -------
-        Tensor
+        :obj:`~torch.Tensor`
             The output tensor of shape :math:`(N, \text{num_orders_out}, C_{\text{out}})`.
             The returned feature should then be transformed by :math:`\mathbf{D}_{\text{out}}^\top`.
 
         Notes
         -----
-        If :obj:`external_weight` is :obj:`True`, the :obj:`weight` parameter must be provided. 
-        If :obj:`external_weight` is :obj:`False`, the :obj:`weight` will still be used if provided.
+        If :obj:`external_weights` is :obj:`True`, the :obj:`weight` parameter must be provided. 
+        If :obj:`external_weights` is :obj:`False`, the :obj:`weight` will still be used if provided.
         """
-        if weight is None and not self.external_weight:
+        if weight is None and not self.external_weights:
             weight = self.weight
         else:
-            weight = weight.view(self.weight_shape)
+            weight = weight.view(-1, *(self.weight_shape))
             
         X = x.index_select(dim=1,index=self.M_in) # N * Num * Ci 
 
@@ -527,4 +528,4 @@ class SO2Linear(nn.Module):
             out = (X.unsqueeze(-2)@W).squeeze(-2)
         return scatter(out, index=self.M_out, dim=1, dim_size=self.out_ms)
     def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(L_in={self.L_in}, L_out={self.L_out}, in_channels={self.in_channels},\n  out_channels={self.out_channels}, channel_wise={self.channel_wise}, external_weight={self.external_weight}\n)'
+        return f'{self.__class__.__name__}(L_in={self.L_in}, L_out={self.L_out}, in_channels={self.in_channels},\n  out_channels={self.out_channels}, channel_wise={self.channel_wise}, external_weights={self.external_weights}\n)'

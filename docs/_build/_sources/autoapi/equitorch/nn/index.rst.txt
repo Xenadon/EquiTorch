@@ -81,7 +81,7 @@ Package Contents
 
 
 
-.. py:class:: SO3Linear(L_in: equitorch.typing.DegreeRange, L_edge: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, in_channels: int, out_channels: int, external_weight: bool = False, channel_wise: bool = False)
+.. py:class:: SO3Linear(L_in: equitorch.typing.DegreeRange, L_edge: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, in_channels: int, out_channels: int, external_weights: bool = False, channel_wise: bool = False)
 
    Bases: :py:obj:`torch.nn.Module`
 
@@ -147,8 +147,8 @@ Package Contents
    :type in_channels: int
    :param out_channels: The number of output channels.
    :type out_channels: int
-   :param external_weight: Whether to use an external weight. Default is :obj:`False`.
-   :type external_weight: bool, optional
+   :param external_weights: Whether to use an external weights. Default is :obj:`False`.
+   :type external_weights: bool, optional
    :param channel_wise: Whether to perform the operation channel-wise. Default is :obj:`False`.
    :type channel_wise: bool, optional
 
@@ -174,12 +174,12 @@ Package Contents
 
       .. rubric:: Notes
 
-      If :obj:`external_weight` is :obj:`True`, the :obj:`weight` parameter must be provided.
-      If :obj:`external_weight` is :obj:`False`, the :obj:`weight` will still be used if provided.
+      If :obj:`external_weights` is :obj:`True`, the :obj:`weight` parameter must be provided.
+      If :obj:`external_weights` is :obj:`False`, the :obj:`weight` will still be used if provided.
 
 
 
-.. py:class:: SO2Linear(L_in: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, in_channels: int, out_channels: int, external_weight: bool = False, channel_wise: bool = False)
+.. py:class:: SO2Linear(L_in: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, in_channels: int, out_channels: int, external_weights: bool = False, channel_wise: bool = False)
 
    Bases: :py:obj:`torch.nn.Module`
 
@@ -244,9 +244,9 @@ Package Contents
    :type in_channels: int
    :param out_channels: The number of output channels.
    :type out_channels: int
-   :param external_weight: Whether the user will pass external weights (that may depend on data or edges) or keep a set of independent weights inside.
+   :param external_weights: Whether the user will pass external weights (that may depend on data or edges) or keep a set of independent weights inside.
                            Default to False.
-   :type external_weight: bool, optional
+   :type external_weights: bool, optional
    :param channel_wise: Whether the weight is performed channel-wise.
                         Default to False.
    :type channel_wise: bool, optional
@@ -275,8 +275,8 @@ Package Contents
 
       .. rubric:: Notes
 
-      If :obj:`external_weight` is :obj:`True`, the :obj:`weight` parameter must be provided.
-      If :obj:`external_weight` is :obj:`False`, the :obj:`weight` will still be used if provided.
+      If :obj:`external_weights` is :obj:`True`, the :obj:`weight` parameter must be provided.
+      If :obj:`external_weights` is :obj:`False`, the :obj:`weight` will still be used if provided.
 
 
 
@@ -323,7 +323,7 @@ Package Contents
 
 
 
-.. py:class:: WeightedTensorProduct(L_in1: equitorch.typing.DegreeRange, L_in2: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, in1_channels: int, in2_channels: int, out_channels: Optional[int] = None, connected: bool = False, channel_wise: bool = True, tp_type: Optional[str] = None, external_weight: bool = False)
+.. py:class:: WeightedTensorProduct(L_in1: equitorch.typing.DegreeRange, L_in2: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, in1_channels: int, in2_channels: int, out_channels: Optional[int] = None, connected: bool = False, channel_wise: bool = True, tp_type: Optional[str] = None, external_weights: bool = False)
 
    Bases: :py:obj:`torch.nn.Module`
 
@@ -388,7 +388,7 @@ Package Contents
            [\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}_{m_1}\mathbf{y}^{(l_2)}_{m_2}]_{c'}=
            \sum_{c_1,c_2}[\mathbf{W}_{l_1,l_2}^{l}]_{c_1,c_2,c'} [\mathbf{x}^{(l_1)}_{m_1}]_{c_1}[\mathbf{y}^{(l_2)}_{m_2}]_{c_2}
 
-   Also, we allow different weights for different input pairs when :obj:`external_weight` is :obj:`True`.
+   Also, we allow different weights for different input pairs when :obj:`external_weights` is :obj:`True`.
 
    .. note::
 
@@ -422,8 +422,8 @@ Package Contents
 
                    If not provided, :obj:`connected` and :obj:`channel_wise` will be used to determine the type of tensor product.
    :type tp_type: str, optional
-   :param external_weight: Whether to use external weights or not. Default is :obj:`False`.
-   :type external_weight: bool, optional
+   :param external_weights: Whether to use external weights or not. Default is :obj:`False`.
+   :type external_weights: bool, optional
 
 
    .. py:method:: forward(x1: Tensor, x2: Tensor, weight: Optional[torch.Tensor] = None)
@@ -438,8 +438,8 @@ Package Contents
                      depends on the tensor product type as listed above.
                      Default is :obj:`None`.
 
-                     It will be used if :obj:`external_weight` is True
-                     or if provided even when :obj:`external_weight` is False.
+                     It will be used if :obj:`external_weights` is True
+                     or if provided even when :obj:`external_weights` is False.
       :type weight: Optional[Tensor], optional
 
       :returns: The tensor product of shape :math:`(N,\text{num_orders_out},C_{out})`,
@@ -570,7 +570,7 @@ Package Contents
 
 
 
-.. py:class:: SO2Linear(L_in: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, in_channels: int, out_channels: int, external_weight: bool = False, channel_wise: bool = False)
+.. py:class:: SO2Linear(L_in: equitorch.typing.DegreeRange, L_out: equitorch.typing.DegreeRange, in_channels: int, out_channels: int, external_weights: bool = False, channel_wise: bool = False)
 
    Bases: :py:obj:`torch.nn.Module`
 
@@ -635,9 +635,9 @@ Package Contents
    :type in_channels: int
    :param out_channels: The number of output channels.
    :type out_channels: int
-   :param external_weight: Whether the user will pass external weights (that may depend on data or edges) or keep a set of independent weights inside.
+   :param external_weights: Whether the user will pass external weights (that may depend on data or edges) or keep a set of independent weights inside.
                            Default to False.
-   :type external_weight: bool, optional
+   :type external_weights: bool, optional
    :param channel_wise: Whether the weight is performed channel-wise.
                         Default to False.
    :type channel_wise: bool, optional
@@ -666,8 +666,8 @@ Package Contents
 
       .. rubric:: Notes
 
-      If :obj:`external_weight` is :obj:`True`, the :obj:`weight` parameter must be provided.
-      If :obj:`external_weight` is :obj:`False`, the :obj:`weight` will still be used if provided.
+      If :obj:`external_weights` is :obj:`True`, the :obj:`weight` parameter must be provided.
+      If :obj:`external_weights` is :obj:`False`, the :obj:`weight` will still be used if provided.
 
 
 
@@ -726,11 +726,11 @@ Package Contents
    :type num_heads: int, optional
    :param weight_k_producer: The module to produce weights of the key projector from
                              additional key features. Default is :obj:`None`.
-                             If not provided, the key projector will not use :obj:`external_weight`.
+                             If not provided, the key projector will not use :obj:`external_weights`.
    :type weight_k_producer: Callable, optional
    :param weight_q_producer: The module to produce weights of the query projector from
                              additional query features. Default is :obj:`None`.
-                             If not provided, the key projector will not use :obj:`external_weight`.
+                             If not provided, the key projector will not use :obj:`external_weights`.
    :type weight_q_producer: Callable, optional
 
 
@@ -800,7 +800,7 @@ Package Contents
    :type attention_score_producer: Callable, optional
    :param v_producer: The module to produce values. Default is :obj:`None`.
                       If not provided, the :obj:`SO2Linear` will be used and the
-                      :obj:`external_weight` will be True only when `weight_v_producer`
+                      :obj:`external_weights` will be True only when `weight_v_producer`
                       is provided.
    :type v_producer: Callable, optional
    :param weight_q_producer: The module to produce weight from edge embeddings for :obj:`attention_score_producer`.

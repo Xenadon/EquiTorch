@@ -34,7 +34,7 @@ class EquivariantLayerNorm(nn.Module):
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         The input degree range.
     channels : int, optional
         The input channels, need to specify if :obj:`elementwise_affine`.
@@ -88,12 +88,12 @@ class EquivariantLayerNorm(nn.Module):
         """
         Parameters
         ----------
-        x : Tensor
+        x : :obj:`~torch.Tensor`
             Input tensor of shape :math:`(...,\text{num_orders},C)`.
 
         Returns
         -------
-        Tensor
+        :obj:`~torch.Tensor`
             Normalized tensor with exactly the same shape of the input.
         """
         sigma2 = rms(x, self.L, 

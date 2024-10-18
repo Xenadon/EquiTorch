@@ -23,7 +23,7 @@ class GaussianBasisExpansion(nn.Module):
         The start value for generating mu values. Required if num_basis is provided.
     end : float, optional
         The end value for generating mu values. Required if num_basis is provided.
-    mu : Tensor, optional
+    mu : :obj:`~torch.Tensor`, optional
         The mu values for the Gaussian basis functions. Required if num_basis is None.
     trainable : bool, optional
         Whether the mu and gamma parameters should be trainable. Default is :obj:`False`.

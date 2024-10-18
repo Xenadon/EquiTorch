@@ -52,7 +52,7 @@ class TFNBlock(MessagePassing):
 
         self.lin = SO3Linear(L_in, L_edge, L_out, 
                              in_channels, out_channels, 
-                             external_weight=True, channel_wise=channel_wise)
+                             external_weights=True, channel_wise=channel_wise)
         self.lin_weight_shape = (-1, self.lin.num_weights, in_channels) if channel_wise \
             else (-1, self.lin.num_weights, in_channels, out_channels)
         self.self_int = DegreeWiseLinear(self.L_out, self.L_out, out_channels, out_channels)
@@ -60,16 +60,16 @@ class TFNBlock(MessagePassing):
         self.weight_producer = weight_producer
 
     def forward(self, x: Tensor, edge_index,
-                edge_feat: Tensor, edge_emb: Optional[Tensor], edge_weight: Optional[Tensor]=None):
+                sh: Tensor, edge_emb: Optional[Tensor], edge_weight: Optional[Tensor]=None):
         lin_weight = edge_emb if self.weight_producer is None else self.weight_producer(edge_emb)
         lin_weight = lin_weight.view(*(self.lin_weight_shape))
-        out = self.propagate(edge_index, x=x, edge_feat=edge_feat,
+        out = self.propagate(edge_index, x=x, sh=sh,
                              lin_weight=lin_weight, edge_weight=edge_weight)
         out = self.self_int(out)
         return self.act(out) if self.act is not None else out
     
-    def message(self, x_j:Tensor, edge_feat:Tensor, lin_weight:Tensor, edge_weight:Optional[Tensor]):
-        x_j = self.lin(x_j, edge_feat, lin_weight)
+    def message(self, x_j:Tensor, sh:Tensor, lin_weight:Tensor, edge_weight:Optional[Tensor]):
+        x_j = self.lin(x_j, sh, lin_weight)
 
         return edge_weight.view(-1,1,1) * x_j
 
@@ -127,7 +127,7 @@ class SO2TFNBlock(MessagePassing):
 
         self.lin = SO2Linear(L_in, L_out, 
                              in_channels, out_channels, 
-                             external_weight=True, channel_wise=channel_wise)
+                             external_weights=True, channel_wise=channel_wise)
         self.lin_weight_shape = (-1, self.lin.num_weights, in_channels) if channel_wise \
             else (-1, self.lin.num_weights, in_channels, out_channels)
         self.self_int = DegreeWiseLinear(self.L_out, self.L_out, out_channels, out_channels)

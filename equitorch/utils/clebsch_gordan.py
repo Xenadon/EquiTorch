@@ -18,11 +18,11 @@ def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optiona
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         Range of total angular momentum :math:`l`.
-    L1 : DegreeRange
+    L1 : :obj:`~equitorch.typing.DegreeRange`
         Range of first angular momentum :math:`l_1`.
-    L2 : DegreeRange
+    L2 : :obj:`~equitorch.typing.DegreeRange`
         Range of second angular momentum :math:`l_2`.
     condition : callable, optional
         A function that takes :math:`(l, l_1, l_2)` as arguments and returns a boolean or float.
@@ -32,7 +32,7 @@ def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optiona
 
     Returns
     -------
-    Tensor
+    :obj:`~torch.Tensor`
         A dense tensor of Clebsch-Gordan coefficients. The shape of the tensor is
         :math:`(l_{max}^2 - l_{min}^2,l_{1,max}^2 - l_{1,min}^2, l_{2,max}^2 - l_{2,min}^2)`.
     """
@@ -75,11 +75,11 @@ def blocked_CG(L: DegreeRange, L1: DegreeRange, L2:DegreeRange, condition:Option
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         Range of total angular momentum :math:`l`.
-    L1 : DegreeRange
+    L1 : :obj:`~equitorch.typing.DegreeRange`
         Range of first angular momentum :math:`l_1`.
-    L2 : DegreeRange
+    L2 : :obj:`~equitorch.typing.DegreeRange`
         Range of second angular momentum :math:`l_2`.
     condition : callable, optional
         A function that takes :math:`(l, l_1, l_2)` as arguments and returns a boolean.
@@ -122,11 +122,11 @@ def coo_CG(L:DegreeRange, L1:DegreeRange, L2:DegreeRange,
 
     Parameters
     ----------
-    L : DegreeRange
+    L : :obj:`~equitorch.typing.DegreeRange`
         Range of total angular momentum :math:`l`.
-    L1 : DegreeRange
+    L1 : :obj:`~equitorch.typing.DegreeRange`
         Range of first angular momentum :math:`l_1`.
-    L2 : DegreeRange
+    L2 : :obj:`~equitorch.typing.DegreeRange`
         Range of second angular momentum :math:`l_2`.
     condition : callable, optional
         A function that takes :math:`(l, l_1, l_2)` as arguments and returns a boolean.
@@ -141,13 +141,13 @@ def coo_CG(L:DegreeRange, L1:DegreeRange, L2:DegreeRange,
     Tuple[Tensor, Tensor, Tensor, Tensor]
         A tuple containing:
 
-        - Cs : Tensor of shape (N,)
+        - Cs : :obj:`~torch.Tensor` of shape (N,)
             Non-zero CG coefficient values.
-        - Ms : Tensor of shape (3, N)
+        - Ms : :obj:`~torch.Tensor` of shape (3, N)
             Indices (M, M1, M2) of non-zero CG values.
-        - ls_cg : Tensor of shape (3, N)
+        - ls_cg : :obj:`~torch.Tensor` of shape (3, N)
             Corresponding degrees (l, l1, l2) for each non-zero CG value.
-        - l_ind : Tensor of shape (N,)
+        - l_ind : :obj:`~torch.Tensor` of shape (N,)
             Indices of (l, l1, l2) combinations.
 
         Where N is the number of non-zero CG coefficients.
