@@ -15,6 +15,8 @@ Degree-wise linear operation just performs the channel mixing on each degrees by
 
 where :math:`\oplus` is the concatenation. 
 
+For simplicity, we will also denote this with :math:`\mathbf{x}'=\tilde{\mathbf{W}}_{\text{DW}}\mathbf{x}`, where the tilde "~" is denoting this is an equivariant function.
+
 In some works, this operation is also called "self-interaction" or simply "linear".
 
 In Equitorch, we can use the :obj:`~equitorch.nn.DegreeWiseLinear`:
@@ -212,13 +214,14 @@ Besides the SO(2) equivariances, the more important role of this module is that 
 
 and vice versa, where :math:`\mathbf{D}_{\mathbf{r},\text{in}}` and :math:`\mathbf{D}_{\mathbf{r},\text{out}}` are the Wigner D's on the input and output spaces corresponding to a rotation matrix that can align :math:`\mathbf{r}` to the z axis (in Equitorch, these matrices can be obtained by :obj:`~equitorch.utils.align_to_z_wigner`).
 
-Thus, we can verify the SO(3) equivariances by:
 
 .. figure:: ./imgs/3_so2_so3.png
     :align: center
     :scale: 50%
 
     Transform from an SO(2) linear operation to an SO(3) linear operation.
+
+Thus, we can verify the SO(3) equivariances by:
 
 .. code-block::
 

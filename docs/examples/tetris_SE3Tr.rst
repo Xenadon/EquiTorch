@@ -102,7 +102,7 @@ with more complicated operations.
                 ),
                 nn.Sequential(
                     EquivariantLayerNorm(range_eq(L_out), out_channels),
-                    S2Act(8, nn.SiLU(), range_eq(L_out))
+                    S2Act(range_eq(L_out), nn.SiLU(), 8)
                 )
             )
 

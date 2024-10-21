@@ -1,6 +1,7 @@
 from typing import Tuple, Union, List, Any
 
 import math
+import os
 
 import sympy
 from sympy.printing.pycode import pycode
@@ -19,6 +20,8 @@ import functools
 from ..typing import DegreeRange
 
 # all the functions below are borrowed and modified form https://github.com/e3nn/e3nn/tree/0.5.0/e3nn/o3
+
+_Jd = torch.load(os.path.join(os.path.dirname(__file__), "Jd.pt"))
 
 def angles_to_xyz(theta, phi, dim=-1):
     r"""Convert spherical coordinates :math:`(\theta, \phi)` into Cartesian coordinates :math:`(x, y, z)` on the unit sphere.
@@ -105,7 +108,7 @@ def angles_to_matrix(alpha, beta, gamma):
     return o3.matrix_z(alpha) @ o3.matrix_y(beta) @ o3.matrix_z(gamma)
 
 @functools.lru_cache(maxsize=None)
-def _so3_clebsch_gordan(l1, l2, l3):
+def _so3_clebsch_gordan(l1, l2, l3, normalize:bool=True):
     '''
     Copied from e3nn.o3, but remove the normalization operation to match the scale properties of CG-coefficients. 
     '''
@@ -118,6 +121,8 @@ def _so3_clebsch_gordan(l1, l2, l3):
     # make it real
     assert torch.all(torch.abs(torch.imag(C)) < 1e-5)
     C = torch.real(C)
+    if normalize:
+        C = C / torch.norm(C)
 
     return C
 
@@ -191,12 +196,27 @@ def _wigner_D(l, alpha, beta, gamma):
     `Tensor`
         tensor :math:`D^l(\alpha, \beta, \gamma)` of shape :math:`(2l+1, 2l+1)`
     """
+    if not l < len(_Jd):
+        raise NotImplementedError(
+            f"wigner D maximum l implemented is {len(_Jd) - 1}"
+        )
+
     alpha, beta, gamma = torch.broadcast_tensors(alpha, beta, gamma)
-    alpha = alpha[..., None, None] % (2 * math.pi)
-    beta = beta[..., None, None] % (2 * math.pi)
-    gamma = gamma[..., None, None] % (2 * math.pi)
-    X = o3._wigner.so3_generators(l).to(alpha.device)
-    return torch.matrix_exp(alpha * X[1]) @ torch.matrix_exp(beta * X[0]) @ torch.matrix_exp(gamma * X[1])
+    J = _Jd[l].to(dtype=alpha.dtype, device=alpha.device)
+    Xa = _z_rot_mat(alpha, l)
+    Xb = _z_rot_mat(beta, l)
+    Xc = _z_rot_mat(gamma, l)
+    return Xa @ J @ Xb @ J @ Xc
+
+def _z_rot_mat(angle, l):
+    shape, device, dtype = angle.shape, angle.device, angle.dtype
+    M = angle.new_zeros((*shape, 2 * l + 1, 2 * l + 1))
+    inds = torch.arange(0, 2 * l + 1, 1, device=device)
+    reversed_inds = torch.arange(2 * l, -1, -1, device=device)
+    frequencies = torch.arange(l, -l - 1, -1, dtype=dtype, device=device)
+    M[..., inds, reversed_inds] = torch.sin(frequencies * angle[..., None])
+    M[..., inds, inds] = torch.cos(frequencies * angle[..., None])
+    return M
 
 def spherical_harmonics(X: Tensor, 
                         L: DegreeRange, 
@@ -230,7 +250,7 @@ def spherical_harmonics(X: Tensor,
             \begin{aligned}
                 \mathbf{Y}^{(0)}(\mathbf{r})&=\bigg[\sqrt{\frac{1}{4\pi}}\bigg]\\
                 \mathbf{Y}^{(1)}(\mathbf{r})&=\begin{bmatrix}\sqrt{\frac{3}{4\pi}}y\\\sqrt{\frac{3}{4\pi}}z\\\sqrt{\frac{3}{4\pi}}x\end{bmatrix}\\
-                \mathbf{Y}^{(2)}(\mathbf{r})&=\begin{bmatrix}\sqrt{\frac{15}{4\pi}}xy\\ \sqrt{\frac{15}{4\pi}}yz\\ \sqrt{\frac{5}{16\pi}}(2z^2-x^2-y^2)\\ -\sqrt{\frac{15}{4\pi}}xz\\ \sqrt{\frac{15}{16\pi}}(x^2-y^2)\end{bmatrix}
+                \mathbf{Y}^{(2)}(\mathbf{r})&=\begin{bmatrix}\sqrt{\frac{15}{4\pi}}xy\\ \sqrt{\frac{15}{4\pi}}yz\\ \sqrt{\frac{5}{16\pi}}(2z^2-x^2-y^2)\\ \sqrt{\frac{15}{4\pi}}xz\\ \sqrt{\frac{15}{16\pi}}(x^2-y^2)\end{bmatrix}
             \end{aligned}
 
         
@@ -901,4 +921,3 @@ def _spherical_harmonics(l_max:int, X:Tensor,dim:int=-1):
             sh_16_0, sh_16_1, sh_16_2, sh_16_3, sh_16_4, sh_16_5, sh_16_6, sh_16_7, sh_16_8, sh_16_9, sh_16_10, sh_16_11, sh_16_12, sh_16_13, sh_16_14, sh_16_15, sh_16_16, sh_16_17, sh_16_18, sh_16_19, sh_16_20, sh_16_21, sh_16_22, sh_16_23, sh_16_24, sh_16_25, sh_16_26, sh_16_27, sh_16_28, sh_16_29, sh_16_30, sh_16_31, sh_16_32,
             sh_17_0, sh_17_1, sh_17_2, sh_17_3, sh_17_4, sh_17_5, sh_17_6, sh_17_7, sh_17_8, sh_17_9, sh_17_10, sh_17_11, sh_17_12, sh_17_13, sh_17_14, sh_17_15, sh_17_16, sh_17_17, sh_17_18, sh_17_19, sh_17_20, sh_17_21, sh_17_22, sh_17_23, sh_17_24, sh_17_25, sh_17_26, sh_17_27, sh_17_28, sh_17_29, sh_17_30, sh_17_31, sh_17_32, sh_17_33, sh_17_34
         ], dim=dim)
-

@@ -32,6 +32,8 @@ from equitorch.transforms import RadiusGraph, AddEdgeAlignWignerD
 
 from e3nn import o3
 
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 # Code borrowed and modified from https://github.com/e3nn/e3nn/blob/main/Example/tetris.py
 
 class SE3TransformerBlock(MessagePassing):
@@ -74,7 +76,7 @@ class SE3TransformerBlock(MessagePassing):
             ),
             nn.Sequential(
                 EquivariantLayerNorm(range_eq(L_out), out_channels),
-                S2Act(8, nn.SiLU(), range_eq(L_out))
+                S2Act(range_eq(L_out), nn.SiLU(), 8)
             )
         )
 
@@ -150,11 +152,11 @@ def tetris() -> None:
         [(0, 0, 0), (0, 0, 1), (0, 0, 2), (0, 1, 1)],  # T
         [(0, 0, 0), (1, 0, 0), (1, 1, 0), (2, 1, 0)],  # zigzag
     ]
-    pos = torch.tensor(pos, dtype=torch.get_default_dtype())
-    labels = torch.arange(8, dtype=torch.long)
+    pos = torch.tensor(pos, dtype=torch.get_default_dtype()).to(device)
+    labels = torch.arange(8, dtype=torch.long).to(device)
 
     # apply random rotation
-    pos = torch.einsum("zij,zaj->zai", o3.rand_matrix(len(pos)), pos)
+    pos = torch.einsum("zij,zaj->zai", o3.rand_matrix(len(pos), device=device), pos)
 
     return pos, labels
 
@@ -167,7 +169,7 @@ def make_batch(pos):
         RadiusGraph(r=1.5),
         AddEdgeAlignWignerD(L=L)
     ])
-    dataset = [transform(Data(pos=pos, x=torch.ones(4, 1))) for pos in pos]
+    dataset = [transform(Data(pos=pos, x=torch.ones(4, 1))).to(device) for pos in pos]
     return next(iter(DataLoader(dataset, batch_size=len(dataset))))
 
 def main() -> None:
@@ -177,7 +179,7 @@ def main() -> None:
     x, y = tetris()
     test_x, test_y = make_batch(x), y
 
-    f = SE3Transformer(hidden, L=L, num_heads=4)
+    f = SE3Transformer(hidden, L=L, num_heads=4).to(device)
     print(f)
 
     optim = torch.optim.Adam(f.parameters(), lr=1e-3)

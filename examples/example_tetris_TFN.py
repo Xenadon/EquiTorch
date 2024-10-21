@@ -28,6 +28,8 @@ from equitorch.typing import DegreeRange
 from e3nn import o3
 from e3nn.nn.models.v2106.gate_points_networks import SimpleNetwork
 
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 # Code borrowed and modified from https://github.com/e3nn/e3nn/blob/main/Example/tetris.py
 
 class TFNBlock(MessagePassing):
@@ -84,10 +86,10 @@ class TFN(nn.Module):
         self.cutoff = PolynomialCutoff(1.5)
         self.layer1 = TFNBlock(in_channels=1, out_channels=hidden, 
                                L_in=0, L_edge=2, L_out=1, channel_wise=False, 
-                               weight_producer=nn.Linear(10,2*hidden), act=NormAct(ShiftedSoftPlus(), 1))
+                               weight_producer=nn.Linear(10,2*hidden), act=NormAct(1, ShiftedSoftPlus()))
         self.layer2 = TFNBlock(in_channels=hidden, out_channels=hidden, 
                                L_in=1, L_edge=2, L_out=1, channel_wise=True, 
-                               weight_producer=nn.Linear(10,6*hidden), act=NormAct(ShiftedSoftPlus(), 1))
+                               weight_producer=nn.Linear(10,6*hidden), act=NormAct(1, ShiftedSoftPlus()))
         self.layer3 = TFNBlock(in_channels=hidden, out_channels=hidden, 
                                L_in=1, L_edge=2, L_out=0, channel_wise=True, 
                                weight_producer=nn.Linear(10,2*hidden), act=nn.SiLU())
@@ -166,10 +168,10 @@ class SO2TFN(nn.Module):
         self.cutoff = PolynomialCutoff(1.5)
         self.layer1 = SO2TFNBlock(in_channels=1, out_channels=hidden,
                                L_in=0, L_out=1, channel_wise=False, 
-                               weight_producer=nn.Linear(10,2*hidden), act=NormAct(ShiftedSoftPlus(), 1))
+                               weight_producer=nn.Linear(10,2*hidden), act=NormAct(1, ShiftedSoftPlus()))
         self.layer2 = SO2TFNBlock(in_channels=hidden, out_channels=hidden, 
                                L_in=1, L_out=1, channel_wise=True, 
-                               weight_producer=nn.Linear(10,6*hidden), act=NormAct(ShiftedSoftPlus(), 1))
+                               weight_producer=nn.Linear(10,6*hidden), act=NormAct(1, ShiftedSoftPlus()))
         self.layer3 = SO2TFNBlock(in_channels=hidden, out_channels=hidden, 
                                L_in=1, L_out=0, channel_wise=True, 
                                weight_producer=nn.Linear(10,2*hidden), act=nn.SiLU())
@@ -200,11 +202,11 @@ def tetris() -> None:
         [(0, 0, 0), (0, 0, 1), (0, 0, 2), (0, 1, 1)],  # T
         [(0, 0, 0), (1, 0, 0), (1, 1, 0), (2, 1, 0)],  # zigzag
     ]
-    pos = torch.tensor(pos, dtype=torch.get_default_dtype())
-    labels = torch.arange(8, dtype=torch.long)
+    pos = torch.tensor(pos, dtype=torch.get_default_dtype()).to(device)
+    labels = torch.arange(8, dtype=torch.long).to(device)
 
     # apply random rotation
-    pos = torch.einsum("zij,zaj->zai", o3.rand_matrix(len(pos)), pos)
+    pos = torch.einsum("zij,zaj->zai", o3.rand_matrix(len(pos), device=device), pos)
 
     return pos, labels
 
@@ -215,7 +217,7 @@ def make_batch(pos):
         AddEdgeSphericalHarmonics(L=2),
         AddEdgeAlignWignerD(L=1)
     ])
-    dataset = [transform(Data(pos=pos, x=torch.ones(4, 1))) for pos in pos]
+    dataset = [transform(Data(pos=pos, x=torch.ones(4, 1))).to(device) for pos in pos]
     return next(iter(DataLoader(dataset, batch_size=len(dataset))))
 
 def Network() -> None:
@@ -228,7 +230,7 @@ def Network() -> None:
     )
 
 def main() -> None:
-    torch.random.manual_seed(193)
+    torch.random.manual_seed(358)
     x, y = tetris()
     train_x, train_y = make_batch(x), y  
 
@@ -241,9 +243,9 @@ def main() -> None:
         case 'Network':
             f = Network()
         case 'TFN':    
-            f = TFN(hidden)
+            f = TFN(hidden).to(device)
         case 'SO2TFN':
-            f = SO2TFN(hidden)
+            f = SO2TFN(hidden).to(device)
     # print("Built a model:")
     print(f)
 

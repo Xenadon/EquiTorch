@@ -41,22 +41,28 @@ which benefits from the modularized design of our package.
 
 .. code-block:: python
 
+    from typing import Optional, Callable
     import time
 
     import torch
+    from torch import Tensor
     import torch.nn as nn
     import torch_geometric
-    from torch_geometric.nn import SumAggregation
+    from torch_geometric.nn import SumAggregation, MessagePassing
     from torch_geometric.data import Data, DataLoader
     import torch_geometric.transforms
-    from equitorch.nn.tfn import TFNBlock, SO2TFNBlock
     from equitorch.nn import (
         GaussianBasisExpansion, 
         PolynomialCutoff, 
         NormAct,
-        ShiftedSoftPlus
+        ShiftedSoftPlus,
+        SO3Linear,
+        SO2Linear,
+        DegreeWiseLinear
     )
+    from equitorch.utils import check_degree_range, rot_on
     from equitorch.transforms import RadiusGraph, AddEdgeSphericalHarmonics, AddEdgeAlignWignerD
+    from equitorch.typing import DegreeRange
 
     from e3nn import o3
     from e3nn.nn.models.v2106.gate_points_networks import SimpleNetwork
@@ -93,16 +99,16 @@ which benefits from the modularized design of our package.
             self.weight_producer = weight_producer
 
         def forward(self, x: Tensor, edge_index,
-                    edge_feat: Tensor, edge_emb: Optional[Tensor], edge_weight: Optional[Tensor]=None):
+                    sh: Tensor, edge_emb: Optional[Tensor], edge_weight: Optional[Tensor]=None):
             lin_weight = edge_emb if self.weight_producer is None else self.weight_producer(edge_emb)
             lin_weight = lin_weight.view(*(self.lin_weight_shape))
-            out = self.propagate(edge_index, x=x, edge_feat=edge_feat,
+            out = self.propagate(edge_index, x=x, sh=sh,
                                 lin_weight=lin_weight, edge_weight=edge_weight)
             out = self.self_int(out)
             return self.act(out) if self.act is not None else out
         
-        def message(self, x_j:Tensor, edge_feat:Tensor, lin_weight:Tensor, edge_weight:Optional[Tensor]):
-            x_j = self.lin(x_j, edge_feat, lin_weight)
+        def message(self, x_j:Tensor, sh:Tensor, lin_weight:Tensor, edge_weight:Optional[Tensor]):
+            x_j = self.lin(x_j, sh, lin_weight)
 
             return edge_weight.view(-1,1,1) * x_j
 
@@ -117,10 +123,10 @@ which benefits from the modularized design of our package.
             self.cutoff = PolynomialCutoff(1.5)
             self.layer1 = TFNBlock(in_channels=1, out_channels=hidden, 
                                 L_in=0, L_edge=2, L_out=1, channel_wise=False, 
-                                weight_producer=nn.Linear(10,2*hidden), act=NormAct(ShiftedSoftPlus(), 1))
+                                weight_producer=nn.Linear(10,2*hidden), act=NormAct(1, ShiftedSoftPlus()))
             self.layer2 = TFNBlock(in_channels=hidden, out_channels=hidden, 
                                 L_in=1, L_edge=2, L_out=1, channel_wise=True, 
-                                weight_producer=nn.Linear(10,6*hidden), act=NormAct(ShiftedSoftPlus(), 1))
+                                weight_producer=nn.Linear(10,6*hidden), act=NormAct(1, ShiftedSoftPlus()))
             self.layer3 = TFNBlock(in_channels=hidden, out_channels=hidden, 
                                 L_in=1, L_edge=2, L_out=0, channel_wise=True, 
                                 weight_producer=nn.Linear(10,2*hidden), act=nn.SiLU())
@@ -199,10 +205,10 @@ which benefits from the modularized design of our package.
             self.cutoff = PolynomialCutoff(1.5)
             self.layer1 = SO2TFNBlock(in_channels=1, out_channels=hidden,
                                 L_in=0, L_out=1, channel_wise=False, 
-                                weight_producer=nn.Linear(10,2*hidden), act=NormAct(ShiftedSoftPlus(), 1))
+                                weight_producer=nn.Linear(10,2*hidden), act=NormAct(1, ShiftedSoftPlus()))
             self.layer2 = SO2TFNBlock(in_channels=hidden, out_channels=hidden, 
                                 L_in=1, L_out=1, channel_wise=True, 
-                                weight_producer=nn.Linear(10,6*hidden), act=NormAct(ShiftedSoftPlus(), 1))
+                                weight_producer=nn.Linear(10,6*hidden), act=NormAct(1, ShiftedSoftPlus()))
             self.layer3 = SO2TFNBlock(in_channels=hidden, out_channels=hidden, 
                                 L_in=1, L_out=0, channel_wise=True, 
                                 weight_producer=nn.Linear(10,2*hidden), act=nn.SiLU())
@@ -261,7 +267,7 @@ which benefits from the modularized design of our package.
         )
 
     def main() -> None:
-        torch.random.manual_seed(193)
+        torch.random.manual_seed(358)
         x, y = tetris()
         train_x, train_y = make_batch(x), y  
 

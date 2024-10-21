@@ -156,12 +156,12 @@ class SO3Linear(nn.Module):
     This operation can be expressed as
     
     .. math::
-        \mathbf{x'}^{(l)}=\sum_{l_1,l_2}\mathbf{W}_{l_1,l_2}^{l}(\|\mathbf{r}\|)\mathbf{x}^{(l_1)}\otimes \mathbf{Y}^{(l_2)}(\mathbf{r}),
+        \mathbf{x'}^{(l)}=\sum_{l_1,l_2}\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}^{(l_1)}\otimes \mathbf{Y}^{(l_2)}(\mathbf{r}),
     
     or
 
     .. math::
-        \mathbf{x'}^{(l)}_{m}=\sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}\mathbf{W}_{l_1,l_2}^{l}(\|\mathbf{r}\|)\mathbf{x}_{m_1}^{(l_1)}\mathbf{Y}_{m_2}^{(l_2)}(\mathbf{r}),
+        \mathbf{x'}^{(l)}_{m}=\sum_{l_1,l_2}\sum_{m_1,m_2}C_{(l_1,m_1)(l_2,m_2)}^{(l,m)}\mathbf{W}_{l_1,l_2}^{l}\mathbf{x}_{m_1}^{(l_1)}\mathbf{Y }_{m_2}^{(l_2)}(\mathbf{r}),
     
     where the summation of :math:`(l_1,l_2)` is over all the values such that 
     :math:`l_1\in L_1, l_2\in L_2` and :math:`|l_1-l_2|\le l\le l_1+l_2`,
@@ -170,8 +170,6 @@ class SO3Linear(nn.Module):
     :math:`\sum_{c'}\mathbf{W}_{l_1,l_2,cc'}^{l}\mathbf{x}_{m_1,c'}^{(l_i)}`
     if :obj:`channel_wise` is :obj:`False`, or
     :math:`\mathbf{W}_{l_1,l_2,c}^{l}\mathbf{x}_{m_1,c}^{(l_i)}` if :obj:`channel_wise` is :obj:`True`.
-    :math:`\mathbf{W}(\|\mathbf{r}\|)` means the weights can depend on the length of the 
-    vector :math:`\mathbf{r}\in\mathbb{R}^3` (but not necessary).
 
     When there are no ambiguities on :obj:`L_in`, :obj:`L_edge` and :obj:`L_out`,
     we also denote this operation as
@@ -369,22 +367,21 @@ class SO2Linear(nn.Module):
 
     .. math::
         \begin{aligned}
-        \mathbf{x}_{m}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}-\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, & m < 0,\\
-        \mathbf{x}_{0}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{0}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{0}^{(l_i)}, &\\
-        \mathbf{x}_{m}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m}^{(l_i)}-\mathbf{W}_{-m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{-m}^{(l_i)}, & m > 0,\\
+        \mathbf{x}_{m}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}\mathbf{x}_{-m}^{(l_i)}-\mathbf{W}_{m}^{(l_o,l_i)}\mathbf{x}_{-m}^{(l_i)}, & m < 0,\\
+        \mathbf{x}_{0}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{0}^{(l_o,l_i)}\mathbf{x}_{0}^{(l_i)}, &\\
+        \mathbf{x}_{m}^{(l_o)}&=\sum_{l_i\in L_{in}}\mathbf{W}_{m}^{(l_o,l_i)}\mathbf{x}_{m}^{(l_i)}-\mathbf{W}_{-m}^{(l_o,l_i)}\mathbf{x}_{-m}^{(l_i)}, & m > 0,\\
         \end{aligned}
 
-    where :math:`\mathbf{W}_{m}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m'}^{(l_i)}` means 
-    :math:`\sum_{c'}\mathbf{W}_{m,cc'}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c'}^{(l_i)}`
+    where :math:`\mathbf{W}_{m}^{(l_o,l_i)}\mathbf{x}_{m'}^{(l_i)}` means 
+    :math:`\sum_{c'}\mathbf{W}_{m,cc'}^{(l_o,l_i)}\mathbf{x}_{m',c'}^{(l_i)}`
     if :obj:`channel_wise` is :obj:`False`, or
-    :math:`\mathbf{W}_{m,c}^{(l_o,l_i)}(\|\mathbf{r}\|)\mathbf{x}_{m',c}^{(l_i)}` if :obj:`channel_wise` is :obj:`True`.
-    :math:`\mathbf{W}(\|\mathbf{r}\|)` means the weights can depend on the length of the 
-    vector :math:`\mathbf{r}\in\mathbb{R}^3` (but not necessary).        
+    :math:`\mathbf{W}_{m,c}^{(l_o,l_i)}\mathbf{x}_{m',c}^{(l_i)}` if :obj:`channel_wise` is :obj:`True`.
 
     When there is no ambiguity, we also denote the operation as 
 
     .. math::
-        \mathbf{x}'=\tilde{\mathbf{W}}_{\phi}(\|\mathbf{r}\|)\mathbf{x}.
+        \mathbf{x}'=\tilde{\mathbf{W}}_{\phi}\mathbf{x} \text{ or } \mathbf{x}'=\tilde{\mathbf{W}}_{\text{SO(2)}}\mathbf{x}.
+
 
     The SO(2) equivariance means that, for any rotation 
     :math:`\mathbf{R}=\begin{bmatrix}\cos\phi&-\sin\phi&0\\\sin\phi&\cos\phi&0\\0&0&1\end{bmatrix}`
@@ -393,17 +390,17 @@ class SO2Linear(nn.Module):
     it satisfise that
 
     .. math::
-        \mathbf{D}_{\text{out}}\tilde{\mathbf{W}}_{\phi}(\|{\mathbf{r}}\|)\mathbf{x}=\tilde{\mathbf{W}}_{\phi}(\mathbf{R}{\mathbf{r}})(\mathbf{D}_{\text{in}}\mathbf{x}).
+        \mathbf{D}_{\text{out}}\tilde{\mathbf{W}}_{\phi}\mathbf{x}=\tilde{\mathbf{W}}_{\phi}(\mathbf{D}_{\text{in}}\mathbf{x}).
 
 
     This operation can work as a more efficient alternative for SO(3) linear operation
     and satisfies: 
     
     for any possible SO(3) linear operation :math:`\tilde{\mathbf{W}}(\mathbf{r})`,
-    there exists an SO(2) linear operation :math:`\tilde{\mathbf{W}}_{\phi}'(\|\mathbf{r}\|)` such that:
+    there exists an SO(2) linear operation :math:`\tilde{\mathbf{W}}_{\phi}'` such that:
 
     .. math::
-        \mathbf{D}_{\mathbf{r},\text{out}}^\top\tilde{\mathbf{W}}'_{\phi}(\|\mathbf{r}\|)(\mathbf{D}_{\mathbf{r},\text{in}}\mathbf{x})=\tilde{\mathbf{W}}(\mathbf {r})\mathbf{x}
+        \mathbf{D}_{\mathbf{r},\text{out}}^\top\tilde{\mathbf{W}}'_{\phi}(\mathbf{D}_{\mathbf{r},\text{in}}\mathbf{x})=\tilde{\mathbf{W}}(\mathbf {r})\mathbf{x}
 
     and vice versa, where :math:`\mathbf{D}_{\mathbf{r},\text{in}}` and :math:`\mathbf{D}_{\mathbf{r},\text{out}}` are the Wigner D
     matrices on the input/output spaces corresponding to the rotation matrix that can align :math:`\mathbf{r}`
@@ -413,12 +410,12 @@ class SO2Linear(nn.Module):
     :obj:`~equitorch.utils.so3_weights_to_so2` and :obj:`~equitorch.utils.so2_weights_to_so3`.
     
     .. note::
-        If dense Wigner D matrix is used before the SO(2) linear operation, the 
-        :math:`O(L^4)` complexity of :math:`\mathbf{Dx}` can be the bottleneck.
         When channels :math:`C` explicitly considered, the linear operation will 
         be of complexity :math:`O(L^3C)` if channel wise or :math:`O(L^3CC')` if
-        not, but the rotation :math:`\mathbf{Dx}` will always be of complexity 
-        :math:`O(L^4C)`.
+        not, but the rotation :math:`\mathbf{Dx}` will always be of complexity
+        :math:`O(L^4C)` if dense Wigner D matrices are used. However, since the transform
+        :math:`\mathbf{Dx}` can be performed via a dense matrix multiplication,
+        this will not be likely to be the bottleneck in practice.
 
         Whenever possible, it is recommended to use :obj:`SO2Linear` rather than :obj:`SO3Linear` for 
         equivariant operation on large :math:`L`.

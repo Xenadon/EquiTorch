@@ -11,7 +11,11 @@ In this section, we will introduce *tensor products*, one of the most fundamenta
 Tensor Product
 --------------
 
-Given two spherical tensors :math:`\mathbf{x}` and :math:`\mathbf{y}` with degree range :math:`L_1` and :math:`L_2`, respectively, the tensor product of them is also a spherical tensor. The each component of the tensor product is defined as the bilinear form
+.. note::
+
+    Though the tensor product between spherical tensors originates from cartesian tensor product, but for simplicity, we will not talk too much about the relations here and directly define it as a new operation. 
+
+Given two spherical tensors :math:`\mathbf{x}` and :math:`\mathbf{y}` with degree ranges :math:`L_1` and :math:`L_2`, respectively, the tensor product :math:`\mathbf{x}\otimes \mathbf{y}` of them with the degree range :math:`L_\text{out}` is also a spherical tensor. The each component of the tensor product is defined as the bilinear form
 
 .. math::
 

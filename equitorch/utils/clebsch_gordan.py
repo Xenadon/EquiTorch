@@ -9,7 +9,7 @@ from .indices import check_degree_range, degree_order_to_index, degrees_in_range
 from ..typing import DegreeRange
 from ..math.so3 import _so3_clebsch_gordan
 
-def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optional[Callable]=None, dtype=torch.float):
+def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optional[Callable]=None, dtype=None):
     r"""Generate dense Clebsch-Gordan (CG) matrices for given angular momentum ranges.
 
     This function computes the Clebsch-Gordan coefficients for coupling two angular momenta
@@ -63,9 +63,9 @@ def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optiona
                 CGs_LL1, dim=-1) 
             for CGs_LL1 in CGs_L], dim=-2
         ) for CGs_L in CGs], dim=-3)
-    return CG
+    return CG.to(device=device, dtype=dtype)
 
-def blocked_CG(L: DegreeRange, L1: DegreeRange, L2:DegreeRange, condition:Optional[Callable]=None, dtype=torch.float):
+def blocked_CG(L: DegreeRange, L1: DegreeRange, L2:DegreeRange, condition:Optional[Callable]=None, device=None, dtype=None):
     r"""Generate blocked Clebsch-Gordan (CG) coefficients for given angular momentum ranges.
 
     This function computes the Clebsch-Gordan coefficients for coupling two angular momenta
@@ -98,7 +98,7 @@ def blocked_CG(L: DegreeRange, L1: DegreeRange, L2:DegreeRange, condition:Option
     L2 = check_degree_range(L2)
     if condition is None:
         return {
-            (l, l1, l2):_so3_clebsch_gordan(l,l1,l2).type(dtype)
+            (l, l1, l2):_so3_clebsch_gordan(l,l1,l2).to(device=device, dtype=dtype)
                 for l in degrees_in_range(L)
                 for l1 in degrees_in_range(L1)
                 for l2 in degrees_in_range(L2)
@@ -106,14 +106,14 @@ def blocked_CG(L: DegreeRange, L1: DegreeRange, L2:DegreeRange, condition:Option
         }
     else:
         return {
-            (l, l1, l2):_so3_clebsch_gordan(l,l1,l2).type(dtype)
+            (l, l1, l2):_so3_clebsch_gordan(l,l1,l2).to(device=device, dtype=dtype)
                 for l in degrees_in_range(L)
                 for l1 in degrees_in_range(L1)
                 for l2 in degrees_in_range(L2)
                 if l >= abs(l1-l2) and l <= l1+l2 and condition(l,l1,l2)
         }
 def coo_CG(L:DegreeRange, L1:DegreeRange, L2:DegreeRange, 
-           condition:Optional[Callable]=None, dtype=torch.float, device=None):
+           condition:Optional[Callable]=None, dtype=None, device=None):
     r"""Generate sparse Clebsch-Gordan (CG) coefficients in coordinate format.
 
     This function computes the non-zero Clebsch-Gordan coefficients for coupling two angular momenta
@@ -177,5 +177,5 @@ def coo_CG(L:DegreeRange, L1:DegreeRange, L2:DegreeRange,
     l_ind = torch.tensor([t[6] for t in ret])
     Ms = torch.tensor([[t[1], t[4], t[5]] for t in ret]).T
     Cs = torch.tensor([t[7] for t in ret])
-    return Cs.type(dtype).to(device), Ms, ls_cg, l_ind
+    return Cs.to(device=device, dtype=dtype), Ms.to(device=device), ls_cg.to(device=device), l_ind.to(device=device)
 

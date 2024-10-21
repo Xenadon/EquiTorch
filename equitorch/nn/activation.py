@@ -19,20 +19,20 @@ class NormAct(nn.Module):
 
     Parameters
     ----------
-    activation : Callable[[Tensor], Tensor]
-        The activation function to apply to the norm.
     L : :obj:`~equitorch.typing.DegreeRange`
         The range of degrees (l_min, l_max) to consider for spherical harmonics.
+    activation : Callable[[Tensor], Tensor]
+        The activation function to apply to the norm.
     degree_wise : bool, optional
         If True, apply the activation separately for each degree. 
-        If False, apply it to the overall norm. Default is False.
+        If False, apply it to the overall norm. Default is True.
     bias : bool, optional
         If True, add a learnable bias before the activation. Default is False.
     num_channels : int, optional
         Number of input channels. Required if bias is True.
 
-    Notes
-    -----
+    Note
+    ----
     - If degree_wise is True, the norm is computed for each degree separately.
     - If degree_wise is False, the norm is computed across all degrees.
     - The bias, if used, is added before the activation function is applied.
@@ -42,7 +42,7 @@ class NormAct(nn.Module):
     --------
     >>> activation = torch.nn.SiLU()
     >>> L = (0, 2)
-    >>> norm_act = NormAct(activation, L, degree_wise=True, bias=True, num_channels=16)
+    >>> norm_act = NormAct(L, activation, degree_wise=True, bias=True, num_channels=16)
     >>> x = torch.randn(32, 9, 16)  # batch_size=32, num_orders=9, channels=16
     >>> output = norm_act(x)
     >>> print(output.shape)
@@ -50,9 +50,9 @@ class NormAct(nn.Module):
     """
 
     def __init__(self, 
-                 activation: Callable[[Tensor], Tensor],
                  L: DegreeRange, 
-                 degree_wise:bool=False, 
+                 activation: Callable[[Tensor], Tensor],
+                 degree_wise:bool=True, 
                  need_bias:bool=False, 
                  num_channels: Optional[int] = None):
         super().__init__()
@@ -71,6 +71,8 @@ class NormAct(nn.Module):
                     torch.randn(self.num_channels))
 
     def forward(self, x: Tensor):
+        """
+        """
         if self.degree_wise:
             n = norm(x, self.L)
             if self.need_bias:
@@ -84,6 +86,33 @@ class NormAct(nn.Module):
             n = self.activation(n)
             x = x * n
         return x
+
+class Gate(nn.Module):
+
+    def __init__(self, 
+                 L: DegreeRange, 
+                 activation: Callable[[Tensor], Tensor] = None,
+                 degree_wise:bool=True, 
+                ):
+        super().__init__()
+        self.activation = activation
+        self.degree_wise = degree_wise
+        self.L = check_degree_range(L)
+        self.num_degrees = self.L[1] - self.L[0] + 1
+
+    def forward(self, x: Tensor, gate: Tensor):
+        if self.degree_wise:
+            gate = gate.view(-1, self.num_degrees, x.shape[-1])
+            if self.activation is not None:
+                gate = self.activation(gate)
+            x = x * expand_degree_to_order(gate, self.L, dim=-2)
+        else:
+            gate = gate.view(-1, 1, x.shape[-1])
+            if self.activation is not None:
+                gate = self.activation(gate)
+            x = x * gate
+        return x
+
 
 class S2Act(nn.Module):
     r"""The S2 pointwise activation.
@@ -105,17 +134,17 @@ class S2Act(nn.Module):
 
     Warning
     -------
-    This operation is ``not`` exactly equivariant since we use grid summation
+    This operation is **not** exactly equivariant since we use grid summation
     instead of integral when performing ISHT. 
 
     Parameters
     ----------
-    resolution : Union[Tuple[int,int],int]
-        The grid points of thetas and phis when performing ISHT.
-    activation : Callable[[Tensor], Tensor]
-        The scalar activation
     L : :obj:`~equitorch.typing.DegreeRange`
         The degree range of inputs and outputs.
+    activation : Callable[[Tensor], Tensor]
+        The scalar activation
+    resolution : Union[Tuple[int,int],int]
+        The grid points of thetas and phis when performing ISHT.
 
     Example
     -------
@@ -129,27 +158,28 @@ class S2Act(nn.Module):
         >>> print(D.shape)
         torch.Size([20, 16, 16])
 
-        >>> act = S2Act((16, 16), torch.nn.SiLU(), L)
+        >>> act = S2Act(L, torch.nn.SiLU(), (16, 16))
         >>> z = act(x)
         >>> Dz = act(D@x)
         >>> print((D@z - Dz).abs().max())
         tensor(0.0072)
 
-        >>> act = S2Act((16, 32), torch.nn.SiLU(), L)
+        >>> act = S2Act(L, torch.nn.SiLU(), (16, 32))
         >>> z = act(x)
         >>> Dz = act(D@x)
         >>> print((D@z - Dz).abs().max())
         tensor(3.7670e-05)
     
-        >>> act = S2Act((32, 32), torch.nn.SiLU(), L)
+        >>> act = S2Act(L, torch.nn.SiLU(), (32, 32))
         >>> z = act(x)
         >>> Dz = act(D@x)
         >>> print((D@z - Dz).abs().max())
         tensor(6.4373e-06)
     """
-    def __init__(self, resolution:Union[Tuple[int,int],int], 
+    def __init__(self, L: DegreeRange,
                  activation: Callable[[Tensor], Tensor],
-                 L: DegreeRange):
+                 resolution:Union[Tuple[int,int],int] = 16, 
+                 ):
         super().__init__()
 
         self.L = check_degree_range(L)

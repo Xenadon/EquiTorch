@@ -17,7 +17,11 @@
 Introduction to Spherical Tensors
 =================================
 
-`Spherical tensors` (or irreps tensors/features), is a basic data structure of a widely used family of SO(3)-equivariant (3D rotational-equivariant) neural networks. Here, as a simple introduction, we will directly give some properties that we need in building equivariant neural networks, with minimum mathematics involved.
+.. note::
+
+    In this introduction, we aim to minimize complex mathematical details and instead focus on the key properties and rules necessary in building neural networks. While this approach might omit the origins of some concepts and make them seem less intuitive, we apologize for any inconvenience and will strive to clarify these ideas through visualizations and examples.
+
+`Spherical tensors` (or irreps tensors/features), is a basic data structure of a widely used family of SO(3)-equivariant (3D rotational-equivariant) neural networks. 
 
 Shapes and components
 ---------------------
@@ -91,14 +95,16 @@ Besides being of the proper shape, what makes a tensor "spherical" is that it sh
 
     f(\mathbf{D}_{\text{in}}(\mathbf{R})\mathbf{x})=\mathbf{D}_{\text{out}}(\mathbf{R})\mathbf{y},
 
-for any rotation :math:`\mathbf{R}\in\text{SO(3)}`. Reversely, we can call the functions with such a property to be "equivariant". The following diagram also illustrate this:
+for any rotation :math:`\mathbf{R}\in\text{SO(3)}`. Reversely, we can call the functions with such a property to be "equivariant". Here, :math:`\mathbf{D}_{\text{in}}(\mathbf{R})` and :math:`\mathbf{D}_{\text{out}}(\mathbf{R})` are the so-called `Wigner D matrices <https://en.wikipedia.org/wiki/Wigner_D-matrix>`_, with the degree-range of the input and output space, respectively. Given a degree-range :math:`L`, the corresponding Wigner D matrix is block diagonal :math:`\mathbf{D}(\mathbf{R})=\bigoplus_{l\in L}\mathbf{D}^{(l)}(\mathbf{R})` with each blocks :math:`\mathbf{D}^{(l)}(\mathbf{R})\in\mathbb{R}^{(2l+1)\times(2l+1)}` being othrogonal.
+
+The equivariance property can also be represented via the following diagrams:
 
 
 .. figure:: ./imgs/1_equiv.png
     :align: center
     :scale: 60%
 
-Here, :math:`\mathbf{D}_{\text{in}}(\mathbf{R})` and :math:`\mathbf{D}_{\text{out}}(\mathbf{R})` are the so-called `Wigner D matrices <https://en.wikipedia.org/wiki/Wigner_D-matrix>`_, with the degree-range of the input and output space, respectively. Given a degree-range :math:`L`, the corresponding Wigner D matrix is block diagonal :math:`\mathbf{D}(\mathbf{R})=\bigoplus_{l\in L}\mathbf{D}^{(l)}(\mathbf{R})` with each blocks :math:`\mathbf{D}^{(l)}(\mathbf{R})\in\mathbb{R}^{(2l+1)\times(2l+1)}` being othrogonal.
+    (In our diagram, the :math:`\mathbf{D}`'s before and after :math:`f` actually represent :math:`\mathbf{D}_{\text{in}}` and :math:`\mathbf{D}_{\text{out}}`, respectively, although this is not explicitly shown.)
 
 The most important property of Wigner D matrices is that they will multiply as rotations, that is, :math:`\mathbf{D}(\mathbf{R}_1)\mathbf{D}(\mathbf{R}_2)=\mathbf{D}(\mathbf{R}_1\mathbf{R}_2)`, thus, the Wigner D :math:`\mathbf{D}(\mathbf{R})` can be considered as a "**representation**" of the 3D rotation :math:`\mathbf{R}` on the spaces of spherical tensors.
 
@@ -164,7 +170,7 @@ which is also a case of equivariances.
 
     The equivariance of spherical harmonics
 
-The spherical harmonics are usually used to encode a direction vector :math:`\hat{\mathbf{r}}\in S^2` to the space of spherical tensors.
+The spherical harmonics are usually used to encode a direction vector :math:`\hat{\mathbf{r}}\in S^2` to the space of spherical tensors. Especially, the three components of degree-:math:`1` spherical harmonics is just :math:`\frac{1}{\sqrt{3}}` times the input vector :math:`\hat{\mathbf{r}}` in :math:`(y,z,x)` order.
 
 In Equitorch, we can get the spherical harmonics by :obj:`~equitorch.math.spherical_harmonics`.
 
