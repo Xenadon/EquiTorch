@@ -17,6 +17,12 @@ where :math:`\phi` is a message function that generate messages from both source
 
 In conventional GNNs, the functions above is typically the scalar functions. However, if we are dealing geometric graphs where the nodes and edges contain geometric and physical information like position :math:`\{\mathbf{r}_i\}` and relative position :math:`\{\mathbf{r}_{j,i}\}`, we should should equivariant functions for all the message, aggregation and updating functions to form an equivariant message passsing neural network.
 
+.. figure:: ./imgs/4_MPNN.png
+    :align: center
+    :scale: 60%
+
+    A general message passing block.
+
 In the context of AI for science tasks, the message passing processes are also interpreted as the "interactions" between particles. Therefore, some work will refer to a message passing layer as an "interaction block".
 
 Tensor Field Networks
@@ -30,6 +36,13 @@ A TFN block can be defined as
     \mathbf{x}'_i = \sigma\bigg(\tilde{\mathbf{W}}_{\text{DW}}\big(\sum_{j\in\mathcal{N}(i)}\tilde{\mathbf{W}}(\mathbf{r}_{ji})\mathbf{x}_j\big)\bigg),
 
 where :math:`\mathbf{x}_i'` is the output spherical tensor attribute of the :math:`i`'th node, :math:`\mathbf{x}_j` is the input spherical tensor attribute of the :math:`j`'th node in the neighborhood :math:`\mathcal{N}(i)` of node :math:`i`, :math:`\tilde{\mathbf{W}}(\mathbf{r}_{ji})` is a channel-wise SO(3) equivariant linear operation that depends on the relative position vector :math:`r_{ji}` pointing from :math:`j` to :math:`i`, :math:`\tilde{\mathbf{W}}_{\text{DW}}(\cdot)` is a degree-wise linear operation and :math:`\sigma` is a degree-wise norm-activation (see :obj:`~equitorch.nn.NormAct`).
+
+.. figure:: ./imgs/4_TFN.png
+    :align: center
+    :scale: 60%
+
+    A TFN block. 
+    Note that :math:`\mathbf{x}_i` is not involved in the block. We denote this with dashed line.
 
 From today's perspective, TFN can also be viewed as a type of MPNN, with the key functions defined as follows:
 

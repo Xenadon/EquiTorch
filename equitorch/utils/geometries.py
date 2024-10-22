@@ -44,7 +44,7 @@ def zero_center_of_mass(pos: Tensor, batch: Tensor, center_of_mass: Tensor):
     Parameters
     ----------
     pos : :obj:`~torch.Tensor`
-        Tensor of shape :math:`(N, 3): containing the positions of all atoms.
+        Tensor of shape :math:`(N, 3)` containing the positions of all atoms.
     batch : :obj:`~torch.Tensor`
         Tensor of shape :math:`(N,)` indicating which molecule each atom belongs to.
     center_of_mass : :obj:`~torch.Tensor`
@@ -244,10 +244,10 @@ def edge_align_to_z_wigner(pos: Tensor, edge_index: Tensor, L: DegreeRange):
 
 
 def rot_on(mat: Tensor, x: Tensor):
-    r"""Performs rotation of matrix 'mat' on tensor 'x'.
+    r"""Performs rotation of matrix :obj:`mat` on tensor :obj:`x`.
 
-    This function applies the rotation defined by 'mat' to the tensor 'x'. The behavior
-    depends on the dimensions of both 'mat' and 'x'.
+    This function applies the rotation defined by :obj:`mat` to the tensor :obj:`x`. The behavior
+    depends on the dimensions of both :obj:`mat` and :obj:`x`.
 
     Parameters
     ----------
