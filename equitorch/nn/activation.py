@@ -11,16 +11,27 @@ from ..math import norm, isht, sht
 
 
 class NormAct(nn.Module):
-    r"""Apply an activation function to the norm of spherical tensors.
+    r"""The Norm Activation
 
-    This module computes the norm of the input tensor along specific dimensions,
-    applies an activation function to the norm, and then scales the original input
-    by the activated norm.
+    - If :obj:`degree_wise`:
+
+    .. math::
+
+        \mathbf{x}'_c = \bigoplus_l \sigma(\|\mathbf{x}^{(l)}_c\|)\mathbf{x}^{(l)}_c
+
+    - otherwise
+
+        \mathbf{x}'_c = \sigma(\|\mathbf{x}_c\|)\mathbf{x}_c
+
+    for the channel :math:`c`, where :math:`\bigoplus` is the concatenation.
+
+    If :obj:`bias` is true, a bias :math:`b_c` or :math:`b_c^{(l)}` will be added 
+    to the corresponding norm before be passed in the activation.
 
     Parameters
     ----------
     L : :obj:`~equitorch.typing.DegreeRange`
-        The range of degrees (l_min, l_max) to consider for spherical harmonics.
+        The degree range.
     activation : Callable[[Tensor], Tensor]
         The activation function to apply to the norm.
     degree_wise : bool, optional
@@ -30,13 +41,6 @@ class NormAct(nn.Module):
         If True, add a learnable bias before the activation. Default is False.
     num_channels : int, optional
         Number of input channels. Required if bias is True.
-
-    Note
-    ----
-    - If degree_wise is True, the norm is computed for each degree separately.
-    - If degree_wise is False, the norm is computed across all degrees.
-    - The bias, if used, is added before the activation function is applied.
-    - After activation, the input is scaled by the activated norm.
 
     Example
     --------
@@ -88,7 +92,32 @@ class NormAct(nn.Module):
         return x
 
 class Gate(nn.Module):
+    r""" The Gate Activation
 
+    - If `degree_wise`:
+
+    .. math::
+        \text{Gate}_\sigma(\mathbf{x}_c,g_c) = \bigoplus_l\sigma(g_c^{(l)})\mathbf{x}^{(l)},
+
+    - otherwise
+
+    .. math::
+        \text{Gate}_\sigma(\mathbf{x}_c,g_c) = \sigma(g_c)\mathbf{x},
+
+    for the channel :math:`c`, where :math:`\bigoplus` is the concatenation, 
+    :math:`\sigma` is the activation function and :math:`g_c` or :math:`g_c^{(l)}`
+    is the gate variable. 
+
+    Parameters
+    ----------
+    L : :obj:`~equitorch.typing.DegreeRange`
+        The degree range.
+    activation: Callable[[Tensor], Tensor], optional
+        The activation function applied to gate variables. Default is :obj:`None` for the identity function.
+    degree_wise: bool, optional
+        If True, apply the gate separately for each degree. 
+        If False, apply gate to the whole spherical tensor. Default is True.
+    """
     def __init__(self, 
                  L: DegreeRange, 
                  activation: Callable[[Tensor], Tensor] = None,
@@ -101,6 +130,21 @@ class Gate(nn.Module):
         self.num_degrees = self.L[1] - self.L[0] + 1
 
     def forward(self, x: Tensor, gate: Tensor):
+        r"""
+        Parameters
+        ----------
+        x : :obj:`~torch.Tensor`
+            The input spherical tensor of shape :math:`(N, \text{num_orders}, C)`.
+        gate : :obj:`~torch.Tensor`
+            The gate variable of shape :math:`(N, \text{num_degrees}, C)` if 
+            :obj:`degree_wise` is :obj:`True` or :math:`(N, C)` 
+            if :obj:`degree_wise` is :obj:`False`.
+
+        Returns
+        -------
+        :obj:`~torch.Tensor`
+            The gated spherical tensor.
+        """
         if self.degree_wise:
             gate = gate.view(-1, self.num_degrees, x.shape[-1])
             if self.activation is not None:

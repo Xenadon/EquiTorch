@@ -25,6 +25,7 @@ cutoffs = [
 ]
 
 activations = [
+    'Gate',
     'S2Act',
     'NormAct'
 ]

@@ -26,6 +26,7 @@ Equivariant Activations
     :nosignatures:
     :toctree: ../generated
 
+        Gate
         S2Act
         NormAct
 

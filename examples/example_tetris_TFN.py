@@ -151,7 +151,6 @@ class SO2TFNBlock(MessagePassing):
         x_j = rot_on(D_in, x_j)
         x_j = self.lin(x_j, lin_weight)
         x_j = rot_on(DT_out, x_j)
-        # return edge_weight.view(-1,1,1) * x_j
         if edge_weight is not None:
             return edge_weight.view(-1,1,1) * x_j
         else:
