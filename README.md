@@ -1,4 +1,6 @@
-# EquiTorch
+# Equitorch
+
+![Equitorch_logo](./img/logo_wide.png)
 
 *Equitorch* is a modularized package that can be used to flexibly constructing equivariant GNNs based on Pytorch-Geometric.
 

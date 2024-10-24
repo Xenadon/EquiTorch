@@ -78,7 +78,11 @@ exclude_patterns = []
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
-# html_static_path = ['_static']
+html_static_path = ['_static']
+html_logo = '_static/logo_.png'
+html_css_files = [
+    'css/custom.css'
+]
 
 def rstjinja(app, docname, source):
     """
