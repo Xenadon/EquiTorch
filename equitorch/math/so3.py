@@ -21,7 +21,7 @@ from ..typing import DegreeRange
 
 # all the functions below are borrowed and modified form https://github.com/e3nn/e3nn/tree/0.5.0/e3nn/o3
 
-_Jd = torch.load(os.path.join(os.path.dirname(__file__), "Jd.pt"))
+_Jd = torch.load(os.path.join(os.path.dirname(__file__), "Jd.pt"), weights_only=True)
 
 def angles_to_xyz(theta, phi, dim=-1):
     r"""Convert spherical coordinates :math:`(\theta, \phi)` into Cartesian coordinates :math:`(x, y, z)` on the unit sphere.

@@ -5,10 +5,9 @@ setup(
     version='0.1',
     description='A package for constructing equivariant GNNs building upon pyg.',
     packages=find_packages(),
+    package_data={'': ['*.pt']},
     install_requires=[
-        'torch>=2.2',
-        'torch-geometric>=2.4',
-        'e3nn>=0.5.1',
+        'e3nn',
         'torch-cluster'
     ],
     python_requires='>=3.12',
