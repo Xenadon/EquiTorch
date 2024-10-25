@@ -19,7 +19,9 @@ class NormAct(nn.Module):
 
         \mathbf{x}'_c = \bigoplus_l \sigma(\|\mathbf{x}^{(l)}_c\|)\mathbf{x}^{(l)}_c
 
-    - otherwise
+    - otherwise:
+
+    .. math::
 
         \mathbf{x}'_c = \sigma(\|\mathbf{x}_c\|)\mathbf{x}_c
 
