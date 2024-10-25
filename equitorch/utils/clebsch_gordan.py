@@ -9,7 +9,7 @@ from .indices import check_degree_range, degree_order_to_index, degrees_in_range
 from ..typing import DegreeRange
 from ..math.so3 import _so3_clebsch_gordan
 
-def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optional[Callable]=None, dtype=None):
+def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optional[Callable]=None, dtype=None, device=None):
     r"""Generate dense Clebsch-Gordan (CG) matrices for given angular momentum ranges.
 
     This function computes the Clebsch-Gordan coefficients for coupling two angular momenta
@@ -28,7 +28,9 @@ def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optiona
         A function that takes :math:`(l, l_1, l_2)` as arguments and returns a boolean or float.
         If provided, it is used to filter the CG coefficients.
     dtype : torch.dtype, optional
-        The desired data type of the output tensor. Default is torch.float.
+        The desired data type of the output tensor. Default is None for :obj:`torch.get_default_dtype`.
+    device : torch.device, optional
+        The desired device of the output tensor. Default is None.
 
     Returns
     -------
@@ -44,7 +46,7 @@ def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optiona
             [
                 [
                     _so3_clebsch_gordan(l,l1,l2)
-                        .nan_to_num(0).type(dtype) * condition(l,l1,l2)
+                        .nan_to_num(0) * condition(l,l1,l2)
                 for l2 in range(l2_min, l2_max+1)]
             for l1 in range(l1_min,l1_max+1)]
         for l in range(l_min,l_max+1)]
@@ -53,7 +55,7 @@ def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optiona
             [
                 [
                     _so3_clebsch_gordan(l,l1,l2)
-                        .nan_to_num(0).type(dtype) 
+                        .nan_to_num(0)
                 for l2 in range(l2_min, l2_max+1)]
             for l1 in range(l1_min,l1_max+1)]
         for l in range(l_min,l_max+1)]
@@ -63,6 +65,8 @@ def dense_CG(L: DegreeRange, L1: DegreeRange, L2: DegreeRange, condition:Optiona
                 CGs_LL1, dim=-1) 
             for CGs_LL1 in CGs_L], dim=-2
         ) for CGs_L in CGs], dim=-3)
+    if dtype is None:
+        dtype = torch.get_default_dtype()
     return CG.to(device=device, dtype=dtype)
 
 def blocked_CG(L: DegreeRange, L1: DegreeRange, L2:DegreeRange, condition:Optional[Callable]=None, device=None, dtype=None):

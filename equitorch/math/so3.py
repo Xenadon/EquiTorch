@@ -108,15 +108,17 @@ def angles_to_matrix(alpha, beta, gamma):
     return o3.matrix_z(alpha) @ o3.matrix_y(beta) @ o3.matrix_z(gamma)
 
 @functools.lru_cache(maxsize=None)
-def _so3_clebsch_gordan(l1, l2, l3, normalize:bool=True):
+def _so3_clebsch_gordan(l, l1, l2, normalize:bool=False):
     '''
-    Copied from e3nn.o3, but remove the normalization operation to match the scale properties of CG-coefficients. 
+    Copied from e3nn.o3, but:
+        - optional normalize or not
+        - make the output as the first dimension 
     '''
+    Q = change_basis_real_to_complex(l, dtype=torch.float64)
     Q1 = change_basis_real_to_complex(l1, dtype=torch.float64)
     Q2 = change_basis_real_to_complex(l2, dtype=torch.float64)
-    Q3 = change_basis_real_to_complex(l3, dtype=torch.float64)
-    C = _su2_clebsch_gordan(l1, l2, l3).to(dtype=torch.complex128)
-    C = torch.einsum("ij,kl,mn,ikn->jlm", Q1, Q2, torch.conj(Q3.T), C)
+    C = _su2_clebsch_gordan(l1, l2, l).to(dtype=torch.complex128)
+    C = torch.einsum("ij,kl,mn,ikn->mjl", Q1, Q2, torch.conj(Q.T), C)
 
     # make it real
     assert torch.all(torch.abs(torch.imag(C)) < 1e-5)
