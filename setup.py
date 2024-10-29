@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
+import equitorch
 
 setup(
     name='equitorch',
-    version='0.1',
+    version=equitorch.__version__,
     description='A package for constructing equivariant GNNs building upon pyg.',
     packages=find_packages(),
     package_data={'': ['*.pt']},

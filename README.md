@@ -34,5 +34,5 @@ This package is based on [Pytorch](https://pytorch.org/)(>=2.2), [Pytorch-Geomet
 With these packages installed, you can install *Equitorch* by
 
 ```bash
-pip install git+https://github.com/GTML-LAB/Equitorch.git
+pip install equitorch
 ```
