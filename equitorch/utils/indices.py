@@ -140,6 +140,7 @@ def order_ptr(L: DegreeRange, dim:int=0, device=None):
     L = check_degree_range(L)
     return torch.tensor([i**2-L[0]**2 for i in range(L[0], L[1]+2)]).reshape([1]*dim+[-1]).to(device)
 
+@functools.lru_cache(maxsize=None)
 def orders_in_degree_range(L: DegreeRange, zero_based:bool=True, device=None):
     r"""
     Generate a tensor that specifying the order :math:`m` in a feature of 
@@ -170,6 +171,7 @@ def orders_in_degree_range(L: DegreeRange, zero_based:bool=True, device=None):
     >>> print(result)
     tensor([-1, 0, 1, -2, -1, 0, 1, 2])
     """
+    L = check_degree_range(L)
     return torch.tensor([
         m+zero_based*(L[1]) for l in degrees_in_range(L) for m in orders_in_degree(l)
     ], device=device)

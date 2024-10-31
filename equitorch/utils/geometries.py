@@ -278,7 +278,7 @@ def rot_on(mat: Tensor, x: Tensor):
         ret = torch.einsum('NPQC, NQC -> NPC', mat, x)
     else:
         assert "The dimension of mat should only be 2, 3 or 4."
-    
+        ret = x
     if d==2:
         ret = ret.squeeze(-1)
 
