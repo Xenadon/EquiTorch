@@ -20,7 +20,7 @@ import functools
 from ..typing import DegreeRange
 
 # all the functions below are borrowed and modified form https://github.com/e3nn/e3nn/tree/0.5.0/e3nn/o3
-
+# Except for Jd and _wigner_D are from https://github.com/e3nn/e3nn/blob/0.4.0/e3nn/o3/_wigner.py
 _Jd = torch.load(os.path.join(os.path.dirname(__file__), "Jd.pt"), weights_only=True)
 
 def angles_to_xyz(theta, phi, dim=-1):
