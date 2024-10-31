@@ -1,5 +1,9 @@
 # Equitorch
 
+## Sorry!
+
+**I'm sorry if google or bing lead you here when searching "Equitorch". This repository will soon be private, please turn to [the repository of our lab](https://github.com/GTML-LAB/Equitorch/tree/main).**
+
 ![Equitorch_logo](./img/logo_wide.png)
 
 *Equitorch* is a modularized package that can be used to flexibly constructing equivariant GNNs based on Pytorch-Geometric.
@@ -11,9 +15,6 @@
 > This package is still under development. 
 > We are actively adding more operations, documentations and tutorials.
 
-## Sorry!
-
-**I'm sorry if google or bing lead you here when searching "Equitorch". This repository will soon be private, please turn to [the repository of our lab](https://github.com/GTML-LAB/Equitorch/tree/main).**
 
 In this package, we implemented many basic operators that may need in equivariant neural networks, currently including:
 
